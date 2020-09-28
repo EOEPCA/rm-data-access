@@ -1,0 +1,38 @@
+# Idea folder in the solution root contains IntelliJ's project specific settings files
+.idea
+# IML is a module file created by IntelliJ IDEA
+*.iml
+
+# Compiled class file
+*.class
+
+# Log file
+*.log
+
+target
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+#*.jar needed for gradle wrapper jar
+*.war
+*.ear
+*.nar
+*.zip
+*.tar.gz
+*.rar
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
+# Gradle build temporal files
+.gradle/
+build/
+out/
+
+# Terraform state files and plugins
+terraform.tfstate
+terraform.tfstate.backup
+
+.terraform
