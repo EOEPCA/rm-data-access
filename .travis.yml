@@ -1,0 +1,45 @@
+sudo: required
+language: java
+jdk: openjdk11
+install: skip
+
+services:
+  - docker
+
+jobs:
+  include:
+    - stage: build (compile, unit test, package)
+      script: travis/build.sh
+
+    - stage: container creation
+      script:
+        - travis/containerCreation.sh
+
+    - stage: smoke and acceptance test
+      language: minimal
+      install: skip # without this there's a `git clone` and `gradlew assemble` executed!
+      script: travis/acceptanceTest.sh
+
+    - stage: release and tag on DockerHub
+      if: tag =~ ^v[0-9.]*$
+      language: minimal
+      install: skip
+      deploy:
+        provider: script
+        script: travis/release.sh
+        on:
+          tags: true
+      after_deploy:
+        - travis/delete-dockerhub-images.sh
+
+import:
+  - docs/.travis.yml
+
+notifications:
+  slack: eoepca:Msk9hjQKAbwSYcVWiepenPim
+  email:
+    recipients:
+      - a.person@acme.com
+      - a.n.other@acme.com
+    on_success: never # default: change
+    on_failure: never # default: always
