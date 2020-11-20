@@ -8,32 +8,32 @@ LANGUAGE = 'eng'
 
 logger = logging.getLogger(__name__)
 
-mcf = {
-    'mcf': {
-        'version': '1.0'
-    },
-    'metadata': {
-        'language': LANGUAGE,
-        'charset': 'utf8'
-    },
-    'spatial': {
-        'datatype': 'grid',
-        'geomtype': 'solid'
-    },
-    'identification': {
-        'charset': 'utf8',
-        'language': 'missing',
-        'keywords': {}
-    },
-    'contact': {
-      'main': {},
-      'distribution': {}
-    },
-    'distribution': {}
-}
-
-
 def gen_iso_metadata(base_url: str, esa_xml: bytes, inspire_xml: bytes) -> str:
+
+    mcf = {
+        'mcf': {
+            'version': '1.0'
+        },
+        'metadata': {
+            'language': LANGUAGE,
+            'charset': 'utf8'
+        },
+        'spatial': {
+            'datatype': 'grid',
+            'geomtype': 'solid'
+        },
+        'identification': {
+            'charset': 'utf8',
+            'language': 'missing',
+            'keywords': {}
+        },
+        'contact': {
+          'main': {},
+          'distribution': {}
+        },
+        'distribution': {}
+    }
+
     exml = etree.fromstring(esa_xml)
     ixml = etree.fromstring(inspire_xml)
 
@@ -41,7 +41,7 @@ def gen_iso_metadata(base_url: str, esa_xml: bytes, inspire_xml: bytes) -> str:
 
     product_manifest = exml.xpath('//PRODUCT_URI/text()')[0]
     product_identifier = product_manifest.replace('.SAFE', '')
-    product_manifest_link = f"{base_url}/{product_manifest}"
+    product_manifest_link = f'{base_url}/{product_manifest}'
 
     mcf['metadata']['identifier'] = product_identifier
     mcf['metadata']['hierarchylevel'] = m.hierarchy
@@ -89,8 +89,8 @@ def gen_iso_metadata(base_url: str, esa_xml: bytes, inspire_xml: bytes) -> str:
     mcf['distribution'][product_manifest] = {
         'url': product_manifest_link,
         'type': 'enclosure',
-        'name': product_manifest,
-        'description': product_manifest,
+        'name': 'product',
+        'description': 'product',
         'function': 'download'
     }
 
@@ -109,15 +109,15 @@ def gen_iso_metadata(base_url: str, esa_xml: bytes, inspire_xml: bytes) -> str:
 
     for image_file in exml.xpath('//Product_Organisation//IMAGE_FILE/text()'):
         dist = {
-            'url': f"{product_manifest_link}/{image_file}.{file_extension}",
+            'url': f'{product_manifest_link}/{image_file}.{file_extension}',
             'type': mime_type,
-            'name': image_file,
-            'description': image_file,
+            'name': 'granule',
+            'description': 'granule',
             'function': 'download'
         }
         mcf['distribution'][image_file] = dist
 
-    logger.debug("MCF: {}".format(mcf))
+    logger.debug('MCF: {}'.format(mcf))
 
     iso_os = ISO19139OutputSchema()
 

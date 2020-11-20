@@ -32,6 +32,7 @@ class PycswBackend(Backend):
         return False
 
     def register(self, source: Source, item: Context, replace: bool) -> RegistrationResult:
+
         ingest_fail = False
         esa_xml_local = '/tmp/esa-metadata.xml'
         inspire_xml_local = '/tmp/inspire-metadata.xml'
