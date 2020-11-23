@@ -17,5 +17,5 @@ jobs:
           path: ./core
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          repository: schindlerf/pvs_core
+          repository: eoepca/rm-data-access-core
           tag_with_ref: true
