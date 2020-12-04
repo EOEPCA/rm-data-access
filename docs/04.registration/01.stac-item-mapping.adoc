@@ -1,0 +1,149 @@
+= STAC Item mapping
+
+When the registration is triggered with a path to a directory (or Object Storage prefix) containing a `collection.json`, the STAC Item registration scheme in the registrar will recursively discover all contained `collection.json` files and ultimately all referenced STAC Items.
+
+For each such discovered item, the registration into the data access and resource catalogue components is started.
+
+== STAC Item registration into the data access component
+
+When ingesting a STAC item into the data access component the following steps will be taken:
+
+1. A suitable `ProductType` will be queried. This is done using the STAC Items assets with their respective `eo:bands` list. Here, the `name` attribute will be used as a lookup and the `ProductType` with matching `CoverageType` field names will be used. If no suitable `ProductType` was found, a new one will be created. See the Section ... for how exactly this `ProductType` is created.
+2. A new `Product` will be created and associated with the fetched or created `ProductType` from step 1. Its unique identifier is taken from the `id` attribute of the STAC Item. If there already is a `Product` with that identifier, it is either replaced or the registration process aborts, depending on the configuration.
+In this step, also the product metadata is extracted. The STAC Item's `geometry` is used as the `footprint`, whereas either the `datetime` or the `start_datetime`/`end_datetime` will be used as the temporal extent.
+3. For each `CoverageType` in the used `ProductType` the related asset is extracted and registered as a `Coverage` associated with the `CoverageType` and the `Product` from earlier.
+4. Collection placement TBD
+
+== `ProductType` creation
+
+=== `CoverageType` setup
+
+Each asset that provides the `eo:bands` metadata will be added as a `CoverageType`
+
+=== `BrowseTypes` setup
+
+Depending on the available bands semantics (the `common_name` attribute is used to determine the existence of a certain band) the following `BrowseTypes` will be created for the `ProductType`:
+
+[cols="2,7a,2a"]
+|===
+| `BrowseType` name | Description | Prerequisites
+| `TRUE_COLOR`      | RGB true color representation | `red`, `green`, `blue`
+| `FALSE_COLOR`     | NirRG false color composite   | `nir`, `red`, `green`
+|===
+
+=== STAC Item extension for browse generation
+
+Additionally, the `brow` extension can be used to declare additional `BrowseTypes`. This allows to declare additional color composites or expressions to be added. The following shows an example for a Landsat-8 STAC Item, declaring the `TRUE_COLOR`, `FALSE_COLOR` and `NDVI` representations from the original source data assets.
+
+```json
+{
+    "stac_version": "1.0.0-beta.2",
+    "stac_extensions": [
+      "eo",
+      "view",
+      "https://example.com/stac/landsat-extension/1.0/schema.json",
+      "brow"
+    ],
+    "id": "LC08_L1TP_107018_20181001_20181001_01_RT",
+    "collection": "landsat-8-l1",
+    "type": "Feature",
+    "bbox": [
+        ...
+    ],
+    "geometry": {
+        ...
+    },
+    "properties": {
+        ...
+        "brow:browses": {
+            "TRUE_COLOR": {
+                "bands": ["B4", "B3", "B2"],
+                "range": [0, 4000],
+                "scale": "linear"
+            },
+            "FALSE_COLOR": {
+                "bands": ["B5", "B4", "B3"],
+                "range": [0, 4000],
+                "scale": "linear"
+            },
+            "NDVI": {
+                "expression": "(B5 – B4) / (B5 + B4)",
+                "color_ramp": [
+                    [-1.0, 68, 1, 84, 255],
+                    [-0.7142857142857143, 57, 84, 139, 255],
+                    [-0.4285714285714286, 42, 117, 142,255],
+                    [-0.1428571428571429, 31, 149, 140,255],
+                    [0.1428571428571428, 47, 180, 124, 255],
+                    [0.4285714285714284, 110, 206, 88, 255],
+                    [0.7142857142857142, 188, 223, 39, 255],
+                    [1.0, 253, 231, 37, 255]
+                ]
+            }
+        }
+    },
+    "assets": {
+        ...
+        "B2": {
+            "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/107/018/LC08_L1TP_107018_20181001_20181001_01_RT/LC08_L1TP_107018_20181001_20181001_01_RT_B2.TIF",
+            "type": "image/tiff; application=geotiff",
+            "eo:bands": [
+                {
+                    "name": "B2",
+                    "common_name": "blue",
+                    "center_wavelength": 0.48,
+                    "full_width_half_max": 0.06
+                }
+            ],
+            "title": "Band 2 (blue)"
+        },
+        "B3": {
+            "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/107/018/LC08_L1TP_107018_20181001_20181001_01_RT/LC08_L1TP_107018_20181001_20181001_01_RT_B3.TIF",
+            "type": "image/tiff; application=geotiff",
+            "eo:bands": [
+                {
+                    "name": "B3",
+                    "common_name": "green",
+                    "center_wavelength": 0.56,
+                    "full_width_half_max": 0.06
+                }
+            ],
+            "title": "Band 3 (green)"
+        },
+        "B4": {
+            "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/107/018/LC08_L1TP_107018_20181001_20181001_01_RT/LC08_L1TP_107018_20181001_20181001_01_RT_B4.TIF",
+            "type": "image/tiff; application=geotiff",
+            "eo:bands": [
+                {
+                    "name": "B4",
+                    "common_name": "red",
+                    "center_wavelength": 0.65,
+                    "full_width_half_max": 0.04
+                }
+            ],
+            "title": "Band 4 (red)"
+        },
+        "B5": {
+            "href": "https://landsat-pds.s3.amazonaws.com/c1/L8/107/018/LC08_L1TP_107018_20181001_20181001_01_RT/LC08_L1TP_107018_20181001_20181001_01_RT_B5.TIF",
+            "type": "image/tiff; application=geotiff",
+            "eo:bands": [
+                {
+                    "name": "B5",
+                    "common_name": "nir",
+                    "center_wavelength": 0.86,
+                    "full_width_half_max": 0.03
+                }
+            ],
+            "title": "Band 5 (nir)"
+        },
+        ...
+    },
+    "links": [
+        ...
+    ]
+}
+```
+
+
+
+== Metadata
+
