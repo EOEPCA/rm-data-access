@@ -16,12 +16,12 @@ logger = logging.getLogger(__name__)
 
 
 class PycswBackend(Backend):
-    def __init__(self, instance_base_path: str, instance_name: str, mapping: dict, simplify_footprint_tolerance: int=None):
+    def __init__(self, repository_database_uri):
         logger.debug('Setting up static context')
         self.context = pycsw.core.config.StaticContext()
 
         logger.debug('Initializing pycsw repository')
-        self.repo = repository.Repository(os.environ.get('PYCSW_REPOSITORY_DATABASE_URI'), self.context, table='records')
+        self.repo = repository.Repository(repository_database_uri, self.context, table='records')
 
     def exists(self, source: Source, item: Context) -> bool:
         # TODO: sort out identifier problem in ISO XML
