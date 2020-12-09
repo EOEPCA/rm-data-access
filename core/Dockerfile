@@ -26,7 +26,7 @@
 #-----------------------------------------------------------------------------
 
 # TODO: make this from a specific release, once released
-FROM registry.gitlab.eox.at/esa/prism/vs/pvs_core:release-1.1.1
+FROM registry.gitlab.eox.at/esa/prism/vs/pvs_core:staging
 
 LABEL name="EOEPCA data access core" \
       vendor="EOX IT Services GmbH <https://eox.at>" \
