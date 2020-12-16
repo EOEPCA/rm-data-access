@@ -31,10 +31,9 @@ import logging
 import logging.config
 import json
 
-
 from flask import Flask, request, Response
 import jwt
-
+import boto3
 
 application = Flask(__name__)
 application.secret_key = "jose"  # Make this long, random, and secret in a real app!
@@ -69,15 +68,45 @@ logging.config.dictConfig({
     }
 })
 
+access = '80658bec0ce34880a9bbc3f3f50ca60b'
+secret = '9069592f9b314a52b26915e35fbef581'
 
 
-@application.route('/userinfo', methods=['POST'])
+def add_object(access_key,secret_key, bucketname, prefix):
+    host = 'https://cf2.cloudferro.com:8080'
+    s3 = boto3.resource('s3',aws_access_key_id=access_key, aws_secret_access_key=secret_key, endpoint_url=host,)
+
+    bucket =s3.Bucket(bucketname)
+
+    bucket.put_object(Key=prefix)
+
+def lookup_objects(access_key, secret_key, bucketname, pref):
+    host = 'https://cf2.cloudferro.com:8080'
+    s3 = boto3.resource('s3',aws_access_key_id=access_key, aws_secret_access_key=secret_key, endpoint_url=host,)
+
+    bucket=s3.Bucket(bucketname)
+    for obj in bucket.objects.filter():
+        if pref == obj.key:
+            return True
+        else: 
+            return False
+
+@application.route('/userinfo', methods=['GET'])
 def store():
     request.get_data()
-    encode = jwt.decode(request.data, verify=False, algorithms=['RS256'])
-    # retuens the jwt decoded
-    data = json.dumps(encode)
-    return data
+    encode_token = jwt.decode(request.headers['jwt-token'], verify=False, algorithms=['RS256'])
+    prefix = encode_token['pct_claims']['aud']
+
+    if lookup_objects(access, secret, 'test_stage_out', prefix) :
+        response = 'An Object with the prefix %s already exists' % prefix
+    else:
+        try:
+            add_object(access, secret, 'test_stage_out', prefix)
+            response = 'created object %s in test_stage_out bucket' % prefix
+        except Exception as e:
+            response = e
+
+    return response
 
 @application.route('/register', methods=['POST'])
 def register():

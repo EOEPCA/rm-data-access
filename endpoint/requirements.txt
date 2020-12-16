@@ -1,4 +1,5 @@
 flask
 pyjwt
 gunicorn
+boto3
 # redis
