@@ -40,7 +40,7 @@ ADD install.sh requirements.txt \
 RUN /install.sh
 RUN mkdir /ingestor 
 
-COPY app.py config.py /
+COPY app.py config.py image.tif stac.json /
 
 ENV INSTANCE_ID="prism-view-server_ingestor" \
     REDIS_HOST="redis" \

@@ -34,9 +34,9 @@ import json
 from flask import Flask, request, Response
 import jwt
 import boto3
+from botocore.exceptions import ClientError
 
 application = Flask(__name__)
-application.secret_key = "jose"  # Make this long, random, and secret in a real app!
 
 
 logger = logging.getLogger(__name__)
@@ -80,36 +80,63 @@ def add_object(access_key,secret_key, bucketname, prefix):
 
     bucket.put_object(Key=prefix)
 
+def upload_file(file_name, bucket, object_name=None):
+    """Upload a file to an S3 bucket
+
+    :param file_name: File to upload
+    :param bucket: Bucket to upload to
+    :param object_name: S3 object name. If not specified then file_name is used
+    :return: True if file was uploaded, else False
+    """
+
+    # If S3 object_name was not specified, use file_name
+    if object_name is None:
+        object_name = file_name
+    
+   
+    # Upload the file
+    host = 'https://cf2.cloudferro.com:8080'
+    s3_client = boto3.client('s3',aws_access_key_id='80658bec0ce34880a9bbc3f3f50ca60b', aws_secret_access_key='9069592f9b314a52b26915e35fbef581', endpoint_url=host,)
+    try:
+        response = s3_client.upload_file(file_name, bucket, object_name)
+    except ClientError as e:
+        logging.exception(e)
+        return False
+    return True
+
 def lookup_objects(access_key, secret_key, bucketname, pref):
+
     host = 'https://cf2.cloudferro.com:8080'
     s3 = boto3.resource('s3',aws_access_key_id=access_key, aws_secret_access_key=secret_key, endpoint_url=host,)
-
     bucket=s3.Bucket(bucketname)
+
     for obj in bucket.objects.filter():
-        if pref == obj.key:
+        if pref in obj.key:
             return True
         else: 
             return False
 
 @application.route('/userinfo', methods=['GET'])
-def store():
+def userinfo():
+
     request.get_data()
     encode_token = jwt.decode(request.headers['jwt-token'], verify=False, algorithms=['RS256'])
     prefix = encode_token['pct_claims']['aud']
 
     if lookup_objects(access, secret, 'test_stage_out', prefix) :
         response = 'An Object with the prefix %s already exists' % prefix
+
     else:
-        try:
-            add_object(access, secret, 'test_stage_out', prefix)
-            response = 'created object %s in test_stage_out bucket' % prefix
-        except Exception as e:
-            response = e
+        upload_file('image.tif', 'test_stage_out', '%s.tif' % prefix)
+        upload_file('stac.json', 'test_stage_out', '%s.json' % prefix)
+
+        response = 'created objects with the prefix: %s , in "test_stage_out" bucket' % prefix
 
     return response
 
 @application.route('/register', methods=['POST'])
 def register():
+
     request.get_data()
     return request.data
 
