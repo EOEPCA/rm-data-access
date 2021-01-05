@@ -5,7 +5,7 @@ import json
 
 from lxml import etree
 from owslib.iso import MD_Metadata
-from pygeometa.schemas.iso19139 import ISO19139OutputSchema
+from pygeometa.schemas.iso19139 import ISO19139OutputSchema, ISO19139_2OutputSchema
 
 LANGUAGE = 'eng'
 
@@ -34,6 +34,10 @@ class ISOMetadata:
                 'language': 'missing',
                 'keywords': {}
             },
+            'content_info': {
+                'type': 'image',
+                'dimensions': []
+            },
             'contact': {
               'main': {},
               'distribution': {}
@@ -59,13 +63,8 @@ class ISOMetadata:
              }]
         }
 
-        mcf['contentinfo'] = {
-            'type': 'image',
-            'dimensions': []
-        }
-
         for eo_band in si['properties']['eo:bands']:
-            mcf['contentinfo']['dimensions'].append({
+            mcf['content_info']['dimensions'].append({
                 'name': eo_band['name']
             })
 
@@ -145,6 +144,17 @@ class ISOMetadata:
         mcf['identification']['maintenancefrequency'] = 'continual'
         mcf['identification']['accessconstraints'] = m.identification.accessconstraints[0]
 
+        mcf['content_info']['cloud_cover'] = exml.xpath('//Cloud_Coverage_Assessment/text()')[0]
+        mcf['content_info']['processing_level'] = exml.xpath('//PROCESSING_LEVEL/text()')[0]
+
+        for d in exml.xpath('//Spectral_Information_List/Spectral_Information'):
+            mcf['content_info']['dimensions'].append({
+                'name': d.attrib.get('physicalBand'),
+                'units': d.xpath('//CENTRAL/')[0].attrib.get('unit'),
+                'min': d.xpath('//MIN/text()')[0],
+                'max': d.xpath('//MAX/text()')[0]
+            })
+
         mcf['distribution'][product_manifest] = {
             'url': product_manifest_link,
             'type': 'enclosure',
@@ -176,8 +186,17 @@ class ISOMetadata:
             }
             mcf['distribution'][image_file] = dist
 
+        mcf['acquisition'] = {
+            'identifier': exml.xpath('//SPACECRAFT_NAME/text()')[0],
+            'description': exml.xpath('//SPACECRAFT_NAME/text()')[0],
+            'instruments': [{
+                'identifier': exml.xpath('//DATATAKE_TYPE/text()')[0],
+                'type': exml.xpath('//PRODUCT_TYPE/text()')[0]
+            }]
+        }
+
         logger.debug('MCF: {}'.format(mcf))
 
-        iso_os = ISO19139OutputSchema()
+        iso_os = ISO19139_2OutputSchema()
 
         return iso_os.write(mcf)
