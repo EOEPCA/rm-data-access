@@ -36,7 +36,7 @@ LABEL name="EOEPCA data access core" \
 
 RUN pip3 install pycsw SQLAlchemy && \
     pip3 install https://github.com/geopython/pygeometa/archive/master.zip && \
-    pip3 install https://github.com/geopython/OWSLib/archive/master.zip
+    pip3 install --upgrade https://github.com/geopython/OWSLib/archive/master.zip
 
 RUN mkdir /registrar_pycsw
 ADD registrar_pycsw/ \
