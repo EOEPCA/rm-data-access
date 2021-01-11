@@ -5,7 +5,8 @@ import json
 
 from lxml import etree
 from owslib.iso import MD_Metadata
-from pygeometa.schemas.iso19139 import ISO19139OutputSchema, ISO19139_2OutputSchema
+from pygeometa.schemas.iso19139 import ISO19139OutputSchema
+from pygeometa.schemas.iso19139_2 import ISO19139_2OutputSchema
 
 LANGUAGE = 'eng'
 
