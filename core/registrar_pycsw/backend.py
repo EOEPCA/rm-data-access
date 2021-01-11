@@ -9,7 +9,7 @@ from registrar.backend import Backend, RegistrationResult
 from registrar.source import Source
 from registrar.context import Context
 
-from .metadata import gen_iso_metadata
+from .metadata import ISOMetadata
 
 
 logger = logging.getLogger(__name__)
@@ -53,8 +53,9 @@ class PycswBackend(Backend):
             return False
 
         logger.info('Generating ISO XML based on ESA and INSPIRE XML')
+        imo = ISOMetadata(base_url)
         with open(esa_xml_local, 'rb') as a, open(inspire_xml_local, 'rb') as b:
-             iso_metadata = gen_iso_metadata(base_url, a.read(), b.read())
+             iso_metadata = imo.from_esa_iso_xml(a.read(), b.read())
 
         logger.debug('Parsing XML')
         try:
