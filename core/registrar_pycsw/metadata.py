@@ -2,6 +2,7 @@ import logging
 
 from copy import deepcopy
 import json
+from urllib.parse import urljoin
 
 from lxml import etree
 from owslib.iso import MD_Metadata
@@ -79,9 +80,14 @@ class ISOMetadata:
             'type': 'theme'
         }
 
+        mcf['identification']['keywords']['default'] = {
+            'keywords': ['processing'],
+            'type': 'theme'
+        }
+
         for key, value in si['assets'].items():
             dist = {
-                'url': f"{self.base_url}/{value['href']}",
+                'url': urljoin(self.base_url, value['href']),
                 'type': value['type'],
                 'name': value['title'],
                 'description': value['title'],
@@ -105,7 +111,7 @@ class ISOMetadata:
 
         product_manifest = exml.xpath('//PRODUCT_URI/text()')[0]
         product_identifier = product_manifest.replace('.SAFE', '')
-        product_manifest_link = f'{self.base_url}/{product_manifest}'
+        product_manifest_link = urljoin(self.base_url, product_manifest)
 
         mcf['metadata']['identifier'] = product_identifier
         mcf['metadata']['hierarchylevel'] = m.hierarchy

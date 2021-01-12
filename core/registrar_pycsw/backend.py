@@ -42,6 +42,9 @@ class PycswBackend(Backend):
                 imo = ISOMetadata(base_url)
                 iso_metadata = imo.from_stac_item(f.read())
 
+            logger.debug(f"Removing temporary file {stac_item_local}")
+            os.remove(stac_item_local)
+
         else:
             esa_xml_local = '/tmp/esa-metadata.xml'
             inspire_xml_local = '/tmp/inspire-metadata.xml'
@@ -65,6 +68,10 @@ class PycswBackend(Backend):
             imo = ISOMetadata(base_url)
             with open(esa_xml_local, 'rb') as a, open(inspire_xml_local, 'rb') as b:
                 iso_metadata = imo.from_esa_iso_xml(a.read(), b.read())
+
+            for tmp_file in [esa_xml_local, inspire_xml_local]:
+                logger.debug(f"Removing temporary file {tmp_file}")
+                os.remove(tmp_file)
 
         logger.debug('Parsing XML')
         try:
