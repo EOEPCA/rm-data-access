@@ -33,6 +33,7 @@ class PycswBackend(Backend):
 
     def register(self, source: Source, item: Context, replace: bool) -> RegistrationResult:
         # For path for STAC items
+        ingest_fail = False
         if item.scheme == 'stac-item':
             stac_item_local = '/tmp/item.json'
             source.get_file(item.path, stac_item_local)
@@ -42,7 +43,6 @@ class PycswBackend(Backend):
                 iso_metadata = imo.from_stac_item(f.read())
 
         else:
-            ingest_fail = False
             esa_xml_local = '/tmp/esa-metadata.xml'
             inspire_xml_local = '/tmp/inspire-metadata.xml'
 
