@@ -32,30 +32,39 @@ class PycswBackend(Backend):
         return False
 
     def register(self, source: Source, item: Context, replace: bool) -> RegistrationResult:
+        # For path for STAC items
+        if item.scheme == 'stac-item':
+            stac_item_local = '/tmp/item.json'
+            source.get_file(item.path, stac_item_local)
+            with open(stac_item_local) as f:
+                base_url = 's3://{}'.format(os.path.split(os.path.dirname(item.path))[0])
+                imo = ISOMetadata(base_url)
+                iso_metadata = imo.from_stac_item(f.read())
 
-        ingest_fail = False
-        esa_xml_local = '/tmp/esa-metadata.xml'
-        inspire_xml_local = '/tmp/inspire-metadata.xml'
+        else:
+            ingest_fail = False
+            esa_xml_local = '/tmp/esa-metadata.xml'
+            inspire_xml_local = '/tmp/inspire-metadata.xml'
 
-        esa_xml = item.metadata_files[0]
-        logger.info(f"ESA XML metadata file: {esa_xml}")
+            esa_xml = item.metadata_files[0]
+            logger.info(f"ESA XML metadata file: {esa_xml}")
 
-        inspire_xml = os.path.dirname(item.metadata_files[0]) + "/INSPIRE.xml"
-        logger.info(f"INSPIRE XML metadata file: {inspire_xml}")
+            inspire_xml = os.path.dirname(item.metadata_files[0]) + "/INSPIRE.xml"
+            logger.info(f"INSPIRE XML metadata file: {inspire_xml}")
 
-        base_url = 's3://{}'.format(os.path.split(os.path.dirname(esa_xml))[0])
+            base_url = 's3://{}'.format(os.path.split(os.path.dirname(esa_xml))[0])
 
-        try:
-            source.get_file(inspire_xml, inspire_xml_local)
-            source.get_file(esa_xml, esa_xml_local)
-        except Exception as err:
-            logger.error(err)
-            return False
+            try:
+                source.get_file(inspire_xml, inspire_xml_local)
+                source.get_file(esa_xml, esa_xml_local)
+            except Exception as err:
+                logger.error(err)
+                return False
 
-        logger.info('Generating ISO XML based on ESA and INSPIRE XML')
-        imo = ISOMetadata(base_url)
-        with open(esa_xml_local, 'rb') as a, open(inspire_xml_local, 'rb') as b:
-             iso_metadata = imo.from_esa_iso_xml(a.read(), b.read())
+            logger.info('Generating ISO XML based on ESA and INSPIRE XML')
+            imo = ISOMetadata(base_url)
+            with open(esa_xml_local, 'rb') as a, open(inspire_xml_local, 'rb') as b:
+                iso_metadata = imo.from_esa_iso_xml(a.read(), b.read())
 
         logger.debug('Parsing XML')
         try:
