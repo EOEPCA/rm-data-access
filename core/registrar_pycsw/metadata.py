@@ -69,6 +69,11 @@ class ISOMetadata:
                 'name': eo_band['name']
             })
 
+        mcf['identification']['dates'] = {
+            'creation': si['properties']['datetime'],
+            'publication': si['properties']['datetime']
+        }
+
         mcf['identification']['keywords']['eo:bands'] = {
             'keywords': [x['common_name'] for x in si['properties']['eo:bands']],
             'type': 'theme'
