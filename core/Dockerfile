@@ -45,4 +45,5 @@ ADD setup.py \
     /registrar_pycsw
 
 RUN cd /registrar_pycsw && \
-    python3 setup.py install
+    python3 setup.py install && \
+    pip3 install .
