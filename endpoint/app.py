@@ -68,19 +68,12 @@ logging.config.dictConfig({
     }
 })
 
-access = '80658bec0ce34880a9bbc3f3f50ca60b'
-secret = '9069592f9b314a52b26915e35fbef581'
+access = os.environ['ACCESS']
+secret = os.environ['SECRET']
+env_host=os.environ['HOST']
 
 
-def add_object(access_key,secret_key, bucketname, prefix):
-    host = 'https://cf2.cloudferro.com:8080'
-    s3 = boto3.resource('s3',aws_access_key_id=access_key, aws_secret_access_key=secret_key, endpoint_url=host,)
-
-    bucket =s3.Bucket(bucketname)
-
-    bucket.put_object(Key=prefix)
-
-def upload_file(file_name, bucket, object_name=None):
+def upload_file(host, file_name, bucket, object_name=None):
     """Upload a file to an S3 bucket
 
     :param file_name: File to upload
@@ -95,18 +88,17 @@ def upload_file(file_name, bucket, object_name=None):
     
    
     # Upload the file
-    host = 'https://cf2.cloudferro.com:8080'
-    s3_client = boto3.client('s3',aws_access_key_id='80658bec0ce34880a9bbc3f3f50ca60b', aws_secret_access_key='9069592f9b314a52b26915e35fbef581', endpoint_url=host,)
+    s3_client = boto3.client('s3',aws_access_key_id= access, aws_secret_access_key= secret, endpoint_url=host,)
     try:
         response = s3_client.upload_file(file_name, bucket, object_name)
     except ClientError as e:
         logging.exception(e)
         return False
     return True
+# This is an experemental function that could be moved or replaced by lookup for buckets instead
+def lookup_objects(host, access_key, secret_key, bucketname, pref):
 
-def lookup_objects(access_key, secret_key, bucketname, pref):
-
-    host = 'https://cf2.cloudferro.com:8080'
+    
     s3 = boto3.resource('s3',aws_access_key_id=access_key, aws_secret_access_key=secret_key, endpoint_url=host,)
     bucket=s3.Bucket(bucketname)
 
@@ -120,15 +112,19 @@ def lookup_objects(access_key, secret_key, bucketname, pref):
 def userinfo():
 
     request.get_data()
-    encode_token = jwt.decode(request.headers['jwt-token'], verify=False, algorithms=['RS256'])
+    auth_header = request.headers['Authorization'] 
+    if not auth_header.startswith('Bearer '): 
+        raise Exception
+    token = auth_header[len('Bearer '):]
+    encode_token = jwt.decode(token, verify=False, algorithms=['RS256'])
     prefix = encode_token['pct_claims']['aud']
 
-    if lookup_objects(access, secret, 'test_stage_out', prefix) :
+    if lookup_objects(env_host, access, secret, 'test_stage_out', prefix) :
         response = 'An Object with the prefix %s already exists' % prefix
 
     else:
-        upload_file('image.tif', 'test_stage_out', '%s.tif' % prefix)
-        upload_file('stac.json', 'test_stage_out', '%s.json' % prefix)
+        upload_file(env_host, 'image.tif', 'test_stage_out', '%s.tif' % prefix)
+        upload_file(env_host, 'stac.json', 'test_stage_out', '%s.json' % prefix)
 
         response = 'created objects with the prefix: %s , in "test_stage_out" bucket' % prefix
 

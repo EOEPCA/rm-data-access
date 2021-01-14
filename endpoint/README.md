@@ -21,4 +21,8 @@ docker run -p 85:8000 exp-app
 ```
 
 
-3. send a GET request to `http://127.0.0.1:85/userinfo` using encoded JWT token as a header - called `jwt-token`.
+3. Send a curl request with the `jwt_token` e.g: 
+```bash
+curl -H "Accept: */*" -H "Authorization: Bearer <jwt_token>" http://127.0.0.1:85/userinfo
+
+```

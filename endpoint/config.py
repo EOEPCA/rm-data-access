@@ -1,3 +1,5 @@
+import os
+
 bind = ['0.0.0.0:8000']
-debug = True
+debug = os.environ.get('DEBUG', 'FALSE').upper() == 'TRUE'
 
