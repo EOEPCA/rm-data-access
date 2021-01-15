@@ -34,7 +34,9 @@ class ISOMetadata:
             'identification': {
                 'charset': 'utf8',
                 'language': 'missing',
-                'keywords': {}
+                'keywords': {},
+                'status': 'onGoing',
+                'maintenancefrequency': 'continual'
             },
             'content_info': {
                 'type': 'image',
@@ -54,6 +56,8 @@ class ISOMetadata:
 
         mcf['metadata']['identifier'] = si['id']
         mcf['metadata']['datestamp'] = si['properties']['datetime']
+
+        mcf['identification']['title'] = si['id']
 
         mcf['identification']['extents'] = {
             'spatial': [{
@@ -77,12 +81,23 @@ class ISOMetadata:
 
         mcf['identification']['keywords']['eo:bands'] = {
             'keywords': [x['common_name'] for x in si['properties']['eo:bands']],
-            'type': 'theme'
+            'keywords_type': 'theme'
         }
 
         mcf['identification']['keywords']['default'] = {
             'keywords': ['processing'],
-            'type': 'theme'
+            'keywords_type': 'theme'
+        }
+
+        mcf['acquisition'] = {
+            'platforms': [{
+                'identifier': si['properties']['eo:platform'],
+                'description': si['properties']['eo:platform'],
+                'instruments': [{
+                    'identifier': si['properties']['eo:instrument'],
+                    'type': si['properties']['eo:instrument']
+                }]
+            }]
         }
 
         for key, value in si['assets'].items():
@@ -199,11 +214,13 @@ class ISOMetadata:
             mcf['distribution'][image_file] = dist
 
         mcf['acquisition'] = {
-            'identifier': exml.xpath('//SPACECRAFT_NAME/text()')[0],
-            'description': exml.xpath('//SPACECRAFT_NAME/text()')[0],
-            'instruments': [{
-                'identifier': exml.xpath('//DATATAKE_TYPE/text()')[0],
-                'type': exml.xpath('//PRODUCT_TYPE/text()')[0]
+            'platforms': [{
+                'identifier': exml.xpath('//SPACECRAFT_NAME/text()')[0],
+                'description': exml.xpath('//SPACECRAFT_NAME/text()')[0],
+                'instruments': [{
+                    'identifier': exml.xpath('//DATATAKE_TYPE/text()')[0],
+                    'type': exml.xpath('//PRODUCT_TYPE/text()')[0]
+                }]
             }]
         }
 
