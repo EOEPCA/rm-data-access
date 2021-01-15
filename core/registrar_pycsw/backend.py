@@ -38,7 +38,7 @@ class PycswBackend(Backend):
             stac_item_local = '/tmp/item.json'
             source.get_file(item.path, stac_item_local)
             with open(stac_item_local) as f:
-                base_url = 's3://{}'.format(os.path.split(os.path.dirname(item.path))[0])
+                base_url = 's3://{}'.format(os.path.dirname(item.path))
                 imo = ISOMetadata(base_url)
                 iso_metadata = imo.from_stac_item(f.read())
 

@@ -2,11 +2,10 @@ import logging
 
 from copy import deepcopy
 import json
-from urllib.parse import urljoin
+from os.path import normpath
 
 from lxml import etree
 from owslib.iso import MD_Metadata
-from pygeometa.schemas.iso19139 import ISO19139OutputSchema
 from pygeometa.schemas.iso19139_2 import ISO19139_2OutputSchema
 
 LANGUAGE = 'eng'
@@ -102,7 +101,7 @@ class ISOMetadata:
 
         for key, value in si['assets'].items():
             dist = {
-                'url': urljoin(self.base_url, value['href']),
+                'url': normpath(f"{self.base_url}/{value['href']}"),
                 'type': value['type'],
                 'name': value['title'],
                 'description': value['title'],
@@ -112,7 +111,7 @@ class ISOMetadata:
 
         logger.debug('MCF: {}'.format(mcf))
 
-        iso_os = ISO19139OutputSchema()
+        iso_os = ISO19139_2OutputSchema()
 
         return iso_os.write(mcf)
 
@@ -126,7 +125,8 @@ class ISOMetadata:
 
         product_manifest = exml.xpath('//PRODUCT_URI/text()')[0]
         product_identifier = product_manifest.replace('.SAFE', '')
-        product_manifest_link = urljoin(self.base_url, product_manifest)
+        product_manifest_link = normpath(
+            f'{self.base_url}/{product_manifest}')
 
         mcf['metadata']['identifier'] = product_identifier
         mcf['metadata']['hierarchylevel'] = m.hierarchy
@@ -177,7 +177,7 @@ class ISOMetadata:
         for d in exml.xpath('//Spectral_Information_List/Spectral_Information'):
             mcf['content_info']['dimensions'].append({
                 'name': d.attrib.get('physicalBand'),
-                'units': d.xpath('//CENTRAL/')[0].attrib.get('unit'),
+                'units': d.xpath('//CENTRAL')[0].attrib.get('unit'),
                 'min': d.xpath('//MIN/text()')[0],
                 'max': d.xpath('//MAX/text()')[0]
             })
@@ -205,7 +205,8 @@ class ISOMetadata:
 
         for image_file in exml.xpath('//Product_Organisation//IMAGE_FILE/text()'):
             dist = {
-                'url': f'{product_manifest_link}/{image_file}.{file_extension}',
+                'url': normpath(
+                    f'{product_manifest_link}/{image_file}.{file_extension}'),
                 'type': mime_type,
                 'name': 'granule',
                 'description': 'granule',
