@@ -24,7 +24,8 @@ class ISOMetadata:
             },
             'metadata': {
                 'language': LANGUAGE,
-                'charset': 'utf8'
+                'charset': 'utf8',
+                'parentidentifier': 'TBD'
             },
             'spatial': {
                 'datatype': 'grid',
@@ -165,6 +166,21 @@ class ISOMetadata:
                 'keywords': kws['keywords']
             }
             mcf['identification']['keywords'][kw_set]['keywords_type'] = kws['type'] or 'theme'
+
+        product_type = f"eo:productType:{exml.xpath('//PRODUCT_TYPE/text()')[0]}"
+        orbit_number = f"eo:orbitNumber:{exml.xpath('//SENSING_ORBIT_NUMBER/text()')[0]}"
+        orbit_direction = f"eo:orbitDirection:{exml.xpath('//SENSING_ORBIT_DIRECTION/text()')[0]}"
+        snow_cover = f"eo:snowCover:{exml.xpath('//SNOW_ICE_PERCENTAGE/text()')[0]}"
+
+        mcf['identification']['keywords']['product'] = {
+                'keywords': [
+                    product_type,
+                    orbit_number,
+                    orbit_direction,
+                    snow_cover
+                ],
+                'keywords_type': 'theme'
+        }
 
         mcf['identification']['topiccategory'] = [m.identification.topiccategory[0]]
         mcf['identification']['status'] = 'onGoing'
