@@ -96,6 +96,9 @@ class PycswBackend(Backend):
         except Exception as err:
             ingest_fail = True
             logger.error('record insertion failed: {}'.format(err))
+            if not replace:
+                logger.error('replace not specified. No update')
+                return False
 
         if ingest_fail and replace:
             logger.info('Updating record')
