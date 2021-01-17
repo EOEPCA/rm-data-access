@@ -110,6 +110,14 @@ class ISOMetadata:
             }
             mcf['distribution'][key] = dist
 
+        mcf['distribution'][si['id']] = {
+            'url': self.base_url,
+            'type': 'enclosure',
+            'name': 'product',
+            'description': 'product',
+            'function': 'download'
+        }
+
         logger.debug('MCF: {}'.format(mcf))
 
         iso_os = ISO19139_2OutputSchema()
