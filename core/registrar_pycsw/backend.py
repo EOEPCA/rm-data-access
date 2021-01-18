@@ -35,9 +35,11 @@ class PycswBackend(Backend):
         # For path for STAC items
         ingest_fail = False
         if item.scheme == 'stac-item':
+            logger.info('Ingesting processing result')
             stac_item_local = '/tmp/item.json'
             source.get_file(item.path, stac_item_local)
             with open(stac_item_local) as f:
+                logger.debug('base URL {}'.format(item.path))
                 base_url = 's3://{}'.format(os.path.dirname(item.path))
                 imo = ISOMetadata(base_url)
                 iso_metadata = imo.from_stac_item(f.read())
@@ -46,6 +48,7 @@ class PycswBackend(Backend):
             os.remove(stac_item_local)
 
         else:
+            logger.info('Ingesting product')
             esa_xml_local = '/tmp/esa-metadata.xml'
             inspire_xml_local = '/tmp/inspire-metadata.xml'
 
@@ -55,7 +58,8 @@ class PycswBackend(Backend):
             inspire_xml = os.path.dirname(item.metadata_files[0]) + "/INSPIRE.xml"
             logger.info(f"INSPIRE XML metadata file: {inspire_xml}")
 
-            base_url = 's3://{}'.format(os.path.split(os.path.dirname(esa_xml))[0])
+            logger.debug('base URL {}'.format(item.path))
+            base_url = 's3://{}'.format(item.path)
 
             try:
                 source.get_file(inspire_xml, inspire_xml_local)
