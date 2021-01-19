@@ -25,11 +25,13 @@ class PycswBackend(Backend):
 
     def exists(self, source: Source, item: Context) -> bool:
         # TODO: sort out identifier problem in ISO XML
-        logger.info(self.repo.query(constraint={}))
+        logger.info('Checking for identifier {}'.format(item.identifier))
         if self.repo.query_ids([item.identifier]):
-            logger.info('identifier exists')
+            logger.info('Identifier {} exists'.format(item.identifier))
             return True
-        return False
+        else:
+            logger.info('Identifier {} does not exist'.format(item.identifier))
+            return False
 
     def register(self, source: Source, item: Context, replace: bool) -> RegistrationResult:
         # For path for STAC items
@@ -101,7 +103,7 @@ class PycswBackend(Backend):
                 logger.error('record update failed: {}'.format(err))
                 raise
         else:
-            logger.debug('Inserting record')
+            logger.info('Inserting record')
             try:
                 self.repo.insert(record, 'local', util.get_today_and_now())
                 logger.info('record inserted')
