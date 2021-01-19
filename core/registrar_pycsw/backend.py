@@ -33,7 +33,6 @@ class PycswBackend(Backend):
 
     def register(self, source: Source, item: Context, replace: bool) -> RegistrationResult:
         # For path for STAC items
-        ingest_fail = False
         if item.scheme == 'stac-item':
             logger.info('Ingesting processing result')
             stac_item_local = '/tmp/item.json'
@@ -66,7 +65,7 @@ class PycswBackend(Backend):
                 source.get_file(esa_xml, esa_xml_local)
             except Exception as err:
                 logger.error(err)
-                return False
+                raise
 
             logger.info('Generating ISO XML based on ESA and INSPIRE XML')
             imo = ISOMetadata(base_url)
@@ -82,7 +81,7 @@ class PycswBackend(Backend):
             xml = etree.fromstring(iso_metadata)
         except Exception as err:
             logger.error('XML parsing failed: {}'.format(err))
-            return False
+            raise
 
         logger.debug('Processing metadata')
         try:
@@ -91,25 +90,23 @@ class PycswBackend(Backend):
             logger.info(f"identifier: {record.identifier}")
         except Exception as err:
             logger.error('Metadata parsing failed: {}'.format(err))
-            return False
+            raise
 
-        logger.debug('Inserting record')
-        try:
-            self.repo.insert(record, 'local', util.get_today_and_now())
-            logger.info('record inserted')
-        except Exception as err:
-            ingest_fail = True
-            logger.error('record insertion failed: {}'.format(err))
-            if not replace:
-                logger.error('replace not specified. No update')
-                return False
-
-        if ingest_fail and replace:
+        if replace:
             logger.info('Updating record')
             try:
                 self.repo.update(record)
                 logger.info('record updated')
             except Exception as err:
                 logger.error('record update failed: {}'.format(err))
+                raise
+        else:
+            logger.debug('Inserting record')
+            try:
+                self.repo.insert(record, 'local', util.get_today_and_now())
+                logger.info('record inserted')
+            except Exception as err:
+                logger.error('record insertion failed: {}'.format(err))
+                raise
 
-        return True
+        return
