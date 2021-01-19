@@ -137,10 +137,9 @@ class ISOMetadata:
         m = MD_Metadata(ixml)
 
         product_manifest = exml.xpath('//PRODUCT_URI/text()')[0]
-        product_identifier = product_manifest.replace('.SAFE', '')
         product_manifest_link = urljoin(self.base_url, product_manifest)
 
-        mcf['metadata']['identifier'] = product_identifier
+        mcf['metadata']['identifier'] = product_manifest
         mcf['metadata']['hierarchylevel'] = m.hierarchy
         mcf['metadata']['datestamp'] = exml.xpath('//Product_Info/GENERATION_TIME/text()')[0]
 
@@ -162,8 +161,8 @@ class ISOMetadata:
             }]
         }
 
-        mcf['identification']['title'] = product_identifier
-        mcf['identification']['abstract'] = product_identifier
+        mcf['identification']['title'] = product_manifest
+        mcf['identification']['abstract'] = product_manifest
 
         mcf['identification']['dates'] = {
             'creation': mcf['metadata']['datestamp'],
