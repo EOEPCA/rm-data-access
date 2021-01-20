@@ -1,5 +1,5 @@
 flask
-pyjwt
-gunicorn
+pyjwt==1.7.1
 boto3
-# redis
+gunicorn
+redis

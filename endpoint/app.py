@@ -32,6 +32,7 @@ import logging.config
 import json
 
 from flask import Flask, request, Response
+import redis
 import jwt
 import boto3
 from botocore.exceptions import ClientError
@@ -68,6 +69,15 @@ logging.config.dictConfig({
     }
 })
 
+client = redis.Redis(
+    host=os.environ['REDIS_HOST'],
+    port=int(os.environ.get('REDIS_PORT', '6379')),
+    charset="utf-8",
+    decode_responses=True,
+)
+
+queue_name = os.environ['REDIS_REGISTER_QUEUE_KEY']
+#TODO: extract credentials from the jwt token instead
 access = os.environ['ACCESS']
 secret = os.environ['SECRET']
 env_host=os.environ['HOST']
@@ -110,7 +120,7 @@ def lookup_objects(host, access_key, secret_key, bucketname, pref):
 
 @application.route('/userinfo', methods=['GET'])
 def userinfo():
-
+    # At the current state this function creates dummy objects and name them based on a prefix from jwt
     request.get_data()
     auth_header = request.headers['Authorization'] 
     if not auth_header.startswith('Bearer '): 
@@ -134,6 +144,16 @@ def userinfo():
 def register():
 
     request.get_data()
+    auth_header = request.headers['Authorization'] 
+    if not auth_header.startswith('Bearer '): 
+        raise Exception
+    token = auth_header[len('Bearer '):]
+    encode_token = jwt.decode(token, verify=False, algorithms=['RS256'])
+    prefix = encode_token['pct_claims']['aud']
+    pre = request.data
+
+    #TODO: presumably th client should pass a stac URL
+    client.lpush(queue_name, pre)
     return request.data
 
 if __name__ == "__main__":

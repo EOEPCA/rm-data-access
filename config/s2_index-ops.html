@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+  <meta charset="UTF-8">
+  <meta name="application" content="VS Client release-1.1.1">
+  <title>PRISM View Server</title>
+  <link rel="icon" href="//eox.at/wp-content/uploads/2015/06/cropped-eox_eye-192x192.png" sizes="192x192" />
+  <link rel="apple-touch-icon-precomposed" href="//eox.at/wp-content/uploads/2015/06/cropped-eox_eye-180x180.png" />
+</head>
+<body>
+  <header id="header" style="width: 100%; height:70px;">
+    <h3 style="width:100%;text-align:center;
+    color: #006699;">PRISM View Server (PVS) Client powered by
+    <a href="//eox.at"><img src="//eox.at/wp-content/uploads/2017/09/EOX_Logo.svg" alt="EOX" style="height:25px;margin-left:10px"/></a>
+    </h3>
+  </header>
+  <div id="app" style="width: 100%; top: 60px; bottom: 0; position: absolute; margin: 0; padding:0;"></div>
+  <script src="prism.js"></script>
+  <script>
+  var today = new Date();
+  today.setUTCHours(24, 0, 0, 0);
+  var baseUrl = '//dem.pass.copernicus.eu/';
+  var defaultStyles = [
+    {"value": "earth"},
+    {"value": "blackbody"},
+    {"value": "summer"},
+    {"value": "coolwarm"},
+    {"value": "copper"},
+    {"value": "spring"},
+    {"value": "viridis"},
+    {"value": "diverging_2"},
+    {"value": "diverging_1"},
+    {"value": "autumn"},
+    {"value": "magma"},
+    {"value": "yiorrd"},
+    {"value": "portland"},
+    {"value": "bluered"},
+    {"value": "rainbow"},
+    {"value": "winter"},
+    {"value": "jet"},
+    {"value": "rdbu"},
+    {"value": "hot"},
+    {"value": "inferno"},
+    {"value": "plasma"},
+    {"value": "electric"},
+    {"value": "greys"},
+    {"value": "hsv"},
+    {"value": "cool"},
+    {"value": "picnic"},
+    {"value": "greens"},
+    {"value": "blackwhite"},
+    {"value": "yignbu"},
+    {"value": "bone"}
+  ];
+  var baseUrlsWMTS = [
+    '//a.dem.pass.copernicus.eu/cache/ows/wmts',
+    '//b.dem.pass.copernicus.eu/cache/ows/wmts',
+    '//c.dem.pass.copernicus.eu/cache/ows/wmts',
+    '//d.dem.pass.copernicus.eu/cache/ows/wmts',
+    '//e.dem.pass.copernicus.eu/cache/ows/wmts',
+    '//f.dem.pass.copernicus.eu/cache/ows/wmts',
+    '//g.dem.pass.copernicus.eu/cache/ows/wmts',
+    '//h.dem.pass.copernicus.eu/cache/ows/wmts',
+  ];
+  var baseUrlsOws = [
+    '//a.dem.pass.copernicus.eu/ows',
+    '//b.dem.pass.copernicus.eu/ows',
+    '//c.dem.pass.copernicus.eu/ows',
+    '//d.dem.pass.copernicus.eu/ows',
+    '//e.dem.pass.copernicus.eu/ows',
+    '//f.dem.pass.copernicus.eu/ows',
+    '//g.dem.pass.copernicus.eu/ows',
+    '//h.dem.pass.copernicus.eu/ows',
+  ];
+  var config = {
+    "settings": {
+        "rightPanelOpen": true,
+        "leftPanelOpen": false,
+        "leftPanelTabIndex": 0,
+        "tutorial": "once",
+        "uploadEnabled": true,
+        "selectFilesDownloadEnabled": false,
+        "downloadEnabled": true,
+        "searchEnabled" : true,
+        "searchDebounceTime": 500,
+        "language": "en",
+        "timeDomain": [
+            "2003-01-01T00:00:00Z",
+            today,
+        ],
+        "constrainTimeDomain": true,
+        "displayTimeDomain": [
+            "2011-02-01T00:00:00Z",
+            "2011-05-31T23:59:59Z",
+        ],
+        "displayInterval": "P7300D",
+        "selectedTimeDomain": [
+          "2011-03-01T00:00:00Z",
+          "2011-04-01T00:00:00Z",
+        ],
+        "selectableInterval": "P7300D",
+        "timeSliderControls": true,
+        "maxTooltips": 1,
+        "center": [14.5, 43],
+        "zoom": 6,
+        "maxZoom": 17,
+        "footprintFillColor": "rgba(0, 0, 0, 0.1)",
+        "footprintStrokeColor": "rgba(0, 0, 0, 1)",
+        "filterFillColor": "rgba(0, 165, 255, 0)",
+        "filterStrokeColor": "rgba(0, 165, 255, 1)",
+        "filterOutsideColor": "rgba(0, 0, 0, 0.5)",
+        "selectedFootprintFillColor": "rgba(255, 0, 0, 0.2)",
+        "selectedFootprintStrokeColor": "rgba(255, 0, 0, 1)",
+        "highlightFillColor": "rgba(246, 182, 0, 0.5)",
+        "highlightStrokeColor": "rgba(246, 182, 0, 1)",
+        "highlightStrokeWidth": 3,
+        "translations": {
+            "en": {
+                "Cloud Cover": "Cloud coverage (%)",
+                "Error: NoApplicableCode": "Search timed out. Please refine the filter criteria.",
+            }
+        },
+        "filterSettings": {
+            "time": {
+                "hidden": true,
+            }
+        },
+        "downloadFormats": [
+            {
+                "name": "TIFF",
+                "mimeType": "image/tiff"
+            },
+            {
+                "name": "JPEG 2000",
+                "mimeType": "image/jp2"
+            },
+            {
+                "name": "HDF",
+                "mimeType": "application/x-hdf",
+            },
+        ],
+        "downloadProjections": [
+            {
+                "name": "WGS-84",
+                "identifier": "http://www.opengis.net/def/crs/EPSG/0/4326"
+            },
+            {
+                "name": "Web Mercator",
+                "identifier": "http://www.opengis.net/def/crs/EPSG/0/3857"
+            },
+            {
+                "name": "ETRS89 / LAEA Europe",
+                "identifier": "http://www.opengis.net/def/crs/EPSG/0/3035"
+            }
+        ],
+        "downloadInterpolations": [
+            {
+              "name": "Bilinear",
+              "identifier": "http://www.opengis.net/def/interpolation/OGC/1/bilinear"
+            },
+            {
+                "name": "Nearest Neighbour",
+                "identifier": "http://www.opengis.net/def/interpolation/OGC/1/nearest-neighbour"
+            },
+            {
+                "name": "Average",
+                "identifier": "http://www.opengis.net/def/interpolation/OGC/1/average"
+            },
+        ]
+    },
+    "baseLayers": [
+        {
+            "id": "terrain-light",
+            "displayName": "EOX Terrain-Light",
+            "display": {
+                "id": "terrain-light",
+                "visible": true,
+                "protocol": "WMTS",
+                "urls": [
+                    "//a.s2maps-tiles.eu/wmts/",
+                    "//b.s2maps-tiles.eu/wmts/",
+                    "//c.s2maps-tiles.eu/wmts/",
+                    "//d.s2maps-tiles.eu/wmts/",
+                    "//e.s2maps-tiles.eu/wmts/"
+                ],
+                "matrixSet": "WGS84",
+                "format": "image/png",
+                "projection": "EPSG:4326",
+                "style": "default",
+                "attribution": "Terrain-Light { Data &copy; <a href=\"//www.openstreetmap.org/copyright\" target=\"_blank\">OpenStreetMap</a> contributors and <a href='javascript:;' onClick='toggle(terrain_attribution)'>others</a>, Rendering &copy; <a href=\"//eox.at\" target=\"_blank\">EOX</a> }"
+            }
+        }, {
+            "id": "terrain",
+            "displayName": "EOX Terrain",
+            "display": {
+                "id": "terrain",
+                "visible": false,
+                "protocol": "WMTS",
+                "urls": [
+                    "//a.s2maps-tiles.eu/wmts/",
+                    "//b.s2maps-tiles.eu/wmts/",
+                    "//c.s2maps-tiles.eu/wmts/",
+                    "//d.s2maps-tiles.eu/wmts/",
+                    "//e.s2maps-tiles.eu/wmts/"
+                ],
+                "matrixSet": "WGS84",
+                "format": "image/png",
+                "projection": "EPSG:4326",
+                "style": "default",
+                "attribution": "Terrain { Data &copy; <a href=\"//www.openstreetmap.org/copyright\" target=\"_blank\">OpenStreetMap</a> contributors and <a href='javascript:;' onClick='toggle(terrain_attribution)'>others</a>, Rendering &copy; <a href=\"//eox.at\" target=\"_blank\">EOX</a> }"
+            }
+        },  {
+            "id": "s2cloudless",
+            "displayName": "EOX Sentinel-2 cloudless",
+            "display": {
+                "id": "s2cloudless-2018",
+                "visible": false,
+                "protocol": "WMTS",
+                "urls": [
+                    "//a.s2maps-tiles.eu/wmts/",
+                    "//b.s2maps-tiles.eu/wmts/",
+                    "//c.s2maps-tiles.eu/wmts/",
+                    "//d.s2maps-tiles.eu/wmts/",
+                    "//e.s2maps-tiles.eu/wmts/"
+                ],
+                "matrixSet": "WGS84",
+                "format": "image/png",
+                "projection": "EPSG:4326",
+                "style": "default",
+                "attribution": "<a xmlns:dct=\"//purl.org/dc/terms/\" href=\"//s2maps.eu\" property=\"dct:title\">Sentinel-2 cloudless - //s2maps.eu</a> by <a xmlns:cc=\"//creativecommons.org/ns#\" href=\"s://eox.at\" property=\"cc:attributionName\" rel=\"cc:attributionURL\">EOX IT Services GmbH</a> (Contains modified Copernicus Sentinel data 2017 &amp; 2018)"
+            }
+        }
+    ],
+    "layers": [
+        {
+            "id": 'DEM',
+            "displayName": 'DEM',
+            "displayColor": '#eb3700',
+            "display": {
+                "id": 'DEM__EARTH',
+                "visible": true,
+                "protocol": 'WMTS',
+                "urls": baseUrlsWMTS,
+                "format": 'image/png',
+                "projection": 'EPSG:4326',
+                "matrixSet": "WGS84",
+                "style": 'default',
+                "useMilliseconds": false,
+                "maxZoom": 17,
+                "options": [{
+                    "name": "Style",
+                    "target": "display.extraParameters.LAYERS",
+                    "values": [{
+                      "label": "DEM earth",
+                      "value": "DEM__EARTH",
+                    },{
+                      "label": "DEM grayscale",
+                      "value": "DEM__GRAYSCALE",
+                    },]
+                }],
+            },
+            "detailsDisplay": {
+                "id": 'DEM',
+                "visible": true,
+                "protocol": 'WMS',
+                "urls": baseUrlsOws,
+                "format": 'image/png',
+                "projection": 'EPSG:4326',
+                "tileSize": 512,
+                "style": 'earth',
+                "useMilliseconds": false,
+                "maxZoom": 17,
+                "options": [{
+                    "name": "Style",
+                    "replace": [{
+                        "target": "detailsDisplay.style",
+                        "value": {
+                            "template": "{{detailsDisplay.extraParameters.STYLES}}"
+                        },
+                    }],
+                    "target": "detailsDisplay.extraParameters.STYLES",
+                    "values": defaultStyles,
+                }],
+            },
+            "search": {
+                "protocol": "OpenSearch",
+                "url": baseUrl + "opensearch/collections/DEM/",
+                "id": "DEM",
+                "histogramBinCount": 28,
+                "format": "application/atom+xml",
+                "method": "GET",
+                "histogramThreshold": 600,
+                "lightweightBuckets": true,
+                "searchLimit": 600,
+                "loadMore": 600,
+                "pageSize": 200,
+                "countZeroRecords": true,
+                "parameters": [
+                  {
+                    "type": "geo:uid",
+                    "title": "Product ID"
+                  },
+                ],
+                "parametersFilterSettings": {
+                    "collapsed": false,
+                },
+            },
+            "download": {
+                "protocol": "EO-WCS",
+                "url": baseUrl + "ows",
+                "rewrite": {
+                  // add __coverage to the coverageId
+                  "from": "({{id}})",
+                  "to": "$1__coverage"
+                }
+            }
+        },
+        {
+            "id": 'DEM_COP-DEM_EEA-10-DGED',
+            "displayName": 'DEM EEA 10 DGED',
+            "displayColor": '#adfa28',
+            "display": {
+                "id": 'DEM_COP-DEM_EEA-10-DGED__EARTH',
+                "visible": false,
+                "protocol": 'WMTS',
+                "urls": baseUrlsWMTS,
+                "format": 'image/png',
+                "projection": 'EPSG:4326',
+                "matrixSet": "WGS84",
+                "style": 'default',
+                "useMilliseconds": false,
+                "maxZoom": 17,
+                "options": [{
+                    "name": "Style",
+                    "target": "display.extraParameters.LAYERS",
+                    "values": [{
+                      "label": "DEM_COP-DEM_EEA-10-DGED earth",
+                      "value": "DEM_COP-DEM_EEA-10-DGED__EARTH",
+                    },{
+                      "label": "DEM_COP-DEM_EEA-10-DGED grayscale",
+                      "value": "DEM_COP-DEM_EEA-10-DGED__GRAYSCALE",
+                    },]
+                }],
+            },
+            "detailsDisplay": {
+                "id": 'DEM_COP-DEM_EEA-10-DGED',
+                "visible": true,
+                "protocol": 'WMS',
+                "urls": baseUrlsOws,
+                "format": 'image/png',
+                "projection": 'EPSG:4326',
+                "tileSize": 512,
+                "style": 'earth',
+                "useMilliseconds": false,
+                "maxZoom": 17,
+                "options": [{
+                    "name": "Style",
+                    "replace": [{
+                        "target": "detailsDisplay.style",
+                        "value": {
+                            "template": "{{detailsDisplay.extraParameters.STYLES}}"
+                        },
+                    }],
+                    "target": "detailsDisplay.extraParameters.STYLES",
+                    "values": defaultStyles,
+                }],
+            },
+            "search": {
+                "protocol": "OpenSearch",
+                "url": baseUrl + "opensearch/collections/DEM_COP-DEM_EEA-10-DGED/",
+                "id": "DEM_COP-DEM_EEA-10-DGED",
+                "histogramBinCount": 28,
+                "format": "application/atom+xml",
+                "method": "GET",
+                "histogramThreshold": 600,
+                "lightweightBuckets": true,
+                "searchLimit": 600,
+                "loadMore": 600,
+                "pageSize": 200,
+                "countZeroRecords": true,
+                "parameters": [
+                  {
+                    "type": "geo:uid",
+                    "title": "Product ID"
+                  },
+                ],
+                "parametersFilterSettings": {
+                    "collapsed": false,
+                },
+            },
+            "download": {
+                "protocol": "EO-WCS",
+                "url": baseUrl + "ows",
+                "rewrite": {
+                  // add __coverage to the coverageId
+                  "from": "({{id}})",
+                  "to": "$1__coverage"
+                }
+            }
+        },
+        {
+            "id": 'DEM_COP-DEM_EEA-10-INSP',
+            "displayName": 'DEM EEA 10 INSP',
+            "displayColor": '#5d24d1',
+            "display": {
+                "id": 'DEM_COP-DEM_EEA-10-INSP__EARTH',
+                "visible": false,
+                "protocol": 'WMTS',
+                "urls": baseUrlsWMTS,
+                "format": 'image/png',
+                "projection": 'EPSG:4326',
+                "matrixSet": "WGS84",
+                "style": 'default',
+                "useMilliseconds": false,
+                "maxZoom": 17,
+                "options": [{
+                    "name": "Style",
+                    "target": "display.extraParameters.LAYERS",
+                    "values": [{
+                      "label": "DEM_COP-DEM_EEA-10-INSP earth",
+                      "value": "DEM_COP-DEM_EEA-10-INSP__EARTH",
+                    },{
+                      "label": "DEM_COP-DEM_EEA-10-INSP grayscale",
+                      "value": "DEM_COP-DEM_EEA-10-INSP__GRAYSCALE",
+                    },]
+                }],
+            },
+            "detailsDisplay": {
+                "id": 'DEM_COP-DEM_EEA-10-INSP',
+                "visible": true,
+                "protocol": 'WMS',
+                "urls": baseUrlsOws,
+                "format": 'image/png',
+                "projection": 'EPSG:4326',
+                "tileSize": 512,
+                "style": 'earth',
+                "useMilliseconds": false,
+                "maxZoom": 17,
+                "options": [{
+                    "name": "Style",
+                    "replace": [{
+                        "target": "detailsDisplay.style",
+                        "value": {
+                            "template": "{{detailsDisplay.extraParameters.STYLES}}"
+                        },
+                    }],
+                    "target": "detailsDisplay.extraParameters.STYLES",
+                    "values": defaultStyles,
+                }],
+            },
+            "search": {
+                "protocol": "OpenSearch",
+                "url": baseUrl + "opensearch/collections/DEM_COP-DEM_EEA-10-INSP/",
+                "id": "DEM_COP-DEM_EEA-10-INSP",
+                "histogramBinCount": 28,
+                "format": "application/atom+xml",
+                "method": "GET",
+                "histogramThreshold": 600,
+                "lightweightBuckets": true,
+                "searchLimit": 600,
+                "loadMore": 600,
+                "pageSize": 200,
+                "countZeroRecords": true,
+                "parameters": [
+                  {
+                    "type": "geo:uid",
+                    "title": "Product ID"
+                  },
+                ],
+                "parametersFilterSettings": {
+                    "collapsed": false,
+                },
+            },
+            "download": {
+                "protocol": "EO-WCS",
+                "url": baseUrl + "ows",
+                "rewrite": {
+                  // add __coverage to the coverageId
+                  "from": "({{id}})",
+                  "to": "$1__coverage"
+                }
+            }
+        },
+        {
+            "id": 'DEM_COP-DEM_GLO-30-DTED',
+            "displayName": 'DEM GLO 30 DTED',
+            "displayColor": '#e3dc09',
+            "display": {
+                "id": 'DEM_COP-DEM_GLO-30-DTED__EARTH',
+                "visible": false,
+                "protocol": 'WMTS',
+                "urls": baseUrlsWMTS,
+                "format": 'image/png',
+                "projection": 'EPSG:4326',
+                "matrixSet": "WGS84",
+                "style": 'default',
+                "useMilliseconds": false,
+                "maxZoom": 17,
+                "options": [{
+                    "name": "Style",
+                    "target": "display.extraParameters.LAYERS",
+                    "values": [{
+                      "label": "DEM_COP-DEM_GLO-30-DTED earth",
+                      "value": "DEM_COP-DEM_GLO-30-DTED__EARTH",
+                    },{
+                      "label": "DEM_COP-DEM_GLO-30-DTED grayscale",
+                      "value": "DEM_COP-DEM_GLO-30-DTED__GRAYSCALE",
+                    },]
+                }],
+            },
+            "detailsDisplay": {
+                "id": 'DEM_COP-DEM_GLO-30-DTED',
+                "visible": true,
+                "protocol": 'WMS',
+                "urls": baseUrlsOws,
+                "format": 'image/png',
+                "projection": 'EPSG:4326',
+                "tileSize": 512,
+                "style": 'earth',
+                "useMilliseconds": false,
+                "maxZoom": 17,
+                "options": [{
+                    "name": "Style",
+                    "replace": [{
+                        "target": "detailsDisplay.style",
+                        "value": {
+                            "template": "{{detailsDisplay.extraParameters.STYLES}}"
+                        },
+                    }],
+                    "target": "detailsDisplay.extraParameters.STYLES",
+                    "values": defaultStyles,
+                }],
+            },
+            "search": {
+                "protocol": "OpenSearch",
+                "url": baseUrl + "opensearch/collections/DEM_COP-DEM_GLO-30-DTED/",
+                "id": "DEM_COP-DEM_GLO-30-DTED",
+                "histogramBinCount": 28,
+                "format": "application/atom+xml",
+                "method": "GET",
+                "histogramThreshold": 600,
+                "lightweightBuckets": true,
+                "searchLimit": 600,
+                "loadMore": 600,
+                "pageSize": 200,
+                "countZeroRecords": true,
+                "parameters": [
+                  {
+                    "type": "geo:uid",
+                    "title": "Product ID"
+                  },
+                ],
+                "parametersFilterSettings": {
+                    "collapsed": false,
+                },
+            },
+            "download": {
+                "protocol": "EO-WCS",
+                "url": baseUrl + "ows",
+                "rewrite": {
+                  // add __coverage to the coverageId
+                  "from": "({{id}})",
+                  "to": "$1__coverage"
+                }
+            }
+        },
+        {
+            "id": 'DEM_COP-DEM_GLO-30-DGED',
+            "displayName": 'DEM GLO 30 DGED',
+            "displayColor": '#09b0e3',
+            "display": {
+                "id": 'DEM_COP-DEM_GLO-30-DGED__EARTH',
+                "visible": false,
+                "protocol": 'WMTS',
+                "urls": baseUrlsWMTS,
+                "format": 'image/png',
+                "projection": 'EPSG:4326',
+                "matrixSet": "WGS84",
+                "style": 'default',
+                "useMilliseconds": false,
+                "maxZoom": 17,
+                "options": [{
+                    "name": "Style",
+                    "target": "display.extraParameters.LAYERS",
+                    "values": [{
+                      "label": "DEM_COP-DEM_GLO-30-DGED earth",
+                      "value": "DEM_COP-DEM_GLO-30-DGED__EARTH",
+                    },{
+                      "label": "DEM_COP-DEM_GLO-30-DGED grayscale",
+                      "value": "DEM_COP-DEM_GLO-30-DGED__GRAYSCALE",
+                    },]
+                }],
+            },
+            "detailsDisplay": {
+                "id": 'DEM_COP-DEM_GLO-30-DGED',
+                "visible": true,
+                "protocol": 'WMS',
+                "urls": baseUrlsOws,
+                "format": 'image/png',
+                "projection": 'EPSG:4326',
+                "tileSize": 512,
+                "style": 'earth',
+                "useMilliseconds": false,
+                "maxZoom": 17,
+                "options": [{
+                    "name": "Style",
+                    "replace": [{
+                        "target": "detailsDisplay.style",
+                        "value": {
+                            "template": "{{detailsDisplay.extraParameters.STYLES}}"
+                        },
+                    }],
+                    "target": "detailsDisplay.extraParameters.STYLES",
+                    "values": defaultStyles,
+                }],
+            },
+            "search": {
+                "protocol": "OpenSearch",
+                "url": baseUrl + "opensearch/collections/DEM_COP-DEM_GLO-30-DGED/",
+                "id": "DEM_COP-DEM_GLO-30-DGED",
+                "histogramBinCount": 28,
+                "format": "application/atom+xml",
+                "method": "GET",
+                "histogramThreshold": 600,
+                "lightweightBuckets": true,
+                "searchLimit": 600,
+                "loadMore": 600,
+                "pageSize": 200,
+                "countZeroRecords": true,
+                "parameters": [
+                  {
+                    "type": "geo:uid",
+                    "title": "Product ID"
+                  },
+                ],
+                "parametersFilterSettings": {
+                    "collapsed": false,
+                },
+            },
+            "download": {
+                "protocol": "EO-WCS",
+                "url": baseUrl + "ows",
+                "rewrite": {
+                  // add __coverage to the coverageId
+                  "from": "({{id}})",
+                  "to": "$1__coverage"
+                }
+            }
+        },
+        {
+            "id": 'DEM_COP-DEM_GLO-90-DGED',
+            "displayName": 'DEM GLO 90 DGED',
+            "displayColor": '#f09c00',
+            "display": {
+                "id": 'DEM_COP-DEM_GLO-90-DGED__EARTH',
+                "visible": false,
+                "protocol": 'WMTS',
+                "urls": baseUrlsWMTS,
+                "format": 'image/png',
+                "projection": 'EPSG:4326',
+                "matrixSet": "WGS84",
+                "style": 'default',
+                "useMilliseconds": false,
+                "maxZoom": 17,
+                "options": [{
+                    "name": "Style",
+                    "target": "display.extraParameters.LAYERS",
+                    "values": [{
+                      "label": "DEM_COP-DEM_GLO-90-DGED earth",
+                      "value": "DEM_COP-DEM_GLO-90-DGED__EARTH",
+                    },{
+                      "label": "DEM_COP-DEM_GLO-90-DGED grayscale",
+                      "value": "DEM_COP-DEM_GLO-90-DGED__GRAYSCALE",
+                    },]
+                }],
+            },
+            "detailsDisplay": {
+                "id": 'DEM_COP-DEM_GLO-90-DGED',
+                "visible": true,
+                "protocol": 'WMS',
+                "urls": baseUrlsOws,
+                "format": 'image/png',
+                "projection": 'EPSG:4326',
+                "tileSize": 512,
+                "style": 'earth',
+                "useMilliseconds": false,
+                "maxZoom": 17,
+                "options": [{
+                    "name": "Style",
+                    "replace": [{
+                        "target": "detailsDisplay.style",
+                        "value": {
+                            "template": "{{detailsDisplay.extraParameters.STYLES}}"
+                        },
+                    }],
+                    "target": "detailsDisplay.extraParameters.STYLES",
+                    "values": defaultStyles,
+                }],
+            },
+            "search": {
+                "protocol": "OpenSearch",
+                "url": baseUrl + "opensearch/collections/DEM_COP-DEM_GLO-90-DGED/",
+                "id": "DEM_COP-DEM_GLO-90-DGED",
+                "histogramBinCount": 28,
+                "format": "application/atom+xml",
+                "method": "GET",
+                "histogramThreshold": 600,
+                "lightweightBuckets": true,
+                "searchLimit": 600,
+                "loadMore": 600,
+                "pageSize": 200,
+                "countZeroRecords": true,
+                "parameters": [
+                  {
+                    "type": "geo:uid",
+                    "title": "Product ID"
+                  },
+                ],
+                "parametersFilterSettings": {
+                    "collapsed": false,
+                },
+            },
+            "download": {
+                "protocol": "EO-WCS",
+                "url": baseUrl + "ows",
+                "rewrite": {
+                  // add __coverage to the coverageId
+                  "from": "({{id}})",
+                  "to": "$1__coverage"
+                }
+            }
+        },
+        {
+            "id": 'DEM_COP-DEM_GLO-90-DTED',
+            "displayName": 'DEM GLO 90 DTED',
+            "displayColor": '#40b366',
+            "display": {
+                "id": 'DEM_COP-DEM_GLO-90-DTED__EARTH',
+                "visible": false,
+                "protocol": 'WMTS',
+                "urls": baseUrlsWMTS,
+                "format": 'image/png',
+                "projection": 'EPSG:4326',
+                "matrixSet": "WGS84",
+                "style": 'default',
+                "useMilliseconds": false,
+                "maxZoom": 17,
+                "options": [{
+                    "name": "Style",
+                    "target": "display.extraParameters.LAYERS",
+                    "values": [{
+                      "label": "DEM_COP-DEM_GLO-90-DTED earth",
+                      "value": "DEM_COP-DEM_GLO-90-DTED__EARTH",
+                    },{
+                      "label": "DEM_COP-DEM_GLO-90-DTED grayscale",
+                      "value": "DEM_COP-DEM_GLO-90-DTED__GRAYSCALE",
+                    },]
+                }],
+            },
+            "detailsDisplay": {
+                "id": 'DEM_COP-DEM_GLO-90-DTED',
+                "visible": true,
+                "protocol": 'WMS',
+                "urls": baseUrlsOws,
+                "format": 'image/png',
+                "projection": 'EPSG:4326',
+                "tileSize": 512,
+                "style": 'earth',
+                "useMilliseconds": false,
+                "maxZoom": 17,
+                "options": [{
+                    "name": "Style",
+                    "replace": [{
+                        "target": "detailsDisplay.style",
+                        "value": {
+                            "template": "{{detailsDisplay.extraParameters.STYLES}}"
+                        },
+                    }],
+                    "target": "detailsDisplay.extraParameters.STYLES",
+                    "values": defaultStyles,
+                }],
+            },
+            "search": {
+                "protocol": "OpenSearch",
+                "url": baseUrl + "opensearch/collections/DEM_COP-DEM_GLO-90-DTED/",
+                "id": "DEM_COP-DEM_GLO-90-DTED",
+                "histogramBinCount": 28,
+                "format": "application/atom+xml",
+                "method": "GET",
+                "histogramThreshold": 600,
+                "lightweightBuckets": true,
+                "searchLimit": 600,
+                "loadMore": 600,
+                "pageSize": 200,
+                "countZeroRecords": true,
+                "parameters": [
+                  {
+                    "type": "geo:uid",
+                    "title": "Product ID"
+                  },
+                ],
+                "parametersFilterSettings": {
+                    "collapsed": false,
+                },
+            },
+            "download": {
+                "protocol": "EO-WCS",
+                "url": baseUrl + "ows",
+                "rewrite": {
+                  // add __coverage to the coverageId
+                  "from": "({{id}})",
+                  "to": "$1__coverage"
+                }
+            }
+        },
+    ],
+    "overlayLayers": [
+        {
+            "id": "overlay_base",
+            "displayName": "EOX Borders and Labels",
+            "display": {
+                "id": "overlay_base",
+                "visible": false,
+                "protocol": "WMTS",
+                "urls": [
+                    "//a.s2maps-tiles.eu/wmts/",
+                    "//b.s2maps-tiles.eu/wmts/",
+                    "//c.s2maps-tiles.eu/wmts/",
+                    "//d.s2maps-tiles.eu/wmts/",
+                    "//e.s2maps-tiles.eu/wmts/"
+                ],
+                "matrixSet": "WGS84",
+                "style": "default",
+                "format": "image/png",
+                "projection": "EPSG:4326",
+                "attribution": "Overlay { Data &copy; <a href=\"//www.openstreetmap.org/copyright\" target=\"_blank\">OpenStreetMap</a> contributors, Rendering &copy; <a href=\"//eox.at\" target=\"_blank\">EOX</a> and <a href=\"//github.com/mapserver/basemaps\" target=\"_blank\">MapServer</a> }"
+            }
+        },
+        {
+            "id": 'DEM__outlines',
+            "displayName": 'DEM Outlines',
+            "displayColor": '#adfa28',
+            "display": {
+                "id": 'DEM__outlines',
+                "visible": false,
+                "protocol": 'WMS',
+                "urls": baseUrlsOws,
+                "format": 'image/png',
+                "projection": 'EPSG:4326',
+                "style": 'red',
+                "useMilliseconds": false,
+                "maxZoom": 17,
+                "synchronizeTime": true,
+            },
+        },
+        {
+            "id": 'DEM_COP-DEM_EEA-10-DGED__outlines',
+            "displayName": 'DEM EEA 10 DGED Outlines',
+            "displayColor": '#37eb00',
+            "display": {
+                "id": 'DEM_COP-DEM_EEA-10-DGED__outlines',
+                "visible": false,
+                "protocol": 'WMS',
+                "urls": baseUrlsOws,
+                "format": 'image/png',
+                "projection": 'EPSG:4326',
+                "style": 'red',
+                "useMilliseconds": false,
+                "maxZoom": 17,
+                "synchronizeTime": true,
+            },
+        },
+        {
+            "id": 'DEM_COP-DEM_EEA-10-INSP__outlines',
+            "displayName": 'DEM EEA 10 INSP Outlines',
+            "displayColor": '#5d24d1',
+            "display": {
+                "id": 'DEM_COP-DEM_EEA-10-INSP__outlines',
+                "visible": false,
+                "protocol": 'WMS',
+                "urls": baseUrlsOws,
+                "format": 'image/png',
+                "projection": 'EPSG:4326',
+                "style": 'red',
+                "useMilliseconds": false,
+                "maxZoom": 17,
+                "synchronizeTime": true,
+            },
+        },
+        {
+            "id": 'DEM_COP-DEM_GLO-30-DTED__outlines',
+            "displayName": 'DEM GLO 30 DTED Outlines',
+            "displayColor": '#e3dc09',
+            "display": {
+                "id": 'DEM_COP-DEM_GLO-30-DTED__outlines',
+                "visible": false,
+                "protocol": 'WMS',
+                "urls": baseUrlsOws,
+                "format": 'image/png',
+                "projection": 'EPSG:4326',
+                "style": 'red',
+                "useMilliseconds": false,
+                "maxZoom": 17,
+                "synchronizeTime": true,
+            },
+        },
+        {
+            "id": 'DEM_COP-DEM_GLO-30-DGED__outlines',
+            "displayName": 'DEM GLO 30 DGED Outlines',
+            "displayColor": '#09b0e3',
+            "display": {
+                "id": 'DEM_COP-DEM_GLO-30-DGED__outlines',
+                "visible": false,
+                "protocol": 'WMS',
+                "urls": baseUrlsOws,
+                "format": 'image/png',
+                "projection": 'EPSG:4326',
+                "style": 'red',
+                "useMilliseconds": false,
+                "maxZoom": 17,
+                "synchronizeTime": true,
+            },
+        },
+        {
+            "id": 'DEM_COP-DEM_GLO-90-DGED__outlines',
+            "displayName": 'DEM GLO 90 DGED Outlines',
+            "displayColor": '#f09c00',
+            "display": {
+                "id": 'DEM_COP-DEM_GLO-90-DGED__outlines',
+                "visible": false,
+                "protocol": 'WMS',
+                "urls": baseUrlsOws,
+                "format": 'image/png',
+                "projection": 'EPSG:4326',
+                "style": 'red',
+                "useMilliseconds": false,
+                "maxZoom": 17,
+                "synchronizeTime": true,
+            },
+        },
+        {
+            "id": 'DEM_COP-DEM_GLO-90-DTED__outlines',
+            "displayName": 'DEM GLO 90 DTED Outlines',
+            "displayColor": '#40b366',
+            "display": {
+                "id": 'DEM_COP-DEM_GLO-90-DTED__outlines',
+                "visible": false,
+                "protocol": 'WMS',
+                "urls": baseUrlsOws,
+                "format": 'image/png',
+                "projection": 'EPSG:4326',
+                "style": 'red',
+                "useMilliseconds": false,
+                "maxZoom": 17,
+                "synchronizeTime": true,
+            },
+        },
+    ]
+};
+
+    var app = new Application({
+      config: config,
+      container: document.getElementById('app'),
+    });
+    app.start();
+  </script>
+</body>
+</html>

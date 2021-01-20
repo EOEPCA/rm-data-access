@@ -44,8 +44,7 @@ COPY app.py config.py image.tif stac.json /
 
 ENV INSTANCE_ID="prism-view-server_ingestor" \
     REDIS_HOST="redis" \
-    REDIS_PORT="6379" \
-    REDIS_PREPROCESS_MD_QUEUE_KEY="preprocess-md_queue"
+    REDIS_PORT="6379" 
  
 
 EXPOSE 8000

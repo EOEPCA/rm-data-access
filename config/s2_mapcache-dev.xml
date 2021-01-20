@@ -1,0 +1,551 @@
+<mapcache>
+  <connection_pool>
+    <max_connections>15</max_connections>
+  </connection_pool>
+  <default_format>mixed</default_format>
+  <format name="mypng" type="PNG">
+    <compression>fast</compression>
+  </format>
+  <format name="myjpeg" type="JPEG">
+    <quality>75</quality>
+    <photometric>ycbcr</photometric>
+  </format>
+  <format name="mixed" type="MIXED">
+    <transparent>mypng</transparent>
+    <opaque>myjpeg</opaque>
+  </format>
+  <service type="wms" enabled="true">
+    <full_wms>assemble</full_wms>
+    <resample_mode>bilinear</resample_mode>
+    <format>mixed</format>
+    <maxsize>4096</maxsize>
+  </service>
+  <service type="wmts" enabled="true"/>
+  <metadata>
+    <title>PRISM View Server (PVS) developed by EOX</title>
+    <abstract>PRISM View Server (PVS) developed by EOX</abstract>
+    <keyword>View Server</keyword>
+    <accessconstraints>UNKNOWN</accessconstraints>
+    <fees>UNKNOWN</fees>
+    <contactname>Stephan Meissl</contactname>
+    <contactphone>Please contact via mail.</contactphone>
+    <contactfacsimile>None</contactfacsimile>
+    <contactorganization>EOX IT Services GmbH</contactorganization>
+    <contactcity>Vienna</contactcity>
+    <contactstateorprovince>Vienna</contactstateorprovince>
+    <contactpostcode>1090</contactpostcode>
+    <contactcountry>Austria</contactcountry>
+    <contactelectronicmailaddress>office@eox.at</contactelectronicmailaddress>
+    <contactposition>CTO</contactposition>
+    <providername>EOX</providername>
+    <providerurl>https://eox.at</providerurl>
+    <inspire_profile>true</inspire_profile>
+    <inspire_metadataurl>TBD</inspire_metadataurl>
+    <defaultlanguage>eng</defaultlanguage>
+    <language>eng</language>
+  </metadata>
+  <errors>empty_img</errors>
+  <lock_dir>/tmp</lock_dir>
+  <threaded_fetching>true</threaded_fetching>
+  <cache name="dem" type="sqlite3">
+    <dbfile>/tmp/cache.db</dbfile>
+  </cache>
+
+  <source type="wms" name="dem_grayscale">
+    <getmap>
+      <params>
+        <LAYERS>DEM</LAYERS>
+        <TRANSPARENT>true</TRANSPARENT>
+      </params>
+    </getmap>
+    <http>
+      <url>http://localhost/ows</url>
+      <connection_timeout>10</connection_timeout>
+      <timeout>120</timeout>
+    </http>
+  </source>
+  <source type="wms" name="dem_earth">
+    <getmap>
+      <params>
+        <LAYERS>DEM</LAYERS>
+        <TRANSPARENT>true</TRANSPARENT>
+        <STYLES>earth</STYLES>
+      </params>
+    </getmap>
+    <http>
+      <url>http://localhost/ows</url>
+      <connection_timeout>10</connection_timeout>
+      <timeout>120</timeout>
+    </http>
+  </source>
+  <source type="wms" name="dem_eea_10_dged_grayscale">
+    <getmap>
+      <params>
+        <LAYERS>DEM_COP-DEM_EEA-10-DGED</LAYERS>
+        <TRANSPARENT>true</TRANSPARENT>
+      </params>
+    </getmap>
+    <http>
+      <url>http://localhost/ows</url>
+      <connection_timeout>10</connection_timeout>
+      <timeout>120</timeout>
+    </http>
+  </source>
+  <source type="wms" name="dem_eea_10_dged_earth">
+    <getmap>
+      <params>
+        <LAYERS>DEM_COP-DEM_EEA-10-DGED</LAYERS>
+        <TRANSPARENT>true</TRANSPARENT>
+        <STYLES>earth</STYLES>
+      </params>
+    </getmap>
+    <http>
+      <url>http://localhost/ows</url>
+      <connection_timeout>10</connection_timeout>
+      <timeout>120</timeout>
+    </http>
+  </source>
+  <source type="wms" name="dem_eea_10_insp_grayscale">
+    <getmap>
+      <params>
+        <LAYERS>DEM_COP-DEM_EEA-10-INSP</LAYERS>
+        <TRANSPARENT>true</TRANSPARENT>
+      </params>
+    </getmap>
+    <http>
+      <url>http://localhost/ows</url>
+      <connection_timeout>10</connection_timeout>
+      <timeout>120</timeout>
+    </http>
+  </source>
+  <source type="wms" name="dem_eea_10_insp_earth">
+    <getmap>
+      <params>
+        <LAYERS>DEM_COP-DEM_EEA-10-INSP</LAYERS>
+        <TRANSPARENT>true</TRANSPARENT>
+        <STYLES>earth</STYLES>
+      </params>
+    </getmap>
+    <http>
+      <url>http://localhost/ows</url>
+      <connection_timeout>10</connection_timeout>
+      <timeout>120</timeout>
+    </http>
+  </source>
+  <source type="wms" name="dem_glob_30_dted_grayscale">
+    <getmap>
+      <params>
+        <LAYERS>DEM_COP-DEM_GLO-30-DTED</LAYERS>
+        <TRANSPARENT>true</TRANSPARENT>
+      </params>
+    </getmap>
+    <http>
+      <url>http://localhost/ows</url>
+      <connection_timeout>10</connection_timeout>
+      <timeout>120</timeout>
+    </http>
+  </source>
+  <source type="wms" name="dem_glob_30_dted_earth">
+    <getmap>
+      <params>
+        <LAYERS>DEM_COP-DEM_GLO-30-DTED</LAYERS>
+        <TRANSPARENT>true</TRANSPARENT>
+        <STYLES>earth</STYLES>
+      </params>
+    </getmap>
+    <http>
+      <url>http://localhost/ows</url>
+      <connection_timeout>10</connection_timeout>
+      <timeout>120</timeout>
+    </http>
+  </source>
+  <source type="wms" name="dem_glob_30_dged_grayscale">
+    <getmap>
+      <params>
+        <LAYERS>DEM_COP-DEM_GLO-30-DGED</LAYERS>
+        <TRANSPARENT>true</TRANSPARENT>
+      </params>
+    </getmap>
+    <http>
+      <url>http://localhost/ows</url>
+      <connection_timeout>10</connection_timeout>
+      <timeout>120</timeout>
+    </http>
+  </source>
+  <source type="wms" name="dem_glob_30_dged_earth">
+    <getmap>
+      <params>
+        <LAYERS>DEM_COP-DEM_GLO-30-DGED</LAYERS>
+        <TRANSPARENT>true</TRANSPARENT>
+        <STYLES>earth</STYLES>
+      </params>
+    </getmap>
+    <http>
+      <url>http://localhost/ows</url>
+      <connection_timeout>10</connection_timeout>
+      <timeout>120</timeout>
+    </http>
+  </source>
+  <source type="wms" name="dem_glob_90_dted_grayscale">
+    <getmap>
+      <params>
+        <LAYERS>DEM_COP-DEM_GLO-90-DTED</LAYERS>
+        <TRANSPARENT>true</TRANSPARENT>
+      </params>
+    </getmap>
+    <http>
+      <url>http://localhost/ows</url>
+      <connection_timeout>10</connection_timeout>
+      <timeout>120</timeout>
+    </http>
+  </source>
+  <source type="wms" name="dem_glob_90_dted_earth">
+    <getmap>
+      <params>
+        <LAYERS>DEM_COP-DEM_GLO-90-DTED</LAYERS>
+        <TRANSPARENT>true</TRANSPARENT>
+        <STYLES>earth</STYLES>
+      </params>
+    </getmap>
+    <http>
+      <url>http://localhost/ows</url>
+      <connection_timeout>10</connection_timeout>
+      <timeout>120</timeout>
+    </http>
+  </source>
+  <source type="wms" name="dem_glob_90_dged_grayscale">
+    <getmap>
+      <params>
+        <LAYERS>DEM_COP-DEM_GLO-90-DGED</LAYERS>
+        <TRANSPARENT>true</TRANSPARENT>
+      </params>
+    </getmap>
+    <http>
+      <url>http://localhost/ows</url>
+      <connection_timeout>10</connection_timeout>
+      <timeout>120</timeout>
+    </http>
+  </source>
+  <source type="wms" name="dem_glob_90_dged_earth">
+    <getmap>
+      <params>
+        <LAYERS>DEM_COP-DEM_GLO-90-DGED</LAYERS>
+        <TRANSPARENT>true</TRANSPARENT>
+        <STYLES>earth</STYLES>
+      </params>
+    </getmap>
+    <http>
+      <url>http://localhost/ows</url>
+      <connection_timeout>10</connection_timeout>
+      <timeout>120</timeout>
+    </http>
+  </source>
+  <tileset name="DEM__GRAYSCALE">
+    <metadata>
+      <title>DEM__GRAYSCALE</title>
+      <abstract>DEM__GRAYSCALE</abstract>
+    </metadata>
+    <source>dem_grayscale</source>
+    <cache>dem</cache>
+    <grid max-cached-zoom="15" out-of-zoom-strategy="reassemble">WGS84</grid>
+    <format>mixed</format>
+    <metatile>1 1</metatile>
+    <expires>3600</expires>
+    <dimensions>
+      <assembly_type>stack</assembly_type>
+      <store_assemblies>false</store_assemblies>
+      <subdimensions_read_only>false</subdimensions_read_only>
+      <dimension type="postgresql" name="time" default="2011/2012" time="true" unit="ISO8601">
+        <connection>host={{DB_HOST}} user={{DB_USER}} password={{DB_PW}} dbname={{DB_NAME}} port={{DB_PORT}}</connection>
+        <list_query>SELECT CONCAT(to_char(MIN(mapcache_items."begin_time"), 'YYYY-MM-DD"T"HH24:MI:SS"Z"'), CONCAT('/', to_char(MAX(mapcache_items."end_time"), 'YYYY-MM-DD"T"HH24:MI:SS"Z"'))) FROM mapcache_items WHERE mapcache_items."collection" = 'DEM';</list_query>
+        <validate_query>SELECT DISTINCT interval FROM (SELECT interval FROM mapcache_items WHERE (mapcache_items."collection" = 'DEM' AND ((mapcache_items."begin_time" &lt; to_timestamp(:end_timestamp) AND mapcache_items."end_time" &gt; to_timestamp(:start_timestamp)) or (mapcache_items."begin_time" = mapcache_items."end_time" AND mapcache_items."begin_time" &lt;= to_timestamp(:end_timestamp) AND mapcache_items."end_time" &gt;= to_timestamp(:start_timestamp)))) AND mapcache_items."footprint" &amp;&amp; ST_MakeEnvelope(:minx, :miny, :maxx, :maxy, 4326) ORDER BY mapcache_items."end_time" DESC) AS sub ORDER BY interval ASC LIMIT 30;</validate_query>
+      </dimension>
+    </dimensions>
+  </tileset>
+  <tileset name="DEM__EARTH">
+    <metadata>
+      <title>DEM__EARTH</title>
+      <abstract>DEM__EARTH</abstract>
+    </metadata>
+    <source>dem_earth</source>
+    <cache>dem</cache>
+    <grid max-cached-zoom="15" out-of-zoom-strategy="reassemble">WGS84</grid>
+    <format>mixed</format>
+    <metatile>1 1</metatile>
+    <expires>3600</expires>
+    <dimensions>
+      <assembly_type>stack</assembly_type>
+      <store_assemblies>false</store_assemblies>
+      <subdimensions_read_only>false</subdimensions_read_only>
+      <dimension type="postgresql" name="time" default="2011/2012" time="true" unit="ISO8601">
+        <connection>host={{DB_HOST}} user={{DB_USER}} password={{DB_PW}} dbname={{DB_NAME}} port={{DB_PORT}}</connection>
+        <list_query>SELECT CONCAT(to_char(MIN(mapcache_items."begin_time"), 'YYYY-MM-DD"T"HH24:MI:SS"Z"'), CONCAT('/', to_char(MAX(mapcache_items."end_time"), 'YYYY-MM-DD"T"HH24:MI:SS"Z"'))) FROM mapcache_items WHERE mapcache_items."collection" = 'DEM';</list_query>
+        <validate_query>SELECT DISTINCT interval FROM (SELECT interval FROM mapcache_items WHERE (mapcache_items."collection" = 'DEM' AND ((mapcache_items."begin_time" &lt; to_timestamp(:end_timestamp) AND mapcache_items."end_time" &gt; to_timestamp(:start_timestamp)) or (mapcache_items."begin_time" = mapcache_items."end_time" AND mapcache_items."begin_time" &lt;= to_timestamp(:end_timestamp) AND mapcache_items."end_time" &gt;= to_timestamp(:start_timestamp)))) AND mapcache_items."footprint" &amp;&amp; ST_MakeEnvelope(:minx, :miny, :maxx, :maxy, 4326) ORDER BY mapcache_items."end_time" DESC) AS sub ORDER BY interval ASC LIMIT 30;</validate_query>
+      </dimension>
+    </dimensions>
+  </tileset>
+  <tileset name="DEM_COP-DEM_EEA-10-DGED__EARTH">
+    <metadata>
+      <title>DEM_COP-DEM_EEA-10-DGED__EARTH</title>
+      <abstract>DEM_COP-DEM_EEA-10-DGED__EARTH</abstract>
+    </metadata>
+    <source>dem_eea_10_dged_earth</source>
+    <cache>dem</cache>
+    <grid max-cached-zoom="15" out-of-zoom-strategy="reassemble">WGS84</grid>
+    <format>mixed</format>
+    <metatile>1 1</metatile>
+    <expires>3600</expires>
+    <dimensions>
+      <assembly_type>stack</assembly_type>
+      <store_assemblies>false</store_assemblies>
+      <subdimensions_read_only>false</subdimensions_read_only>
+      <dimension type="postgresql" name="time" default="2011/2012" time="true" unit="ISO8601">
+        <connection>host={{DB_HOST}} user={{DB_USER}} password={{DB_PW}} dbname={{DB_NAME}} port={{DB_PORT}}</connection>
+        <list_query>SELECT CONCAT(to_char(MIN(mapcache_items."begin_time"), 'YYYY-MM-DD"T"HH24:MI:SS"Z"'), CONCAT('/', to_char(MAX(mapcache_items."end_time"), 'YYYY-MM-DD"T"HH24:MI:SS"Z"'))) FROM mapcache_items WHERE mapcache_items."collection" = 'DEM_COP-DEM_EEA-10-DGED';</list_query>
+        <validate_query>SELECT DISTINCT interval FROM (SELECT interval FROM mapcache_items WHERE (mapcache_items."collection" = 'DEM_COP-DEM_EEA-10-DGED' AND ((mapcache_items."begin_time" &lt; to_timestamp(:end_timestamp) AND mapcache_items."end_time" &gt; to_timestamp(:start_timestamp)) or (mapcache_items."begin_time" = mapcache_items."end_time" AND mapcache_items."begin_time" &lt;= to_timestamp(:end_timestamp) AND mapcache_items."end_time" &gt;= to_timestamp(:start_timestamp)))) AND mapcache_items."footprint" &amp;&amp; ST_MakeEnvelope(:minx, :miny, :maxx, :maxy, 4326) ORDER BY mapcache_items."end_time" DESC) AS sub ORDER BY interval ASC LIMIT 30;</validate_query>
+      </dimension>
+    </dimensions>
+  </tileset>
+  <tileset name="DEM_COP-DEM_EEA-10-DGED__GRAYSCALE">
+    <metadata>
+      <title>DEM_COP-DEM_EEA-10-DGED__GRAYSCALE</title>
+      <abstract>DEM_COP-DEM_EEA-10-DGED__GRAYSCALE</abstract>
+    </metadata>
+    <source>dem_eea_10_dged_grayscale</source>
+    <cache>dem</cache>
+    <grid max-cached-zoom="15" out-of-zoom-strategy="reassemble">WGS84</grid>
+    <format>mixed</format>
+    <metatile>1 1</metatile>
+    <expires>3600</expires>
+    <dimensions>
+      <assembly_type>stack</assembly_type>
+      <store_assemblies>false</store_assemblies>
+      <subdimensions_read_only>false</subdimensions_read_only>
+      <dimension type="postgresql" name="time" default="2011/2012" time="true" unit="ISO8601">
+        <connection>host={{DB_HOST}} user={{DB_USER}} password={{DB_PW}} dbname={{DB_NAME}} port={{DB_PORT}}</connection>
+        <list_query>SELECT CONCAT(to_char(MIN(mapcache_items."begin_time"), 'YYYY-MM-DD"T"HH24:MI:SS"Z"'), CONCAT('/', to_char(MAX(mapcache_items."end_time"), 'YYYY-MM-DD"T"HH24:MI:SS"Z"'))) FROM mapcache_items WHERE mapcache_items."collection" = 'DEM_COP-DEM_EEA-10-DGED';</list_query>
+        <validate_query>SELECT DISTINCT interval FROM (SELECT interval FROM mapcache_items WHERE (mapcache_items."collection" = 'DEM_COP-DEM_EEA-10-DGED' AND ((mapcache_items."begin_time" &lt; to_timestamp(:end_timestamp) AND mapcache_items."end_time" &gt; to_timestamp(:start_timestamp)) or (mapcache_items."begin_time" = mapcache_items."end_time" AND mapcache_items."begin_time" &lt;= to_timestamp(:end_timestamp) AND mapcache_items."end_time" &gt;= to_timestamp(:start_timestamp)))) AND mapcache_items."footprint" &amp;&amp; ST_MakeEnvelope(:minx, :miny, :maxx, :maxy, 4326) ORDER BY mapcache_items."end_time" DESC) AS sub ORDER BY interval ASC LIMIT 30;</validate_query>
+      </dimension>
+    </dimensions>
+  </tileset>
+  <tileset name="DEM_COP-DEM_EEA-10-INSP__EARTH">
+    <metadata>
+      <title>DEM_COP-DEM_EEA-10-INSP__EARTH</title>
+      <abstract>DEM_COP-DEM_EEA-10-INSP__EARTH</abstract>
+    </metadata>
+    <source>dem_eea_10_insp_earth</source>
+    <cache>dem</cache>
+    <grid max-cached-zoom="15" out-of-zoom-strategy="reassemble">WGS84</grid>
+    <format>mixed</format>
+    <metatile>1 1</metatile>
+    <expires>3600</expires>
+    <dimensions>
+      <assembly_type>stack</assembly_type>
+      <store_assemblies>false</store_assemblies>
+      <subdimensions_read_only>false</subdimensions_read_only>
+      <dimension type="postgresql" name="time" default="2011/2012" time="true" unit="ISO8601">
+        <connection>host={{DB_HOST}} user={{DB_USER}} password={{DB_PW}} dbname={{DB_NAME}} port={{DB_PORT}}</connection>
+        <list_query>SELECT CONCAT(to_char(MIN(mapcache_items."begin_time"), 'YYYY-MM-DD"T"HH24:MI:SS"Z"'), CONCAT('/', to_char(MAX(mapcache_items."end_time"), 'YYYY-MM-DD"T"HH24:MI:SS"Z"'))) FROM mapcache_items WHERE mapcache_items."collection" = 'DEM_COP-DEM_EEA-10-INSP';</list_query>
+        <validate_query>SELECT DISTINCT interval FROM (SELECT interval FROM mapcache_items WHERE (mapcache_items."collection" = 'DEM_COP-DEM_EEA-10-INSP' AND ((mapcache_items."begin_time" &lt; to_timestamp(:end_timestamp) AND mapcache_items."end_time" &gt; to_timestamp(:start_timestamp)) or (mapcache_items."begin_time" = mapcache_items."end_time" AND mapcache_items."begin_time" &lt;= to_timestamp(:end_timestamp) AND mapcache_items."end_time" &gt;= to_timestamp(:start_timestamp)))) AND mapcache_items."footprint" &amp;&amp; ST_MakeEnvelope(:minx, :miny, :maxx, :maxy, 4326) ORDER BY mapcache_items."end_time" DESC) AS sub ORDER BY interval ASC LIMIT 30;</validate_query>
+      </dimension>
+    </dimensions>
+  </tileset>
+  <tileset name="DEM_COP-DEM_EEA-10-INSP__GRAYSCALE">
+    <metadata>
+      <title>DEM_COP-DEM_EEA-10-INSP__GRAYSCALE</title>
+      <abstract>DEM_COP-DEM_EEA-10-INSP__GRAYSCALE</abstract>
+    </metadata>
+    <source>dem_eea_10_insp_grayscale</source>
+    <cache>dem</cache>
+    <grid max-cached-zoom="15" out-of-zoom-strategy="reassemble">WGS84</grid>
+    <format>mixed</format>
+    <metatile>1 1</metatile>
+    <expires>3600</expires>
+    <dimensions>
+      <assembly_type>stack</assembly_type>
+      <store_assemblies>false</store_assemblies>
+      <subdimensions_read_only>false</subdimensions_read_only>
+      <dimension type="postgresql" name="time" default="2011/2012" time="true" unit="ISO8601">
+        <connection>host={{DB_HOST}} user={{DB_USER}} password={{DB_PW}} dbname={{DB_NAME}} port={{DB_PORT}}</connection>
+        <list_query>SELECT CONCAT(to_char(MIN(mapcache_items."begin_time"), 'YYYY-MM-DD"T"HH24:MI:SS"Z"'), CONCAT('/', to_char(MAX(mapcache_items."end_time"), 'YYYY-MM-DD"T"HH24:MI:SS"Z"'))) FROM mapcache_items WHERE mapcache_items."collection" = 'DEM_COP-DEM_EEA-10-INSP';</list_query>
+        <validate_query>SELECT DISTINCT interval FROM (SELECT interval FROM mapcache_items WHERE (mapcache_items."collection" = 'DEM_COP-DEM_EEA-10-INSP' AND ((mapcache_items."begin_time" &lt; to_timestamp(:end_timestamp) AND mapcache_items."end_time" &gt; to_timestamp(:start_timestamp)) or (mapcache_items."begin_time" = mapcache_items."end_time" AND mapcache_items."begin_time" &lt;= to_timestamp(:end_timestamp) AND mapcache_items."end_time" &gt;= to_timestamp(:start_timestamp)))) AND mapcache_items."footprint" &amp;&amp; ST_MakeEnvelope(:minx, :miny, :maxx, :maxy, 4326) ORDER BY mapcache_items."end_time" DESC) AS sub ORDER BY interval ASC LIMIT 30;</validate_query>
+      </dimension>
+    </dimensions>
+  </tileset>
+  <tileset name="DEM_COP-DEM_GLO-30-DTED__EARTH">
+    <metadata>
+      <title>DEM_COP-DEM_GLO-30-DTED__EARTH</title>
+      <abstract>DEM_COP-DEM_GLO-30-DTED__EARTH</abstract>
+    </metadata>
+    <source>dem_glob_30_dted_earth</source>
+    <cache>dem</cache>
+    <grid max-cached-zoom="15" out-of-zoom-strategy="reassemble">WGS84</grid>
+    <format>mixed</format>
+    <metatile>1 1</metatile>
+    <expires>3600</expires>
+    <dimensions>
+      <assembly_type>stack</assembly_type>
+      <store_assemblies>false</store_assemblies>
+      <subdimensions_read_only>false</subdimensions_read_only>
+      <dimension type="postgresql" name="time" default="2011/2012" time="true" unit="ISO8601">
+        <connection>host={{DB_HOST}} user={{DB_USER}} password={{DB_PW}} dbname={{DB_NAME}} port={{DB_PORT}}</connection>
+        <list_query>SELECT CONCAT(to_char(MIN(mapcache_items."begin_time"), 'YYYY-MM-DD"T"HH24:MI:SS"Z"'), CONCAT('/', to_char(MAX(mapcache_items."end_time"), 'YYYY-MM-DD"T"HH24:MI:SS"Z"'))) FROM mapcache_items WHERE mapcache_items."collection" = 'DEM_COP-DEM_GLO-30-DTED';</list_query>
+        <validate_query>SELECT DISTINCT interval FROM (SELECT interval FROM mapcache_items WHERE (mapcache_items."collection" = 'DEM_COP-DEM_GLO-30-DTED' AND ((mapcache_items."begin_time" &lt; to_timestamp(:end_timestamp) AND mapcache_items."end_time" &gt; to_timestamp(:start_timestamp)) or (mapcache_items."begin_time" = mapcache_items."end_time" AND mapcache_items."begin_time" &lt;= to_timestamp(:end_timestamp) AND mapcache_items."end_time" &gt;= to_timestamp(:start_timestamp)))) AND mapcache_items."footprint" &amp;&amp; ST_MakeEnvelope(:minx, :miny, :maxx, :maxy, 4326) ORDER BY mapcache_items."end_time" DESC) AS sub ORDER BY interval ASC LIMIT 30;</validate_query>
+      </dimension>
+    </dimensions>
+  </tileset>
+  <tileset name="DEM_COP-DEM_GLO-30-DTED__GRAYSCALE">
+    <metadata>
+      <title>DEM_COP-DEM_GLO-30-DTED__GRAYSCALE</title>
+      <abstract>DEM_COP-DEM_GLO-30-DTED__GRAYSCALE</abstract>
+    </metadata>
+    <source>dem_glob_30_dted_grayscale</source>
+    <cache>dem</cache>
+    <grid max-cached-zoom="15" out-of-zoom-strategy="reassemble">WGS84</grid>
+    <format>mixed</format>
+    <metatile>1 1</metatile>
+    <expires>3600</expires>
+    <dimensions>
+      <assembly_type>stack</assembly_type>
+      <store_assemblies>false</store_assemblies>
+      <subdimensions_read_only>false</subdimensions_read_only>
+      <dimension type="postgresql" name="time" default="2011/2012" time="true" unit="ISO8601">
+        <connection>host={{DB_HOST}} user={{DB_USER}} password={{DB_PW}} dbname={{DB_NAME}} port={{DB_PORT}}</connection>
+        <list_query>SELECT CONCAT(to_char(MIN(mapcache_items."begin_time"), 'YYYY-MM-DD"T"HH24:MI:SS"Z"'), CONCAT('/', to_char(MAX(mapcache_items."end_time"), 'YYYY-MM-DD"T"HH24:MI:SS"Z"'))) FROM mapcache_items WHERE mapcache_items."collection" = 'DEM_COP-DEM_GLO-30-DTED';</list_query>
+        <validate_query>SELECT DISTINCT interval FROM (SELECT interval FROM mapcache_items WHERE (mapcache_items."collection" = 'DEM_COP-DEM_GLO-30-DTED' AND ((mapcache_items."begin_time" &lt; to_timestamp(:end_timestamp) AND mapcache_items."end_time" &gt; to_timestamp(:start_timestamp)) or (mapcache_items."begin_time" = mapcache_items."end_time" AND mapcache_items."begin_time" &lt;= to_timestamp(:end_timestamp) AND mapcache_items."end_time" &gt;= to_timestamp(:start_timestamp)))) AND mapcache_items."footprint" &amp;&amp; ST_MakeEnvelope(:minx, :miny, :maxx, :maxy, 4326) ORDER BY mapcache_items."end_time" DESC) AS sub ORDER BY interval ASC LIMIT 30;</validate_query>
+      </dimension>
+    </dimensions>
+  </tileset>
+  <tileset name="DEM_COP-DEM_GLO-30-DGED__EARTH">
+    <metadata>
+      <title>DEM_COP-DEM_GLO-30-DGED__EARTH</title>
+      <abstract>DEM_COP-DEM_GLO-30-DGED__EARTH</abstract>
+    </metadata>
+    <source>dem_glob_30_dged_earth</source>
+    <cache>dem</cache>
+    <grid max-cached-zoom="15" out-of-zoom-strategy="reassemble">WGS84</grid>
+    <format>mixed</format>
+    <metatile>1 1</metatile>
+    <expires>3600</expires>
+    <dimensions>
+      <assembly_type>stack</assembly_type>
+      <store_assemblies>false</store_assemblies>
+      <subdimensions_read_only>false</subdimensions_read_only>
+      <dimension type="postgresql" name="time" default="2011/2012" time="true" unit="ISO8601">
+        <connection>host={{DB_HOST}} user={{DB_USER}} password={{DB_PW}} dbname={{DB_NAME}} port={{DB_PORT}}</connection>
+        <list_query>SELECT CONCAT(to_char(MIN(mapcache_items."begin_time"), 'YYYY-MM-DD"T"HH24:MI:SS"Z"'), CONCAT('/', to_char(MAX(mapcache_items."end_time"), 'YYYY-MM-DD"T"HH24:MI:SS"Z"'))) FROM mapcache_items WHERE mapcache_items."collection" = 'DEM_COP-DEM_GLO-30-DGED';</list_query>
+        <validate_query>SELECT DISTINCT interval FROM (SELECT interval FROM mapcache_items WHERE (mapcache_items."collection" = 'DEM_COP-DEM_GLO-30-DGED' AND ((mapcache_items."begin_time" &lt; to_timestamp(:end_timestamp) AND mapcache_items."end_time" &gt; to_timestamp(:start_timestamp)) or (mapcache_items."begin_time" = mapcache_items."end_time" AND mapcache_items."begin_time" &lt;= to_timestamp(:end_timestamp) AND mapcache_items."end_time" &gt;= to_timestamp(:start_timestamp)))) AND mapcache_items."footprint" &amp;&amp; ST_MakeEnvelope(:minx, :miny, :maxx, :maxy, 4326) ORDER BY mapcache_items."end_time" DESC) AS sub ORDER BY interval ASC LIMIT 30;</validate_query>
+      </dimension>
+    </dimensions>
+  </tileset>
+  <tileset name="DEM_COP-DEM_GLO-30-DGED__GRAYSCALE">
+    <metadata>
+      <title>DEM_COP-DEM_GLO-30-DGED__GRAYSCALE</title>
+      <abstract>DEM_COP-DEM_GLO-30-DGED__GRAYSCALE</abstract>
+    </metadata>
+    <source>dem_glob_30_dged_grayscale</source>
+    <cache>dem</cache>
+    <grid max-cached-zoom="15" out-of-zoom-strategy="reassemble">WGS84</grid>
+    <format>mixed</format>
+    <metatile>1 1</metatile>
+    <expires>3600</expires>
+    <dimensions>
+      <assembly_type>stack</assembly_type>
+      <store_assemblies>false</store_assemblies>
+      <subdimensions_read_only>false</subdimensions_read_only>
+      <dimension type="postgresql" name="time" default="2011/2012" time="true" unit="ISO8601">
+        <connection>host={{DB_HOST}} user={{DB_USER}} password={{DB_PW}} dbname={{DB_NAME}} port={{DB_PORT}}</connection>
+        <list_query>SELECT CONCAT(to_char(MIN(mapcache_items."begin_time"), 'YYYY-MM-DD"T"HH24:MI:SS"Z"'), CONCAT('/', to_char(MAX(mapcache_items."end_time"), 'YYYY-MM-DD"T"HH24:MI:SS"Z"'))) FROM mapcache_items WHERE mapcache_items."collection" = 'DEM_COP-DEM_GLO-30-DGED';</list_query>
+        <validate_query>SELECT DISTINCT interval FROM (SELECT interval FROM mapcache_items WHERE (mapcache_items."collection" = 'DEM_COP-DEM_GLO-30-DGED' AND ((mapcache_items."begin_time" &lt; to_timestamp(:end_timestamp) AND mapcache_items."end_time" &gt; to_timestamp(:start_timestamp)) or (mapcache_items."begin_time" = mapcache_items."end_time" AND mapcache_items."begin_time" &lt;= to_timestamp(:end_timestamp) AND mapcache_items."end_time" &gt;= to_timestamp(:start_timestamp)))) AND mapcache_items."footprint" &amp;&amp; ST_MakeEnvelope(:minx, :miny, :maxx, :maxy, 4326) ORDER BY mapcache_items."end_time" DESC) AS sub ORDER BY interval ASC LIMIT 30;</validate_query>
+      </dimension>
+    </dimensions>
+  </tileset>
+  <tileset name="DEM_COP-DEM_GLO-90-DGED__EARTH">
+    <metadata>
+      <title>DEM_COP-DEM_GLO-90-DGED__EARTH</title>
+      <abstract>DEM_COP-DEM_GLO-90-DGED__EARTH</abstract>
+    </metadata>
+    <source>dem_glob_90_dged_earth</source>
+    <cache>dem</cache>
+    <grid max-cached-zoom="15" out-of-zoom-strategy="reassemble">WGS84</grid>
+    <format>mixed</format>
+    <metatile>1 1</metatile>
+    <expires>3600</expires>
+    <dimensions>
+      <assembly_type>stack</assembly_type>
+      <store_assemblies>false</store_assemblies>
+      <subdimensions_read_only>false</subdimensions_read_only>
+      <dimension type="postgresql" name="time" default="2011/2012" time="true" unit="ISO8601">
+        <connection>host={{DB_HOST}} user={{DB_USER}} password={{DB_PW}} dbname={{DB_NAME}} port={{DB_PORT}}</connection>
+        <list_query>SELECT CONCAT(to_char(MIN(mapcache_items."begin_time"), 'YYYY-MM-DD"T"HH24:MI:SS"Z"'), CONCAT('/', to_char(MAX(mapcache_items."end_time"), 'YYYY-MM-DD"T"HH24:MI:SS"Z"'))) FROM mapcache_items WHERE mapcache_items."collection" = 'DEM_COP-DEM_GLO-90-DGED';</list_query>
+        <validate_query>SELECT DISTINCT interval FROM (SELECT interval FROM mapcache_items WHERE (mapcache_items."collection" = 'DEM_COP-DEM_GLO-90-DGED' AND ((mapcache_items."begin_time" &lt; to_timestamp(:end_timestamp) AND mapcache_items."end_time" &gt; to_timestamp(:start_timestamp)) or (mapcache_items."begin_time" = mapcache_items."end_time" AND mapcache_items."begin_time" &lt;= to_timestamp(:end_timestamp) AND mapcache_items."end_time" &gt;= to_timestamp(:start_timestamp)))) AND mapcache_items."footprint" &amp;&amp; ST_MakeEnvelope(:minx, :miny, :maxx, :maxy, 4326) ORDER BY mapcache_items."end_time" DESC) AS sub ORDER BY interval ASC LIMIT 30;</validate_query>
+      </dimension>
+    </dimensions>
+  </tileset>
+  <tileset name="DEM_COP-DEM_GLO-90-DGED__GRAYSCALE">
+    <metadata>
+      <title>DEM_COP-DEM_GLO-90-DGED__GRAYSCALE</title>
+      <abstract>DEM_COP-DEM_GLO-90-DGED__GRAYSCALE</abstract>
+    </metadata>
+    <source>dem_glob_90_dged_grayscale</source>
+    <cache>dem</cache>
+    <grid max-cached-zoom="15" out-of-zoom-strategy="reassemble">WGS84</grid>
+    <format>mixed</format>
+    <metatile>1 1</metatile>
+    <expires>3600</expires>
+    <dimensions>
+      <assembly_type>stack</assembly_type>
+      <store_assemblies>false</store_assemblies>
+      <subdimensions_read_only>false</subdimensions_read_only>
+      <dimension type="postgresql" name="time" default="2011/2012" time="true" unit="ISO8601">
+        <connection>host={{DB_HOST}} user={{DB_USER}} password={{DB_PW}} dbname={{DB_NAME}} port={{DB_PORT}}</connection>
+        <list_query>SELECT CONCAT(to_char(MIN(mapcache_items."begin_time"), 'YYYY-MM-DD"T"HH24:MI:SS"Z"'), CONCAT('/', to_char(MAX(mapcache_items."end_time"), 'YYYY-MM-DD"T"HH24:MI:SS"Z"'))) FROM mapcache_items WHERE mapcache_items."collection" = 'DEM_COP-DEM_GLO-90-DGED';</list_query>
+        <validate_query>SELECT DISTINCT interval FROM (SELECT interval FROM mapcache_items WHERE (mapcache_items."collection" = 'DEM_COP-DEM_GLO-90-DGED' AND ((mapcache_items."begin_time" &lt; to_timestamp(:end_timestamp) AND mapcache_items."end_time" &gt; to_timestamp(:start_timestamp)) or (mapcache_items."begin_time" = mapcache_items."end_time" AND mapcache_items."begin_time" &lt;= to_timestamp(:end_timestamp) AND mapcache_items."end_time" &gt;= to_timestamp(:start_timestamp)))) AND mapcache_items."footprint" &amp;&amp; ST_MakeEnvelope(:minx, :miny, :maxx, :maxy, 4326) ORDER BY mapcache_items."end_time" DESC) AS sub ORDER BY interval ASC LIMIT 30;</validate_query>
+      </dimension>
+    </dimensions>
+  </tileset>
+  <tileset name="DEM_COP-DEM_GLO-90-DTED__EARTH">
+    <metadata>
+      <title>DEM_COP-DEM_GLO-90-DTED__EARTH</title>
+      <abstract>DEM_COP-DEM_GLO-90-DTED__EARTH</abstract>
+    </metadata>
+    <source>dem_glob_90_dted_earth</source>
+    <cache>dem</cache>
+    <grid max-cached-zoom="15" out-of-zoom-strategy="reassemble">WGS84</grid>
+    <format>mixed</format>
+    <metatile>1 1</metatile>
+    <expires>3600</expires>
+    <dimensions>
+      <assembly_type>stack</assembly_type>
+      <store_assemblies>false</store_assemblies>
+      <subdimensions_read_only>false</subdimensions_read_only>
+      <dimension type="postgresql" name="time" default="2011/2012" time="true" unit="ISO8601">
+        <connection>host={{DB_HOST}} user={{DB_USER}} password={{DB_PW}} dbname={{DB_NAME}} port={{DB_PORT}}</connection>
+        <list_query>SELECT CONCAT(to_char(MIN(mapcache_items."begin_time"), 'YYYY-MM-DD"T"HH24:MI:SS"Z"'), CONCAT('/', to_char(MAX(mapcache_items."end_time"), 'YYYY-MM-DD"T"HH24:MI:SS"Z"'))) FROM mapcache_items WHERE mapcache_items."collection" = 'DEM_COP-DEM_GLO-90-DTED';</list_query>
+        <validate_query>SELECT DISTINCT interval FROM (SELECT interval FROM mapcache_items WHERE (mapcache_items."collection" = 'DEM_COP-DEM_GLO-90-DTED' AND ((mapcache_items."begin_time" &lt; to_timestamp(:end_timestamp) AND mapcache_items."end_time" &gt; to_timestamp(:start_timestamp)) or (mapcache_items."begin_time" = mapcache_items."end_time" AND mapcache_items."begin_time" &lt;= to_timestamp(:end_timestamp) AND mapcache_items."end_time" &gt;= to_timestamp(:start_timestamp)))) AND mapcache_items."footprint" &amp;&amp; ST_MakeEnvelope(:minx, :miny, :maxx, :maxy, 4326) ORDER BY mapcache_items."end_time" DESC) AS sub ORDER BY interval ASC LIMIT 30;</validate_query>
+      </dimension>
+    </dimensions>
+  </tileset>
+  <tileset name="DEM_COP-DEM_GLO-90-DTED__GRAYSCALE">
+    <metadata>
+      <title>DEM_COP-DEM_GLO-90-DTED__GRAYSCALE</title>
+      <abstract>DEM_COP-DEM_GLO-90-DTED__GRAYSCALE</abstract>
+    </metadata>
+    <source>dem_glob_90_dted_grayscale</source>
+    <cache>dem</cache>
+    <grid max-cached-zoom="15" out-of-zoom-strategy="reassemble">WGS84</grid>
+    <format>mixed</format>
+    <metatile>1 1</metatile>
+    <expires>3600</expires>
+    <dimensions>
+      <assembly_type>stack</assembly_type>
+      <store_assemblies>false</store_assemblies>
+      <subdimensions_read_only>false</subdimensions_read_only>
+      <dimension type="postgresql" name="time" default="2011/2012" time="true" unit="ISO8601">
+        <connection>host={{DB_HOST}} user={{DB_USER}} password={{DB_PW}} dbname={{DB_NAME}} port={{DB_PORT}}</connection>
+        <list_query>SELECT CONCAT(to_char(MIN(mapcache_items."begin_time"), 'YYYY-MM-DD"T"HH24:MI:SS"Z"'), CONCAT('/', to_char(MAX(mapcache_items."end_time"), 'YYYY-MM-DD"T"HH24:MI:SS"Z"'))) FROM mapcache_items WHERE mapcache_items."collection" = 'DEM_COP-DEM_GLO-90-DTED';</list_query>
+        <validate_query>SELECT DISTINCT interval FROM (SELECT interval FROM mapcache_items WHERE (mapcache_items."collection" = 'DEM_COP-DEM_GLO-90-DTED' AND ((mapcache_items."begin_time" &lt; to_timestamp(:end_timestamp) AND mapcache_items."end_time" &gt; to_timestamp(:start_timestamp)) or (mapcache_items."begin_time" = mapcache_items."end_time" AND mapcache_items."begin_time" &lt;= to_timestamp(:end_timestamp) AND mapcache_items."end_time" &gt;= to_timestamp(:start_timestamp)))) AND mapcache_items."footprint" &amp;&amp; ST_MakeEnvelope(:minx, :miny, :maxx, :maxy, 4326) ORDER BY mapcache_items."end_time" DESC) AS sub ORDER BY interval ASC LIMIT 30;</validate_query>
+      </dimension>
+    </dimensions>
+  </tileset>
+</mapcache>

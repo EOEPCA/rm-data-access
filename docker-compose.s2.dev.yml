@@ -1,0 +1,129 @@
+version: "3.6"
+services:
+  database:
+    networks:
+      - extnet
+    ports:
+      - "5432:5432"
+    volumes:
+      - type: bind
+        source: ./data/
+        target: /data/
+  client:
+    configs:
+      - source: client-dev
+        target: /usr/share/nginx/html/index.html
+    volumes:
+      - type: bind
+        source: ./data/
+        target: /data/
+    networks:
+      - extnet
+    ports:
+      - "80:80"
+    deploy:
+      labels:
+        # router for basic access (http)
+        - "traefik.http.routers.s2-client.rule=Host(`s2.localhost`)"
+        - "traefik.http.routers.s2-client.middlewares=compress@file"
+        - "traefik.http.routers.s2-client.entrypoints=http"
+        # general
+        - "traefik.http.services.s2-client.loadbalancer.sticky=false"
+        - "traefik.http.services.s2-client.loadbalancer.server.port=80"
+        - "traefik.docker.network=s2-extnet"
+        - "traefik.docker.lbswarm=true"
+        - "traefik.enable=true"
+  endpoint:
+    networks:
+      - extnet
+    ports:
+      - "85:8000"
+  renderer:
+    volumes:
+      - type: bind
+        source: ./data/
+        target: /data/
+      - type: bind
+        source: ../eoxserver/eoxserver
+        target: /usr/local/lib/python3.7/dist-packages/eoxserver/
+      - type: bind
+        source: ../eoxserver/eoxserver
+        target: /opt/eoxserver/eoxserver/
+    networks:
+      - extnet
+    ports:
+      - "81:80"
+      - "82:8080"
+    deploy:
+      labels:
+        # router for basic access (http)
+        - "traefik.http.routers.s2-renderer.rule=Host(`s2.localhost`, `a.s2.localhost`, `b.s2.localhost`, `c.s2.localhost`, `d.s2.localhost`, `e.s2.localhost`, `f.s2.localhost`, `g.s2.localhost`, `h.s2.localhost`) && PathPrefix(`/ows`, `/opensearch`, `/admin`)"
+        - "traefik.http.routers.s2-renderer.middlewares=compress@file,cors@file"
+        - "traefik.http.routers.s2-renderer.entrypoints=http"
+        # general
+        - "traefik.http.services.s2-renderer.loadbalancer.sticky=false"
+        - "traefik.http.services.s2-renderer.loadbalancer.server.port=80"
+        - "traefik.docker.network=s2-extnet"
+        - "traefik.docker.lbswarm=true"
+        - "traefik.enable=true"
+  registrar:
+    volumes:
+      - type: bind
+        source: ./data/
+        target: /data/
+      - type: bind
+        source: ../vs/core/
+        target: /core/
+      - type: bind
+        source: ../vs/core/registrar/
+        target: /usr/local/lib/python3.8/dist-packages/registrar-1.1.1-py3.8.egg/registrar/
+      - type: bind
+        source: ./core/registrar_pycsw/
+        target: /usr/local/lib/python3.8/dist-packages/registrar_pycsw/
+      - type: bind
+        source: ../eoxserver/eoxserver
+        target: /usr/local/lib/python3.8/dist-packages/eoxserver/
+  catalogue:
+    networks:
+      - extnet
+    ports:
+      - "84:8000"
+  cache:
+    volumes:
+      - type: bind
+        source: ./data/
+        target: /data/
+    configs:
+      - source: mapcache-dev
+        target: /mapcache-template.xml
+    networks:
+      - extnet
+    ports:
+      - "83:80"
+    deploy:
+      labels:
+        - "traefik.http.middlewares.cache-stripprefix.stripprefix.prefixes=/cache"
+        # router for basic access (http)
+        - "traefik.http.routers.s2-cache.rule=Host(`s2.localhost`, `a.s2.localhost`, `b.s2.localhost`, `c.s2.localhost`, `d.s2.localhost`, `e.s2.localhost`, `f.s2.localhost`, `g.s2.localhost`, `h.s2.localhost`) && PathPrefix(`/cache`)"
+        - "traefik.http.routers.s2-cache.middlewares=cache-stripprefix,compress@file,cors@file"
+        - "traefik.http.routers.s2-cache.entrypoints=http"
+        # general
+        - "traefik.http.services.s2-cache.loadbalancer.sticky=false"
+        - "traefik.http.services.s2-cache.loadbalancer.server.port=80"
+        - "traefik.docker.network=s2-extnet"
+        - "traefik.docker.lbswarm=true"
+        - "traefik.enable=true"
+  preprocessor:
+    volumes:
+      - type: tmpfs
+        target: /tmp
+      - type: bind
+        source: ../vs/preprocessor/
+        target: /preprocessor/
+      - type: bind
+        source: ./data/
+        target: /data/
+networks:
+  extnet:
+    name: s2-extnet
+    external: true
