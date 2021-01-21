@@ -25,19 +25,22 @@ class PycswBackend(Backend):
 
     def exists(self, source: Source, item: Context) -> bool:
         # TODO: sort out identifier problem in ISO XML
-        logger.info(self.repo.query(constraint={}))
+        logger.info('Checking for identifier {}'.format(item.identifier))
         if self.repo.query_ids([item.identifier]):
-            logger.info('identifier exists')
+            logger.info('Identifier {} exists'.format(item.identifier))
             return True
-        return False
+        else:
+            logger.info('Identifier {} does not exist'.format(item.identifier))
+            return False
 
     def register(self, source: Source, item: Context, replace: bool) -> RegistrationResult:
         # For path for STAC items
-        ingest_fail = False
         if item.scheme == 'stac-item':
+            logger.info('Ingesting processing result')
             stac_item_local = '/tmp/item.json'
             source.get_file(item.path, stac_item_local)
             with open(stac_item_local) as f:
+                logger.debug('base URL {}'.format(item.path))
                 base_url = 's3://{}'.format(os.path.dirname(item.path))
                 imo = ISOMetadata(base_url)
                 iso_metadata = imo.from_stac_item(f.read())
@@ -46,6 +49,7 @@ class PycswBackend(Backend):
             os.remove(stac_item_local)
 
         else:
+            logger.info('Ingesting product')
             esa_xml_local = '/tmp/esa-metadata.xml'
             inspire_xml_local = '/tmp/inspire-metadata.xml'
 
@@ -55,14 +59,15 @@ class PycswBackend(Backend):
             inspire_xml = os.path.dirname(item.metadata_files[0]) + "/INSPIRE.xml"
             logger.info(f"INSPIRE XML metadata file: {inspire_xml}")
 
-            base_url = 's3://{}'.format(os.path.split(os.path.dirname(esa_xml))[0])
+            logger.debug('base URL {}'.format(item.path))
+            base_url = 's3://{}'.format(item.path)
 
             try:
                 source.get_file(inspire_xml, inspire_xml_local)
                 source.get_file(esa_xml, esa_xml_local)
             except Exception as err:
                 logger.error(err)
-                return False
+                raise
 
             logger.info('Generating ISO XML based on ESA and INSPIRE XML')
             imo = ISOMetadata(base_url)
@@ -78,7 +83,7 @@ class PycswBackend(Backend):
             xml = etree.fromstring(iso_metadata)
         except Exception as err:
             logger.error('XML parsing failed: {}'.format(err))
-            return False
+            raise
 
         logger.debug('Processing metadata')
         try:
@@ -87,25 +92,23 @@ class PycswBackend(Backend):
             logger.info(f"identifier: {record.identifier}")
         except Exception as err:
             logger.error('Metadata parsing failed: {}'.format(err))
-            return False
+            raise
 
-        logger.debug('Inserting record')
-        try:
-            self.repo.insert(record, 'local', util.get_today_and_now())
-            logger.info('record inserted')
-        except Exception as err:
-            ingest_fail = True
-            logger.error('record insertion failed: {}'.format(err))
-            if not replace:
-                logger.error('replace not specified. No update')
-                return False
-
-        if ingest_fail and replace:
+        if replace:
             logger.info('Updating record')
             try:
                 self.repo.update(record)
                 logger.info('record updated')
             except Exception as err:
                 logger.error('record update failed: {}'.format(err))
+                raise
+        else:
+            logger.info('Inserting record')
+            try:
+                self.repo.insert(record, 'local', util.get_today_and_now())
+                logger.info('record inserted')
+            except Exception as err:
+                logger.error('record insertion failed: {}'.format(err))
+                raise
 
-        return True
+        return

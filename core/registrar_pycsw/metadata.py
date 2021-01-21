@@ -2,7 +2,7 @@ import logging
 
 from copy import deepcopy
 import json
-from os.path import normpath
+from urllib.parse import uses_netloc, uses_relative, urljoin
 
 from lxml import etree
 from owslib.iso import MD_Metadata
@@ -16,7 +16,11 @@ logger = logging.getLogger(__name__)
 class ISOMetadata:
     def __init__(self, base_url: str):
 
-        self.base_url = base_url
+        logger.debug('Adding s3 to urllib supported protocols for urljoin')
+        uses_netloc.append('s3')
+        uses_relative.append('s3')
+
+        self.base_url = base_url.rstrip('/') + '/'
 
         self.mcf = {
             'mcf': {
@@ -102,7 +106,7 @@ class ISOMetadata:
 
         for key, value in si['assets'].items():
             dist = {
-                'url': normpath(f"{self.base_url}/{value['href']}"),
+                'url': urljoin(self.base_url, value['href']),
                 'type': value['type'],
                 'name': value['title'],
                 'description': value['title'],
@@ -133,11 +137,9 @@ class ISOMetadata:
         m = MD_Metadata(ixml)
 
         product_manifest = exml.xpath('//PRODUCT_URI/text()')[0]
-        product_identifier = product_manifest.replace('.SAFE', '')
-        product_manifest_link = normpath(
-            f'{self.base_url}/{product_manifest}')
+        product_manifest_link = urljoin(self.base_url, product_manifest)
 
-        mcf['metadata']['identifier'] = product_identifier
+        mcf['metadata']['identifier'] = product_manifest
         mcf['metadata']['hierarchylevel'] = m.hierarchy
         mcf['metadata']['datestamp'] = exml.xpath('//Product_Info/GENERATION_TIME/text()')[0]
 
@@ -159,8 +161,8 @@ class ISOMetadata:
             }]
         }
 
-        mcf['identification']['title'] = product_identifier
-        mcf['identification']['abstract'] = product_identifier
+        mcf['identification']['title'] = product_manifest
+        mcf['identification']['abstract'] = product_manifest
 
         mcf['identification']['dates'] = {
             'creation': mcf['metadata']['datestamp'],
@@ -207,7 +209,7 @@ class ISOMetadata:
             })
 
         mcf['distribution'][product_manifest] = {
-            'url': product_manifest_link,
+            'url': self.base_url,
             'type': 'enclosure',
             'name': 'product',
             'description': 'product',
@@ -229,8 +231,7 @@ class ISOMetadata:
 
         for image_file in exml.xpath('//Product_Organisation//IMAGE_FILE/text()'):
             dist = {
-                'url': normpath(
-                    f'{product_manifest_link}/{image_file}.{file_extension}'),
+                'url': urljoin(product_manifest_link, f'{image_file}.{file_extension}'),
                 'type': mime_type,
                 'name': 'granule',
                 'description': 'granule',
