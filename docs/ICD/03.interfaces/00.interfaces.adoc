@@ -1,0 +1,96 @@
+= Data Access Interfaces
+
+== Enpoints
+
+
+
+=== Cache
+
+==== Capabilities GET
+
+==== Tile GET
+
+`GET /cache/{tileset}/{grid}/{dim}/{z}/{x}/{y}.{ext}`
+
+=== Renderer
+
+==== OpenSearch Description
+
+===== Description
+
+Returns the root OpenSearch Description document of the Renderer.
+
+===== Parameters
+
+
+====== Path Parameters
+
+
+====== Query Parameters
+
+
+===== Return Type
+
+
+==== OpenSearch Collection Search
+
+`GET /opensearch/collections`
+
+===== Description
+
+Performs a collection search of all collections on the Renderer using the search parameters provided.
+
+===== Parameters
+
+
+====== Path Parameters
+
+
+====== Query Parameters
+
+
+===== Return Type
+
+
+==== OpenSearch Collection Description
+
+===== Description
+
+Returns the description  OpenSearch Description document of the Renderer.
+
+===== Parameters
+
+
+====== Path Parameters
+
+
+====== Query Parameters
+
+
+===== Return Type
+
+
+==== OpenSearch Record Search
+
+===== Description
+
+Returns the root OpenSearch Description document of the Renderer.
+
+===== Parameters
+
+
+====== Path Parameters
+
+
+====== Query Parameters
+
+
+===== Return Type
+
+
+
+=== Registrar
+
+``
+
+
