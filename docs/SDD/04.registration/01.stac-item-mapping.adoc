@@ -18,7 +18,7 @@ In this step, also the product metadata is extracted. The STAC Item's `geometry`
 
 === `CoverageType` setup
 
-Each asset that provides the `eo:bands` metadata will be added as a `CoverageType`
+Each asset that provides the `eo:bands` metadata will be added as a `CoverageType`. The `CoverageType` will be comprised of a `FieldType` for each listed band. Here, the `name` attribute will be used as the identifier and (if present) the `common_name` will be used as the fields `definition`.
 
 === `BrowseTypes` setup
 
@@ -26,7 +26,7 @@ Depending on the available bands semantics (the `common_name` attribute is used 
 
 [cols="2,7a,2a"]
 |===
-| `BrowseType` name | Description | Prerequisites
+| `BrowseType` name | Description                   | Prerequisites
 | `TRUE_COLOR`      | RGB true color representation | `red`, `green`, `blue`
 | `FALSE_COLOR`     | NirRG false color composite   | `nir`, `red`, `green`
 |===
