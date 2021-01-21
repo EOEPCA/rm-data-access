@@ -3,7 +3,7 @@
 
 == Purpose and Scope
 
-This document presents the {component-name} Design for the Common Architecture.
+This document presents the {component-name} Interfaces for the Common Architecture.
 
 == Structure of the Document
 

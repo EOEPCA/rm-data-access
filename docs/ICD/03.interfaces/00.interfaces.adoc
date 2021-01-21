@@ -6,11 +6,110 @@
 
 === Cache
 
-==== Capabilities GET
+==== GET Capabilities
 
-==== Tile GET
+`GET /cache/ows/wmts/1.0.0/WMTSCapabilities.xml`
 
-`GET /cache/{tileset}/{grid}/{dim}/{z}/{x}/{y}.{ext}`
+===== Description
+
+Returns the WMTS capabilities document, detailing all available tilesets, their respective grids and formats.
+
+===== Content Type
+
+* text/xml
+
+===== Responses
+
+[cols="2,3,1"]
+|===
+| Code | Message | Datatype
+
+| 200
+|
+|
+
+|===
+
+
+==== GET Tile
+
+`GET /cache/ows/wmts/1.0.0/{layer}/{style}/{starttime}--{endtime}/{tilematrixset}/{tilematrix}/{tilerow}/{tilecol}.{extension}``
+
+===== Description
+
+Returns the specified tile from the given layer in the specified style from the
+
+===== Parameters
+
+====== Path Parameters
+
+[cols="2,3,1"]
+|===
+| Name | Description | Required
+
+| layer
+|
+| X
+
+| style
+|
+| X
+
+| starttime
+|
+| X
+
+| endtime
+|
+| X
+
+| tilematrixset
+|
+| X
+
+| tilematrix
+|
+| X
+
+| tilerow
+|
+| X
+
+| tilecol
+|
+| X
+
+| extension
+|
+| X
+
+|===
+
+===== Content Type
+
+* image/jpeg
+* image/png
+
+===== Responses
+
+[cols="2,3,1"]
+|===
+| Code | Message | Datatype
+
+| 200
+|
+|
+
+| 404
+|
+|
+
+| 500
+|
+|
+
+|===
+
 
 === Renderer
 
