@@ -30,6 +30,7 @@ import os
 import logging
 import logging.config
 import json
+from urllib.parse import urlparse
 
 from flask import Flask, request, Response
 import redis
@@ -144,17 +145,27 @@ def userinfo():
 def register():
 
     request.get_data()
+
     auth_header = request.headers['Authorization'] 
     if not auth_header.startswith('Bearer '): 
         raise Exception
     token = auth_header[len('Bearer '):]
     encode_token = jwt.decode(token, verify=False, algorithms=['RS256'])
     prefix = encode_token['pct_claims']['aud']
-    pre = request.data
+    try:
+        request_body = request.get_json()
+    except Exception :
+        raise Exception
+
+    #TODO json schema check
+
+    parsed_url = urlparse(request_body["url"])
+    url = parsed_url.netloc + parsed_url.path 
 
     #TODO: presumably th client should pass a stac URL
-    client.lpush(queue_name, pre)
-    return request.data
+    client.lpush(queue_name, url)
+    response = "successfully added item %s to the redis queue" %  url
+    return response
 
 if __name__ == "__main__":
     application.run()
