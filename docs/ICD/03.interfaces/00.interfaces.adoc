@@ -1,0 +1,195 @@
+= Data Access Interfaces
+
+== Enpoints
+
+
+
+=== Cache
+
+==== GET Capabilities
+
+`GET /cache/ows/wmts/1.0.0/WMTSCapabilities.xml`
+
+===== Description
+
+Returns the WMTS capabilities document, detailing all available tilesets, their respective grids and formats.
+
+===== Content Type
+
+* text/xml
+
+===== Responses
+
+[cols="2,3,1"]
+|===
+| Code | Message | Datatype
+
+| 200
+|
+|
+
+|===
+
+
+==== GET Tile
+
+`GET /cache/ows/wmts/1.0.0/{layer}/{style}/{starttime}--{endtime}/{tilematrixset}/{tilematrix}/{tilerow}/{tilecol}.{extension}``
+
+===== Description
+
+Returns the specified tile from the given layer in the specified style from the
+
+===== Parameters
+
+====== Path Parameters
+
+[cols="2,3,1"]
+|===
+| Name | Description | Required
+
+| layer
+|
+| X
+
+| style
+|
+| X
+
+| starttime
+|
+| X
+
+| endtime
+|
+| X
+
+| tilematrixset
+|
+| X
+
+| tilematrix
+|
+| X
+
+| tilerow
+|
+| X
+
+| tilecol
+|
+| X
+
+| extension
+|
+| X
+
+|===
+
+===== Content Type
+
+* image/jpeg
+* image/png
+
+===== Responses
+
+[cols="2,3,1"]
+|===
+| Code | Message | Datatype
+
+| 200
+|
+|
+
+| 404
+|
+|
+
+| 500
+|
+|
+
+|===
+
+
+=== Renderer
+
+==== OpenSearch Description
+
+===== Description
+
+Returns the root OpenSearch Description document of the Renderer.
+
+===== Parameters
+
+
+====== Path Parameters
+
+
+====== Query Parameters
+
+
+===== Return Type
+
+
+==== OpenSearch Collection Search
+
+`GET /opensearch/collections`
+
+===== Description
+
+Performs a collection search of all collections on the Renderer using the search parameters provided.
+
+===== Parameters
+
+
+====== Path Parameters
+
+
+====== Query Parameters
+
+
+===== Return Type
+
+
+==== OpenSearch Collection Description
+
+===== Description
+
+Returns the description  OpenSearch Description document of the Renderer.
+
+===== Parameters
+
+
+====== Path Parameters
+
+
+====== Query Parameters
+
+
+===== Return Type
+
+
+==== OpenSearch Record Search
+
+===== Description
+
+Returns the root OpenSearch Description document of the Renderer.
+
+===== Parameters
+
+
+====== Path Parameters
+
+
+====== Query Parameters
+
+
+===== Return Type
+
+
+
+=== Registrar
+
+``
+
+
