@@ -14,6 +14,28 @@ cd "${BIN_DIR}/.."
 rm -rf output
 mkdir -p output
 
+# write an index.html for a nicer navigation
+cat > output/index.html <<EOL
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>Login Service Documentation</h1>
+    <div>
+      <ul>
+        <li><a href="SDD/">Software Design Document</a></li>
+        <li><a href="ICD/">Interface Control Document</a></li>
+      </ul>
+    </div>
+  </body>
+</html>
+EOL
+
 for doc in SDD ICD; do
   # Prepare output/ directory
   cp -r $doc/images output/$doc
