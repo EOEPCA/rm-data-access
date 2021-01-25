@@ -115,25 +115,48 @@ Returns the specified tile from the given layer in the specified style from the
 
 ==== OpenSearch Description
 
+`GET /opensearch/`
+
 ===== Description
 
 Returns the root OpenSearch Description document of the Renderer.
 
-===== Parameters
+// ===== Parameters
 
 
-====== Path Parameters
+// ====== Path Parameters
 
 
-====== Query Parameters
+// ====== Query Parameters
 
 
-===== Return Type
+===== Content Type
 
+* application/xml
+
+===== Responses
+
+[cols="2,3,1"]
+|===
+| Code | Message | Datatype
+
+| 200
+|
+|
+
+| 404
+|
+|
+
+| 500
+|
+|
+
+|===
 
 ==== OpenSearch Collection Search
 
-`GET /opensearch/collections`
+`GET /opensearch/{format}/`
 
 ===== Description
 
@@ -144,14 +167,57 @@ Performs a collection search of all collections on the Renderer using the search
 
 ====== Path Parameters
 
+[cols="2,3,1"]
+|===
+| Name | Description | Required
+
+| format
+| The format to encode the search result in. One of `atom`, `rss`, `json`, `kml`, or `html`
+| X
+
+|===
 
 ====== Query Parameters
 
 
-===== Return Type
+// TODO
+
+
+
+
+
+===== Content Type
+
+* application/atom+xml
+* application/rss+xml
+* application/vnd.google-earth.kml+xml
+* application/vnd.geo+json
+* text/html
+
+===== Responses
+
+[cols="2,3,1"]
+|===
+| Code | Message | Datatype
+
+| 200
+|
+|
+
+| 404
+|
+|
+
+| 500
+|
+|
+
+|===
 
 
 ==== OpenSearch Collection Description
+
+`GET /opensearch/collections/{collection}`
 
 ===== Description
 
@@ -159,17 +225,47 @@ Returns the description  OpenSearch Description document of the Renderer.
 
 ===== Parameters
 
-
 ====== Path Parameters
 
+[cols="2,3,1"]
+|===
+| Name | Description | Required
 
-====== Query Parameters
+| collection
+| The collection to generate the description document
+| X
+
+|===
+
+===== Content Type
+
+* application/xml
 
 
-===== Return Type
+===== Responses
+
+[cols="2,3,1"]
+|===
+| Code | Message | Datatype
+
+| 200
+|
+|
+
+| 404
+|
+|
+
+| 500
+|
+|
+
+|===
 
 
 ==== OpenSearch Record Search
+
+`GET /opensearch/collections/{collection}/{format}`
 
 ===== Description
 
@@ -177,19 +273,54 @@ Returns the root OpenSearch Description document of the Renderer.
 
 ===== Parameters
 
-
 ====== Path Parameters
 
+[cols="2,3,1"]
+|===
+| Name | Description | Required
+
+| collection
+| The collection to perform the record search on
+| X
+
+| format
+| The format to encode the search result in. One of `atom`, `rss`, `json`, `kml`, or `html`
+| X
+
+|===
 
 ====== Query Parameters
 
 
-===== Return Type
 
+
+===== Content Type
+
+* application/atom+xml
+* application/rss+xml
+* application/vnd.google-earth.kml+xml
+* application/vnd.geo+json
+* text/html
+
+===== Responses
+
+[cols="2,3,1"]
+|===
+| Code | Message | Datatype
+
+| 200
+|
+|
+
+| 404
+|
+|
+
+| 500
+|
+|
+
+|===
 
 
 === Registrar
-
-``
-
-

@@ -3,14 +3,14 @@
 :email: <Eoepca.SystemTeam@telespazio.com>
 :project: EOEPCA
 :project-name: EO Exploitation Platform Common Architecture
-:component-name: <Template Service>
+:component-name: Data Access
 :component-github-name: template-svce
-:doc-title: {component-name} Design Document
+:doc-title: {component-name} Interface Control Document
 :doc-num: {project}.SDD.xxx
 :revnumber: 0.1
 :revdate: dd/mm/yyyy
 :revremark:
-:category: Design Document
+:category: Interface Control Document
 :copyrightYear: 2020
 // attributes
 :hardbreaks:
@@ -50,7 +50,7 @@ include::02.overview/00.overview.adoc[]
 
 <<<
 
-include::03.design/00.design.adoc[]
+include::03.interfaces/00.interfaces.adoc[]
 
 '''
 
