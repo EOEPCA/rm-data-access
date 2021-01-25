@@ -1,4 +1,4 @@
-name: Publish Docker image
+name: Build and publish Core Docker image
 on:
   push:
     branches: [ master ]
@@ -6,7 +6,7 @@ on:
     branches: [ master ]
 jobs:
   push_to_registry:
-    name: Push Docker image to Docker Hub
+    name: Build and push Docker image to Docker Hub
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
