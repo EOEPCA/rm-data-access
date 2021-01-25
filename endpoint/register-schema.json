@@ -1,0 +1,16 @@
+{
+  "$id": "https://github.com/EOEPCA/rm-data-access/endpoint/register-schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Schema of a registration item to be sent to the registration enpoint",
+  "type": "object",
+  "properties": {
+    "item": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string",
+      "description": "The full S3 URL to the directory of the root 'catalog.json' to be registered."
+    }
+  },
+  "required": ["item", "url"]
+}

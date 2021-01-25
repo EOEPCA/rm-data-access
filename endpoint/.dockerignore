@@ -1,0 +1,5 @@
+tests
+lib
+bin
+__pycache__
+.pytest_cache

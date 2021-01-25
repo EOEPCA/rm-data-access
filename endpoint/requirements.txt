@@ -1,0 +1,5 @@
+flask
+pyjwt==1.7.1
+boto3
+gunicorn
+redis
