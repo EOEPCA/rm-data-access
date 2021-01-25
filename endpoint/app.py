@@ -168,17 +168,29 @@ def register():
         )
 
     # get the URL and extract the path from the S3 URL
-    body = request.get_json()
-    url = body["url"]
-    parsed_url = urlparse(url)
-    url = parsed_url.netloc + parsed_url.path
+    try:
+        body = request.get_json()
+        url = body["url"]
+        parsed_url = urlparse(url)
+        url = parsed_url.netloc + parsed_url.path
 
-    client.lpush(REDIS_REGISTER_QUEUE_KEY, url)
+        client.lpush(REDIS_REGISTER_QUEUE_KEY, url)
 
-    return jsonify(
-        status="success",
-        message=f"Successfully started registration of {url}"
-    )
+        return jsonify(
+            status="success",
+            message=f"Successfully started registration of {url}"
+        )
+    except Exception as e:
+        return application.response_class(
+            response=json.dumps({
+                "error": {
+                    "code": 400,
+                    "message": f"Failed to start the registration: {e}"
+                }
+            }),
+            status=400,
+            mimetype='application/json'
+        )
 
 
 if __name__ == "__main__":
