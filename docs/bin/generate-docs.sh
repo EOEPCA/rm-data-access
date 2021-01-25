@@ -11,20 +11,18 @@ cd "${BIN_DIR}/.."
 
 # Set context dependant on whether this script has been invoked by Travis or not
 
-for doc in SDD ICD; do
-  cd $doc
-  # Prepare output/ directory
-  rm -rf output
-  mkdir -p output
-  cp -r images output
-  cp -r stylesheets output
+rm -rf output
+mkdir -p output
 
-  # Docuemnt Generation - using asciidoctor docker image
+for doc in SDD ICD; do
+  # Prepare output/ directory
+  cp -r $doc/images output/$doc
+  cp -r $doc/stylesheets output/$doc
+
+  # Document Generation - using asciidoctor docker image
   #
   # HTML version
-  docker run --rm -v $PWD:/documents/ --name asciidoc-to-html asciidoctor/docker-asciidoctor asciidoctor -r asciidoctor-diagram -D /documents/output index.adoc
+  docker run --rm -v $PWD/$doc:/documents/ -v $PWD/output/$doc:/output --name asciidoc-to-html asciidoctor/docker-asciidoctor asciidoctor -r asciidoctor-diagram -D /output/ index.adoc
   # PDF version
-  docker run --rm -v $PWD:/documents/ --name asciidoc-to-pdf asciidoctor/docker-asciidoctor asciidoctor-pdf -r asciidoctor-diagram -D /documents/output index.adoc
-
-  cd -
+  docker run --rm -v $PWD/$doc:/documents/ -v $PWD/output/$doc:/output --name asciidoc-to-pdf asciidoctor/docker-asciidoctor asciidoctor-pdf -r asciidoctor-diagram -D /output/ index.adoc
 done
