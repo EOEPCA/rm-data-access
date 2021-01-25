@@ -141,6 +141,11 @@ REDIS_REGISTER_QUEUE_KEY = os.environ['REDIS_REGISTER_QUEUE_KEY']
 
 #     return response
 
+@application.route('/', methods=['GET', 'HEAD'])
+def index():
+    return jsonify({'status': 'ok'})
+
+
 @application.route('/register', methods=['POST'])
 def register():
     request.get_data()
