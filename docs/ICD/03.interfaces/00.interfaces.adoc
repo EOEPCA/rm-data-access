@@ -324,3 +324,57 @@ Returns the root OpenSearch Description document of the Renderer.
 
 
 === Registrar
+
+==== Registration
+
+`POST /registration`
+
+===== Description
+
+Starts the registration of the specified catalog.json.
+
+===== Parameters
+
+====== Header Parameters
+
+This interface requires a valid JWT in the `Authorization` header using the `Bearer` scheme.
+
+====== JSON Parameters
+
+[cols="2,3,1"]
+|===
+| Name | Description | Required
+
+| url
+| The full S3 URL to the directory name of the catalog.json
+| X
+
+| item
+| The type of the registration. Unused for now.
+|
+
+|===
+
+===== Content Type
+
+* application/json
+
+===== Responses
+
+[cols="2,3,1"]
+|===
+| Code | Message | Datatype
+
+| 200
+| The registration started successfully
+| application/json
+
+| 400
+| Failed to start the registration of the specified catalog.json
+| application/json
+
+| 401
+| Failed to authorize the JWT
+| application/json
+
+|===
