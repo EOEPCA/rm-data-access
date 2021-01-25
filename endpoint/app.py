@@ -1,10 +1,10 @@
-#!/usr/bin/env python
-#------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 #
-# Project: prism view server
-# Authors: Fabian Schindler <fabian.schindler@eox.at>
+# Project: EOEPCA-RM
+# Authors: Mussab Abdalla <mussab.abdalla.eox.at>
+#          Fabian Schindler <fabian.schindler@eox.at>
 #
-#------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Copyright (C) 2020 EOX IT Services GmbH <https://eox.at>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,7 +24,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
-#-----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 import os
 import logging
@@ -32,14 +32,13 @@ import logging.config
 import json
 from urllib.parse import urlparse
 
-from flask import Flask, request, Response
+from flask import Flask, request, Response, jsonify
 import redis
 import jwt
 import boto3
 from botocore.exceptions import ClientError
 
 application = Flask(__name__)
-
 
 logger = logging.getLogger(__name__)
 
@@ -77,95 +76,110 @@ client = redis.Redis(
     decode_responses=True,
 )
 
-queue_name = os.environ['REDIS_REGISTER_QUEUE_KEY']
-#TODO: extract credentials from the jwt token instead
-access = os.environ['ACCESS']
-secret = os.environ['SECRET']
-env_host=os.environ['HOST']
+REDIS_REGISTER_QUEUE_KEY = os.environ['REDIS_REGISTER_QUEUE_KEY']
+# TODO: extract credentials from the jwt token instead
+# access = os.environ['ACCESS']
+# secret = os.environ['SECRET']
+# env_host=os.environ['HOST']
 
 
-def upload_file(host, file_name, bucket, object_name=None):
-    """Upload a file to an S3 bucket
+# def upload_file(host, file_name, bucket, object_name=None):
+#     """Upload a file to an S3 bucket
 
-    :param file_name: File to upload
-    :param bucket: Bucket to upload to
-    :param object_name: S3 object name. If not specified then file_name is used
-    :return: True if file was uploaded, else False
-    """
+#     :param file_name: File to upload
+#     :param bucket: Bucket to upload to
+#     :param object_name: S3 object name. If not specified then file_name is used
+#     :return: True if file was uploaded, else False
+#     """
 
-    # If S3 object_name was not specified, use file_name
-    if object_name is None:
-        object_name = file_name
-    
-   
-    # Upload the file
-    s3_client = boto3.client('s3',aws_access_key_id= access, aws_secret_access_key= secret, endpoint_url=host,)
-    try:
-        response = s3_client.upload_file(file_name, bucket, object_name)
-    except ClientError as e:
-        logging.exception(e)
-        return False
-    return True
+#     # If S3 object_name was not specified, use file_name
+#     if object_name is None:
+#         object_name = file_name
+
+
+#     # Upload the file
+#     s3_client = boto3.client('s3',aws_access_key_id= access, aws_secret_access_key= secret, endpoint_url=host,)
+#     try:
+#         response = s3_client.upload_file(file_name, bucket, object_name)
+#     except ClientError as e:
+#         logging.exception(e)
+#         return False
+#     return True
+
+
 # This is an experemental function that could be moved or replaced by lookup for buckets instead
-def lookup_objects(host, access_key, secret_key, bucketname, pref):
+# def lookup_objects(host, access_key, secret_key, bucketname, pref):
+#     s3 = boto3.resource('s3',aws_access_key_id=access_key, aws_secret_access_key=secret_key, endpoint_url=host,)
+#     bucket=s3.Bucket(bucketname)
 
-    
-    s3 = boto3.resource('s3',aws_access_key_id=access_key, aws_secret_access_key=secret_key, endpoint_url=host,)
-    bucket=s3.Bucket(bucketname)
+#     for obj in bucket.objects.filter():
+#         if pref in obj.key:
+#             return True
+#         else:
+#             return False
 
-    for obj in bucket.objects.filter():
-        if pref in obj.key:
-            return True
-        else: 
-            return False
 
-@application.route('/userinfo', methods=['GET'])
-def userinfo():
-    # At the current state this function creates dummy objects and name them based on a prefix from jwt
-    request.get_data()
-    auth_header = request.headers['Authorization'] 
-    if not auth_header.startswith('Bearer '): 
-        raise Exception
-    token = auth_header[len('Bearer '):]
-    encode_token = jwt.decode(token, verify=False, algorithms=['RS256'])
-    prefix = encode_token['pct_claims']['aud']
+# @application.route('/userinfo', methods=['GET'])
+# def userinfo():
+#     # At the current state this function creates dummy objects and name them based on a prefix from jwt
+#     request.get_data()
+#     auth_header = request.headers['Authorization']
+#     if not auth_header.startswith('Bearer '):
+#         raise Exception
+#     token = auth_header[len('Bearer '):]
+#     encode_token = jwt.decode(token, verify=False, algorithms=['RS256'])
+#     prefix = encode_token['pct_claims']['aud']
 
-    if lookup_objects(env_host, access, secret, 'test_stage_out', prefix) :
-        response = 'An Object with the prefix %s already exists' % prefix
+#     if lookup_objects(env_host, access, secret, 'test_stage_out', prefix) :
+#         response = 'An Object with the prefix %s already exists' % prefix
 
-    else:
-        upload_file(env_host, 'image.tif', 'test_stage_out', '%s.tif' % prefix)
-        upload_file(env_host, 'stac.json', 'test_stage_out', '%s.json' % prefix)
+#     else:
+#         upload_file(env_host, 'image.tif', 'test_stage_out', '%s.tif' % prefix)
+#         upload_file(env_host, 'stac.json', 'test_stage_out', '%s.json' % prefix)
 
-        response = 'created objects with the prefix: %s , in "test_stage_out" bucket' % prefix
+#         response = 'created objects with the prefix: %s , in "test_stage_out" bucket' % prefix
 
-    return response
+#     return response
 
 @application.route('/register', methods=['POST'])
 def register():
-
     request.get_data()
 
-    auth_header = request.headers['Authorization'] 
-    if not auth_header.startswith('Bearer '): 
-        raise Exception
-    token = auth_header[len('Bearer '):]
-    encode_token = jwt.decode(token, verify=False, algorithms=['RS256'])
-    prefix = encode_token['pct_claims']['aud']
     try:
-        request_body = request.get_json()
-    except Exception :
-        raise Exception
+        auth_header = request.headers['Authorization']
+        if not auth_header.startswith('Bearer '):
+            raise Exception("Invalid authorization scheme")
 
-    #TODO json schema check
+        token = auth_header[len('Bearer '):]
+        encode_token = jwt.decode(token, verify=False, algorithms=['RS256'])
+        prefix = encode_token['pct_claims']['aud']
+        # TODO make something with thetoken
 
-    parsed_url = urlparse(request_body["url"])
-    url = parsed_url.netloc + parsed_url.path 
+    except Exception as e:
+        return application.response_class(
+            response=json.dumps({
+                "error": {
+                    "code": 401,
+                    "message": f"Failed to authorize: {e}"
+                }
+            }),
+            status=401,
+            mimetype='application/json'
+        )
 
-    #TODO: presumably th client should pass a stac URL
-    client.lpush(queue_name, url)
-    response = "successfully added item %s to the redis queue" %  url
-    return response
+    # get the URL and extract the path from the S3 URL
+    body = request.get_json()
+    url = body["url"]
+    parsed_url = urlparse(url)
+    url = parsed_url.netloc + parsed_url.path
+
+    client.lpush(REDIS_REGISTER_QUEUE_KEY, url)
+
+    return jsonify(
+        status="success",
+        message=f"Successfully started registration of {url}"
+    )
+
 
 if __name__ == "__main__":
     application.run()

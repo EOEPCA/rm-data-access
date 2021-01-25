@@ -1,6 +1,6 @@
 #------------------------------------------------------------------------------
 #
-# Project: prism view server
+# Project: EOEPCA-DE RM
 # Authors: Fabian Schindler <fabian.schindler@eox.at>
 #
 #------------------------------------------------------------------------------
@@ -28,24 +28,21 @@
 FROM ubuntu:18.04
 
 MAINTAINER EOX
-LABEL name="prism view server cache" \
+LABEL name="EOEPCA-DE RM registration endpoint" \
       vendor="EOX IT Services GmbH <https://eox.at>" \
-      license="MIT Copyright (C) 2020 EOX IT Services GmbH <https://eox.at>" \
-      type="prism view server ingestor" \
-      version="1.1.1"
+      license="MIT Copyright (C) 2021 EOX IT Services GmbH <https://eox.at>" \
+      type="EOEPCA-DE RM registration endpoint" \
+      version="1.0.0"
 
 USER root
 ADD install.sh requirements.txt \
     /
 RUN /install.sh
-RUN mkdir /ingestor 
 
-COPY app.py config.py image.tif stac.json /
+COPY app.py config.py /
 
-ENV INSTANCE_ID="prism-view-server_ingestor" \
-    REDIS_HOST="redis" \
-    REDIS_PORT="6379" 
- 
+ENV REDIS_HOST="redis" \
+    REDIS_PORT="6379"
 
 EXPOSE 8000
 CMD ["gunicorn3", "-c", "config.py", "app"]

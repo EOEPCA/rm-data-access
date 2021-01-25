@@ -1,7 +1,7 @@
-### Endpoint Testing 
+### Endpoint Testing
 
 
-To deploy a working registration instance following [This approach](https://gist.github.com/kalxas/7ca1d3df14f97182db30a02956fdda6b) 
+To deploy a working registration instance following [This approach](https://gist.github.com/kalxas/7ca1d3df14f97182db30a02956fdda6b)
 
 ## Download staging images
 
@@ -12,7 +12,7 @@ for i in 'pvs_core' 'pvs_preprocessor' 'pvs_ingestor' 'pvs_cache' 'fluentd' 'pvs
 
 ```shell
 docker pull eoepca/rm-data-access-core:latest
-docker build endpoint/ -t endpoint:latest  
+docker build endpoint/ -t endpoint:latest
 ```
 
 ## Clone PRISM VS git repo
@@ -66,7 +66,7 @@ docker stack ps s2-pvs
 
 
 ## Ingest one ADES scene from S3 bucket via the registration endpoint and see logs
-use the `jwt_token` and the registration item `json_body` 
+use the `jwt_token` and the registration item `json_body`
 
 ```shell
 curl -X POST -H "Accept:Content-Type: application/json" -H "Authorization: Bearer <jwt_token>" -d '<json_body>' http://127.0.0.1:85/register
@@ -84,7 +84,7 @@ docker service logs s2-pvs_registrar -f -t
 
 ```json
 {
-    "item":"the storage type : e.g. stac-item",
+    "item": "the storage type : e.g. stac-item",
     "url": "url contains the path to the stored item"
 }
 ```
