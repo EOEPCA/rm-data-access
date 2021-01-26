@@ -2,8 +2,6 @@
 
 == Enpoints
 
-
-
 === Cache
 
 ==== GET Capabilities
@@ -25,8 +23,8 @@ Returns the WMTS capabilities document, detailing all available tilesets, their 
 | Code | Message | Datatype
 
 | 200
-|
-|
+| The WMTS Capabilities Document
+| text/xml
 
 |===
 
@@ -48,19 +46,19 @@ Returns the specified tile from the given layer in the specified style from the
 | Name | Description | Required
 
 | layer
-|
+| The data layer to retrieve tiles from
 | X
 
 | style
-|
+| The layer rendering style
 | X
 
 | starttime
-|
+| The start time of the time-dimension to include tiles from
 | X
 
 | endtime
-|
+| The end time of the time-dimension to include tiles from
 | X
 
 | tilematrixset
@@ -68,19 +66,23 @@ Returns the specified tile from the given layer in the specified style from the
 | X
 
 | tilematrix
-|
+| The used tile matrix set
+| X
+
+| tilematrix
+| The tile matrix (zoom level) to get the tiles from
 | X
 
 | tilerow
-|
+| The tiles Y coordinate (row)
 | X
 
 | tilecol
-|
+| The tiles X coordinate (column)
 | X
 
 | extension
-|
+| The filename extension. Use `.jpg` to get JPEG encoded images and `.png` for PNG.
 | X
 
 |===
@@ -97,19 +99,18 @@ Returns the specified tile from the given layer in the specified style from the
 | Code | Message | Datatype
 
 | 200
-|
-|
+| The resulting image tile.
+| image/jpeg / image/png
 
 | 404
-|
-|
+| The tile was not found. Returns an empty image.
+| image/jpeg / image/png
 
 | 500
 |
 |
 
 |===
-
 
 === Renderer
 
@@ -132,7 +133,7 @@ Returns the root OpenSearch Description document of the Renderer.
 
 ===== Content Type
 
-* application/xml
+* application/opensearchdescription+xml
 
 ===== Responses
 
@@ -142,7 +143,7 @@ Returns the root OpenSearch Description document of the Renderer.
 
 | 200
 |
-|
+| application/opensearchdescription+xml
 
 | 404
 |
@@ -181,9 +182,6 @@ Performs a collection search of all collections on the Renderer using the search
 
 
 // TODO
-
-
-
 
 
 ===== Content Type
@@ -239,7 +237,7 @@ Returns the description  OpenSearch Description document of the Renderer.
 
 ===== Content Type
 
-* application/xml
+* application/opensearchdescription+xml
 
 
 ===== Responses
@@ -250,7 +248,7 @@ Returns the description  OpenSearch Description document of the Renderer.
 
 | 200
 |
-|
+| application/opensearchdescription+xml
 
 | 404
 |
@@ -321,6 +319,376 @@ Returns the root OpenSearch Description document of the Renderer.
 |
 
 |===
+
+
+==== WMS Map Rendering
+
+`GET /ows`
+
+===== Description
+
+Renders a map from the specified parameters.
+
+===== Parameters
+
+====== Query Parameters
+
+[cols="2,3,1"]
+|===
+| Name | Description | Required
+
+| service
+| The OWS service to use. Fixed to 'WMS' in this request.
+| X
+
+| version
+| The OWS service version to use. One of '1.0.0', '1.1.0', or '1.3.0'.
+| X
+
+| request
+| The OWS request type to use. Fixed to 'GetMap' in this request.
+| X
+
+| layers
+| The comma-separated list of layers to be rendered. Layers specified later will be drawn over layers set earlier in the list
+| X
+
+| styles
+| A comma separated list of rendering styles (one for each layer). Can be left empty to use default styles.
+| X
+
+| format
+| The format to encode the render result in. One of `image/jpeg`, `image/tiff`, or `image/png`.
+| X
+
+| srs or crs
+| Version 1.3 uses `crs`, whereas other versions use `srs` as the parameter name. Specifies the output projection of the image and how the `bbox` is encoded.
+| X
+
+| bbox
+| The image bounding box to render the layer from. Expressed in the units of the `crs`/`srs`.
+| X
+
+| width
+| The width of the resulting image.
+| X
+
+| height
+| The height of the resulting image.
+| X
+
+| transparent
+| Whether or not to use transparency for not filled areas. Only usable with formats supporting transparency (e.g PNG). Use `true` to enable, `false` to disable. Default is disabled.
+|
+
+| bgcolor
+| The background color to use for non-filled areas encoded as a hexadecimally encoded RGB sextuplet: RRGGBB. Default is `FFFFFF` (white)
+|
+
+| time
+| The time-filter to apply when rendering an image. Use two ISO8601 encoded datetime strings, separated with a '/' to denote the start and the end time bounds.
+| X
+
+|===
+
+===== Content Type
+
+* image/png
+* image/jpeg
+* image/tiff
+
+===== Responses
+
+[cols="2,3,1"]
+|===
+| Code | Message | Datatype
+
+| 200
+| The rendered map image
+| image/png / image/jpeg / image/tiff
+
+| 400
+| Wrong parameter values.
+|
+
+| 500
+|
+|
+
+|===
+
+
+
+
+
+
+
+==== WCS Coverage Description
+
+`GET /ows`
+
+===== Description
+
+Returns the coverage description of a specified coverage.
+
+===== Parameters
+
+====== Query Parameters
+
+[cols="2,3,1"]
+|===
+| Name | Description | Required
+
+| service
+| The OWS service to use. Fixed to 'WCS' in this request.
+| X
+
+| version
+| The OWS service version to use. One of '2.0.0' or '2.1.0'.
+| X
+
+| request
+| The OWS request type to use. Fixed to 'DescribeCoverage' in this request.
+| X
+
+| coverageId
+| The coverage to get the description for.
+| X
+
+|===
+
+===== Content Type
+
+* application/xml
+
+===== Responses
+
+[cols="2,3,1"]
+|===
+| Code | Message | Datatype
+
+| 200
+| The coverage description
+| application/xml
+
+| 400
+| Wrong parameter values.
+|
+
+| 500
+|
+|
+
+|===
+
+
+==== WCS EO Coverage Set Description
+
+`GET /ows`
+
+===== Description
+
+Returns the coverage description of a specified coverage.
+
+===== Parameters
+
+====== Query Parameters
+
+[cols="2,3,1"]
+|===
+| Name | Description | Required
+
+| service
+| The OWS service to use. Fixed to 'WCS' in this request.
+| X
+
+| version
+| The OWS service version to use. One of '2.0.0' or '2.1.0'.
+| X
+
+| request
+| The OWS request type to use. Fixed to 'DescribeEOCoverageSet' in this request.
+| X
+
+| eoId
+| The dataset series identifier or coverage identifier to explore.
+| X
+
+| eoId
+| The dataset series identifier or coverage identifier to explore.
+| X
+
+| subset
+| The spatial and/or temporal subset in the form: `<axis>(<low>,<high>)` to limit the search.
+|
+
+| containment
+| Whether the subsets shall be applied as intersections or overlaps. Values are one of `overlaps`, or `contains`.
+|
+
+| count
+| Limit the maximum number of returned records to this amount.
+|
+
+|===
+
+===== Content Type
+
+* application/xml
+
+===== Responses
+
+[cols="2,3,1"]
+|===
+| Code | Message | Datatype
+
+| 200
+| The EO coverage set description
+| application/xml
+
+| 400
+| Wrong parameter values.
+|
+
+| 500
+|
+|
+
+|===
+
+
+==== WCS Coverage Rendering
+
+`GET /ows`
+
+===== Description
+
+Renders the specified coverage according to the parameters
+
+===== Parameters
+
+====== Query Parameters
+
+[cols="2,3,1"]
+|===
+| Name | Description | Required
+
+| service
+| The OWS service to use. Fixed to 'WCS' in this request.
+| X
+
+| version
+| The OWS service version to use. One of '2.0.0' or '2.1.0'.
+| X
+
+| request
+| The OWS request type to use. Fixed to 'GetCoverage' in this request.
+| X
+
+| coverageId
+| The input coverage to use
+| X
+
+| format
+| The format to encode the rendered coverage in. One of `image/tiff`, `image/tiff`, or `image/png`.
+| X
+
+| mediatype
+|
+|
+
+| subset
+| Specifying a dimension-trim or -slice along a given axis. Must be in the form of either `<axis>(<low>,<high>)` for trims or `<axis>(<value>)` for slices. Can be specified multiple times, each for a separate axis.
+|
+
+| subsettingCrs
+| The coordinate reference system the subsets are expressed in. Also defines the output CRS when not explicitly overridden.
+|
+
+| outputCrs
+| The output coordinate reference system to use. If necessary, the output coverage will be transformed to that CRS.
+|
+
+| scaleFactor
+| Specifies a scale factor to be applied on all axes. The size of each axis will be increased (or decreased) by that factor.
+|
+
+| scaleAxes
+| A comma-separated list of items in the form: `<axis>(<scaleFactor>)` to define an axis specific scale factor.
+|
+
+| scaleSize
+| A comma-separated list of items in the form: `<axis>(<size>)` to define the output size for a specific axis.
+|
+
+| scaleExtent
+|
+|
+
+| interpolation
+| Define the interpolation method when reprojecting or scaling data. One of http://www.opengis.net/def/interpolation/OGC/1/nearest-neighbour (default), http://www.opengis.net/def/interpolation/OGC/1/average, or http://www.opengis.net/def/interpolation/OGC/1/bilinear
+|
+
+| geotiff:compression
+| Define the internal compression method when output format `image/tiff` is chosen. One of: None, PackBits, Huffman, LZW, JPEG, or Deflate.
+|
+
+| geotiff:jpeg_quality
+| Define the compression quality when JPEG compression is defined.
+|
+
+| geotiff:predictor
+| Define the used compression predictor method for LZW or Deflate compression methods. One of: None, Horizontal, or FloatingPoint
+|
+
+| geotiff:interleave
+| Specify whether the internal sample planes of TIFF results shall be pixel or band interleaved. Value must be one of Pixel, or Band.
+|
+
+| geotiff:tiling
+| Defines whether or not the resulting TIFF file shall be internally tiled or stripped. Values must either be `true` or `false`.
+|
+
+| geotiff:tilewidth
+| Specifies the width of each internal tile when `image/tiff` format is used.
+|
+
+| geotiff:tileheight
+| Specifies the height of each internal tile when `image/tiff` format is used.
+|
+
+|===
+
+===== Content Type
+
+* image/png
+* image/jpeg
+* image/tiff
+
+===== Responses
+
+[cols="2,3,1"]
+|===
+| Code | Message | Datatype
+
+| 200
+| The rendered map image
+| image/png / image/jpeg / image/tiff
+
+| 400
+| Wrong parameter values.
+|
+
+| 500
+|
+|
+
+|===
+
+
+
+
+
 
 
 === Registrar
