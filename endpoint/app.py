@@ -190,32 +190,46 @@ def register():
 
         while True:
             time.sleep(wait_time)
-            time_index+= wait_time
-            if time_index >= 300 or url not in client.lrange(register_queue,-100, 100):
-                    break
+            time_index += wait_time
+            if time_index >= 300 or url not in client.lrange(
+                register_queue, -100, 100
+            ):
+                break
 
         while True:
             time.sleep(wait_time)
-            time_index+= wait_time
-            if time_index >= 300 or url not in client.smembers(progress_set):
-                    break
+            time_index += wait_time
+            if time_index >= 300 or client.sismember(progress_set, url):
+                break
 
         if time_index >= 300:
-            return jsonify(
-                status="fail",
-                message= f"Timeout while registering '{url}'"
+            return application.response_class(
+                response=json.dumps({
+                    "error": {
+                        "code": 400,
+                        "message": f"Timeout while registering '{url}'"
+                    }
+                }),
+                status=400,
+                mimetype='application/json'
             )
 
-        if url in client.smembers(success_set):
+        if client.sismember(success_set, url):
             return jsonify(
-            status="success",
-            message=f"Item '{url}' was successfully registered"
+                status="success",
+                message=f"Item '{url}' was successfully registered"
             )
 
-        elif url in client.smembers(failure_set):
-            return jsonify(
-                status="fail",
-                message= f"Failed to register '{url}'"
+        elif client.sismember(failure_set, url):
+            return application.response_class(
+                response=json.dumps({
+                    "error": {
+                        "code": 400,
+                        "message": f"Failed to register '{url}'"
+                    }
+                }),
+                status=400,
+                mimetype='application/json'
             )
 
     except Exception as e:
