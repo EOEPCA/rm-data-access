@@ -112,7 +112,7 @@ failure_set = os.environ['REDIS_REGISTER_FAILURE_KEY']
 #     return True
 
 
-# # This is an experemental function that could be moved or replaced by lookup for buckets instead
+#  This is an experemental function that could be moved or replaced by lookup for buckets instead
 # def lookup_objects(host, access_key, secret_key, bucketname, pref):
 #     s3 = boto3.resource('s3',aws_access_key_id=access_key, aws_secret_access_key=secret_key, endpoint_url=host,)
 #     bucket=s3.Bucket(bucketname)
@@ -120,7 +120,7 @@ failure_set = os.environ['REDIS_REGISTER_FAILURE_KEY']
 #     for obj in bucket.objects.filter():
 #         if pref in obj.key:
 #             return True
-#         else: 
+#         else:
 #             return False
 
 
