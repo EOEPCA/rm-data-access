@@ -196,7 +196,7 @@ def register():
 
         while True:
             time.sleep(wait_time)
-            time_index+= ait_time
+            time_index+= wait_time
             if time_index >= 300 or url not in client.smembers(progress_set):
                     break
 
