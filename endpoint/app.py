@@ -30,9 +30,10 @@ import os
 import logging
 import logging.config
 import json
+import time
 from urllib.parse import urlparse
 
-from flask import Flask, request, Response, jsonify
+from flask import Flask, jsonify, request, Response
 import redis
 import jwt
 import boto3
@@ -76,7 +77,11 @@ client = redis.Redis(
     decode_responses=True,
 )
 
-REDIS_REGISTER_QUEUE_KEY = os.environ['REDIS_REGISTER_QUEUE_KEY']
+register_queue = os.environ['REDIS_REGISTER_QUEUE_KEY']
+progress_set = os.environ['REDIS_REGISTER_PROGRESS_KEY']
+success_set = os.environ['REDIS_REGISTER_SUCCESS_KEY']
+failure_set = os.environ['REDIS_REGISTER_FAILURE_KEY']
+
 # TODO: extract credentials from the jwt token instead
 # access = os.environ['ACCESS']
 # secret = os.environ['SECRET']
@@ -107,7 +112,7 @@ REDIS_REGISTER_QUEUE_KEY = os.environ['REDIS_REGISTER_QUEUE_KEY']
 #     return True
 
 
-# This is an experemental function that could be moved or replaced by lookup for buckets instead
+# # This is an experemental function that could be moved or replaced by lookup for buckets instead
 # def lookup_objects(host, access_key, secret_key, bucketname, pref):
 #     s3 = boto3.resource('s3',aws_access_key_id=access_key, aws_secret_access_key=secret_key, endpoint_url=host,)
 #     bucket=s3.Bucket(bucketname)
@@ -115,7 +120,7 @@ REDIS_REGISTER_QUEUE_KEY = os.environ['REDIS_REGISTER_QUEUE_KEY']
 #     for obj in bucket.objects.filter():
 #         if pref in obj.key:
 #             return True
-#         else:
+#         else: 
 #             return False
 
 
@@ -123,8 +128,8 @@ REDIS_REGISTER_QUEUE_KEY = os.environ['REDIS_REGISTER_QUEUE_KEY']
 # def userinfo():
 #     # At the current state this function creates dummy objects and name them based on a prefix from jwt
 #     request.get_data()
-#     auth_header = request.headers['Authorization']
-#     if not auth_header.startswith('Bearer '):
+#     auth_header = request.headers['Authorization'] 
+#     if not auth_header.startswith('Bearer '): 
 #         raise Exception
 #     token = auth_header[len('Bearer '):]
 #     encode_token = jwt.decode(token, verify=False, algorithms=['RS256'])
@@ -179,12 +184,39 @@ def register():
         parsed_url = urlparse(url)
         url = parsed_url.netloc + parsed_url.path
 
-        client.lpush(REDIS_REGISTER_QUEUE_KEY, url)
+        client.lpush(register_queue, url)
+        time_index = 0
 
-        return jsonify(
+        while True:
+            time.sleep(3)
+            time_index+=3
+            if time_index >= 300 or url not in client.lrange(register_queue,-100, 100):
+                    break
+            
+        while True:
+            time.sleep(3)
+            time_index+=3
+            if time_index >= 300 or url not in client.smembers(progress_set):
+                    break
+
+        if time_index >= 300:
+            return jsonify(
+                status="fail",
+                message= f"Timeout while registering '{url}'"
+            )
+
+        if url in client.smembers(success_set):
+            return jsonify(
             status="success",
-            message=f"Successfully started registration of {url}"
-        )
+            message=f"Item '{url}' was successfully registered"
+            )
+
+        elif url in client.smembers(failure_set): 
+            return jsonify(
+                status="success",
+                message= f"Failed to register '{url}'"
+            )
+
     except Exception as e:
         return application.response_class(
             response=json.dumps({
