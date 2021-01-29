@@ -81,6 +81,7 @@ register_queue = os.environ['REDIS_REGISTER_QUEUE_KEY']
 progress_set = os.environ['REDIS_REGISTER_PROGRESS_KEY']
 success_set = os.environ['REDIS_REGISTER_SUCCESS_KEY']
 failure_set = os.environ['REDIS_REGISTER_FAILURE_KEY']
+wait_time = os.environ['WAIT_TIME']
 
 # TODO: extract credentials from the jwt token instead
 # access = os.environ['ACCESS']
@@ -128,8 +129,8 @@ failure_set = os.environ['REDIS_REGISTER_FAILURE_KEY']
 # def userinfo():
 #     # At the current state this function creates dummy objects and name them based on a prefix from jwt
 #     request.get_data()
-#     auth_header = request.headers['Authorization'] 
-#     if not auth_header.startswith('Bearer '): 
+#     auth_header = request.headers['Authorization']
+#     if not auth_header.startswith('Bearer '):
 #         raise Exception
 #     token = auth_header[len('Bearer '):]
 #     encode_token = jwt.decode(token, verify=False, algorithms=['RS256'])
@@ -188,14 +189,14 @@ def register():
         time_index = 0
 
         while True:
-            time.sleep(3)
-            time_index+=3
+            time.sleep(wait_time)
+            time_index+= wait_time
             if time_index >= 300 or url not in client.lrange(register_queue,-100, 100):
                     break
-            
+
         while True:
-            time.sleep(3)
-            time_index+=3
+            time.sleep(wait_time)
+            time_index+= ait_time
             if time_index >= 300 or url not in client.smembers(progress_set):
                     break
 
@@ -211,9 +212,9 @@ def register():
             message=f"Item '{url}' was successfully registered"
             )
 
-        elif url in client.smembers(failure_set): 
+        elif url in client.smembers(failure_set):
             return jsonify(
-                status="success",
+                status="fail",
                 message= f"Failed to register '{url}'"
             )
 
