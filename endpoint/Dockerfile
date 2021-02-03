@@ -39,10 +39,12 @@ ADD install.sh requirements.txt \
     /
 RUN /install.sh
 
-COPY app.py config.py /
+COPY main.py /
 
 ENV REDIS_HOST="redis" \
-    REDIS_PORT="6379"
+    REDIS_PORT="6379" \
+    LC_ALL="C.UTF-8" \
+    LANG="C.UTF-8"
 
 EXPOSE 8000
-CMD ["gunicorn3", "-c", "config.py", "app"]
+CMD ["uvicorn", "main:app","--host", "0.0.0.0", "--port", "80"]
