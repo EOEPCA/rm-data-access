@@ -1,4 +1,141 @@
 [[mainDesign]]
-= Design
+= Building Block Design
 
-TBD
+================================
+
+================================
+
+== Registrar Service
+
+=== Overview and Purpose
+
+The purpose of the registrar service is to register data products from either upstream data sources (such as Sentinel-2 data archives) into the Data Access Building Block and the Resource Catalougue Building Block where they are indexed for later access.
+
+=== Software Reuse and Dependencies
+
+This service is based upon the Registrar Service of the View Server software system, using its plugin system to allow for a registration also into the Resource Catalogue.
+
+=== Interfaces
+
+This service does not provide any interfaces.
+
+=== Data
+
+==== Configuration
+
+This service uses a YAML based configuration to allow the highly configurable configuration from various data sources parsed using various schemas into the backends.
+
+==== Data flow
+
+The registrar is a server process, listening on a distributed queue for new registration requests coming in as paths to the respective item to be registered.
+When such a registration request is passed via the queue, the respective data storage source will be determined and the relevant data and metadata files are read for a rudimentary classification of the to be registered item, which will be passed to all configured backends for a final registration of the item.
+
+The registrar allows for various item schemes:
+
+* Sentinel-2 L2A: This expects an unpacked Sentinel-2 Level 2A SAFE package as the path input. It will parse all product and granule related metadata and will register the product as a single item.
+* STAC-Catalog: This scheme requires a path to a directory containing at least one `catalog.json` file that will be read and parsed for both sub-catalogs and/or referenced STAC items. All STAC items found this way will be registered into all the backends.
+
+=== Applicable Resources
+
+TODO
+
+== Renderer Service
+
+=== Overview and Purpose
+
+This service allows to generate automatic renderings of the registered data items via various standardized interfaces.
+
+=== Software Reuse and Dependencies
+
+This service is based upon the Renderer Service of the View Server software system with only minor enhancements.
+
+=== Interfaces
+
+==== OGC Web Service (OWS) interfaces
+
+===== Web Coverage Service (WMS)
+
+===== Web Map Service (WMS)
+
+===== OpenSearch
+
+===== Admin Interface
+
+=== Data
+
+==== Configuration
+
+The application configuration is stored in the Database service where, depending on the request, all relevant metadata is extracted and used in the rendering process.
+
+==== Data flow
+
+As a web service, the renderer awaits user requests which are then processed. For that, initial queries to the database service are made, which in turn deliver the information of what files are required to fulfill the request. In the ensuing process, these files, residing on an object storage or a mounted network file system are then accessed and the required portions extracted. Finally, the resulting image, or data files are returned to the caller.
+
+=== Applicable Resources
+
+== Cache Service
+
+=== Overview and Purpose
+
+The purpose of this service is to provide a caching layer for WMS interface of the renderer service, as they may be computationally costly to produce.
+Caching can happen either beforehand (pre-seeded) or on demand (or a mixture of both), in order to even further improve performance, even for the first lookup.
+Caching is performed on a tile basis for each registered dataset, using the time axis to distinguish the individiual scenes in a collection. In order to resolve the time axis, a connection to the database service is used.
+
+=== Software Reuse and Dependencies
+
+This service is realized using the COTS MapCache with a custom confugation.
+
+=== Interfaces
+
+This service exposes the WMS and WMTS OGC Web Services endpoints.
+
+=== Data
+
+==== Configuration
+
+A single configuration file defines the cache behavior.
+
+==== Data flow
+
+
+
+=== Applicable Resources
+
+== Client Service
+=== Overview and Purpose
+=== Software Reuse and Dependencies
+=== Interfaces
+=== Data
+==== Configuration
+==== Data flow
+=== Applicable Resources
+
+== Registration Endpoint Service
+=== Overview and Purpose
+=== Software Reuse and Dependencies
+=== Interfaces
+=== Data
+==== Configuration
+==== Data flow
+=== Applicable Resources
+
+== Database Service
+
+=== Overview and Purpose
+=== Software Reuse and Dependencies
+=== Interfaces
+=== Data
+==== Configuration
+==== Data flow
+=== Applicable Resources
+
+
+== Queue Service
+
+=== Overview and Purpose
+=== Software Reuse and Dependencies
+=== Interfaces
+=== Data
+==== Configuration
+==== Data flow
+=== Applicable Resources
