@@ -4,7 +4,6 @@ import logging.config
 import json
 import time
 from urllib.parse import urlparse
-import uvicorn
 
 import redis
 import jwt
@@ -58,7 +57,8 @@ register_queue = os.environ['REDIS_REGISTER_QUEUE_KEY']
 progress_set = os.environ['REDIS_REGISTER_PROGRESS_KEY']
 success_set = os.environ['REDIS_REGISTER_SUCCESS_KEY']
 failure_set = os.environ['REDIS_REGISTER_FAILURE_KEY']
-wait_time = float(os.environ.get('WAIT_TIME'))
+wait_time = float(os.environ.get('WAIT_TIME', '0.3'))
+time_limit = int(os.environ.get('TIME_LIMIT', '300'))
 app = FastAPI()
 
 
@@ -103,7 +103,7 @@ def register(product: Product, request: Request):
         while True:
             time.sleep(wait_time)
             time_index += wait_time
-            if time_index >= 300 or url not in client.lrange(
+            if time_index >= time_limit or url not in client.lrange(
                 register_queue, -100, 100
             ):
                 break
@@ -111,10 +111,10 @@ def register(product: Product, request: Request):
         while True:
             time.sleep(wait_time)
             time_index += wait_time
-            if time_index >= 300 or not client.sismember(progress_set, url):
+            if time_index >= time_limit or not client.sismember(progress_set, url):
                 break
 
-        if time_index >= 300:
+        if time_index >= time_limit:
             message = {"message": f"Timeout while registering '{url}'"}
             return JSONResponse(status_code=400, content=message)
 
@@ -127,5 +127,5 @@ def register(product: Product, request: Request):
             return JSONResponse(status_code=400, content=message)
 
     except Exception as e:
-        message = {"message": f"Failed to authorize: {e}"}
+        message = {"message": f"Registration failed: {e}"}
         return JSONResponse(status_code=401, content=message)
