@@ -73,6 +73,7 @@ As a web service, the renderer awaits user requests which are then processed. Fo
 
 === Applicable Resources
 
+
 == Cache Service
 
 === Overview and Purpose
@@ -97,45 +98,102 @@ A single configuration file defines the cache behavior.
 
 ==== Data flow
 
-
+Similarly to the renderer service, the cache service exposes an HTTP endpoint that dispatches requests for the provided OGC Web Services. Depending on the request, a database query may be involved in order to resolve the time axis.
+Now it is checked, whether the tiles involved with the request are already cached or need to be rendered by the renderer service. Each tile that is missing in the cache is now requested from the renderer and subsequently cached in the backend, the configured object storage.
+The final response is now merged from all intersecting tiles and returned to the client.
 
 === Applicable Resources
+
 
 == Client Service
+
 === Overview and Purpose
+
+This service provides a configured client to be run in a browser.
+
 === Software Reuse and Dependencies
+
+The server software used is the open source software nginx, serving a pre-built and configured JavaScript application eoxc, which is in turn based on the mapping library OpenLayers.
+
 === Interfaces
+
+This service provides an HTTP endpoint to retrieve the client files.
+
 === Data
+
 ==== Configuration
+
+
+
 ==== Data flow
+
+When requested, the client JavaScript bundle is downloaded by the browser and the application is initialized. This application will connect to the endpoints of various services such as the cache and renderer, but also external sources for map base-, or overlay layer tiles. The requested map tiles and metadata will be visualized within the app or made available as a downloaded file.
+
 === Applicable Resources
 
+
 == Registration Endpoint Service
+
 === Overview and Purpose
+
+This service provides an HTTP interface for the registrar service, allowing authorized clients to start, and receive notice when the registration has finished.
+
 === Software Reuse and Dependencies
+
 === Interfaces
+
+This component exposes a single HTTP endpoint, allowing registration requests to be sent against. User authentication in the form of a JWT is used to discern the internal queue and object storage information used. The location of the item to be registered is passed as a JSON structure.
+
 === Data
+
 ==== Configuration
+
 ==== Data flow
+
 === Applicable Resources
 
 == Database Service
 
 === Overview and Purpose
-=== Software Reuse and Dependencies
-=== Interfaces
-=== Data
-==== Configuration
-==== Data flow
-=== Applicable Resources
 
+=== Software Reuse and Dependencies
+
+=== Interfaces
+
+=== Data
+
+==== Configuration
+
+==== Data flow
+
+=== Applicable Resources
 
 == Queue Service
 
 === Overview and Purpose
+
+This service serves as a central point of communication between the services of the data access building block. Various sets and lists are used to track incoming registration requests and their subsequent status.
+
 === Software Reuse and Dependencies
+
+This service is a configured instance of the Redis COTS software.
+
 === Interfaces
+
+This service provides a TCP based endpoint for all commands.
+
 === Data
+
 ==== Configuration
+
+No additonal configuration is used beyond the default settings.
+
 ==== Data flow
+
+`registration_queue`: this list based queue is used to buffer incoming registration requests. It is used as a FIFO (first-in-first-out) queue, so the earlier registration request is handled first.
+
+`registered_set`: This set of strings collects all registration items that were successfully registered.
+`failure_set`: This set contains all the paths of items that failed to register.
+
 === Applicable Resources
+
