@@ -5,7 +5,7 @@ import json
 import time
 from urllib.parse import urlparse
 
-import redis
+import aioredis
 import jwt
 import boto3
 from botocore.exceptions import ClientError
@@ -46,12 +46,6 @@ logging.config.dictConfig({
     }
 })
 
-client = redis.Redis(
-    host=os.environ['REDIS_HOST'],
-    port=int(os.environ.get('REDIS_PORT', '6379')),
-    charset="utf-8",
-    decode_responses=True,
-)
 
 register_queue = os.environ['REDIS_REGISTER_QUEUE_KEY']
 progress_set = os.environ['REDIS_REGISTER_PROGRESS_KEY']
@@ -59,6 +53,7 @@ success_set = os.environ['REDIS_REGISTER_SUCCESS_KEY']
 failure_set = os.environ['REDIS_REGISTER_FAILURE_KEY']
 wait_time = float(os.environ.get('WAIT_TIME', '0.3'))
 time_limit = int(os.environ.get('TIME_LIMIT', '300'))
+
 app = FastAPI()
 
 
@@ -75,8 +70,10 @@ def read_root():
 
 
 @app.post("/register/")
-def register(product: Product, request: Request):
-
+async def register(product: Product, request: Request):
+    client = await aioredis.create_redis(
+        (os.environ['REDIS_HOST'], int(os.environ.get('REDIS_PORT', '6379'))),
+        encoding='utf-8')
     try:
         auth_header = request.headers['Authorization']
         if not auth_header.startswith('Bearer '):
@@ -97,13 +94,13 @@ def register(product: Product, request: Request):
         parsed_url = urlparse(product.url)
         url = parsed_url.netloc + parsed_url.path
 
-        client.lpush(register_queue, url)
+        await client.lpush(register_queue, url)
         time_index = 0
 
         while True:
             time.sleep(wait_time)
             time_index += wait_time
-            if time_index >= time_limit or url not in client.lrange(
+            if time_index >= time_limit or url not in await client.lrange(
                 register_queue, -100, 100
             ):
                 break
@@ -111,18 +108,20 @@ def register(product: Product, request: Request):
         while True:
             time.sleep(wait_time)
             time_index += wait_time
-            if time_index >= time_limit or not client.sismember(progress_set, url):
+            if time_index >= time_limit or not await client.sismember(
+                progress_set, url
+            ):
                 break
 
         if time_index >= time_limit:
             message = {"message": f"Timeout while registering '{url}'"}
             return JSONResponse(status_code=400, content=message)
 
-        if client.sismember(success_set, url):
+        if await client.sismember(success_set, url):
             message = {"message": f"Item '{url}' was successfully registered"}
             return JSONResponse(status_code=200, content=message)
 
-        elif client.sismember(failure_set, url):
+        elif await client.sismember(failure_set, url):
             message = {"message": f"Failed to register product {url}"}
             return JSONResponse(status_code=400, content=message)
 

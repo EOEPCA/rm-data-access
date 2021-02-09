@@ -3,3 +3,4 @@ boto3
 redis
 fastapi
 uvicorn
+aioredis
