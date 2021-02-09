@@ -104,8 +104,13 @@ async def register(product: Product, request: Request):
                 register_queue, -100, 100
             ):
                 break
-
+        proccessing_count = time_index
         while True:
+
+            if time_index <= proccessing_count and await client.sismember(
+                progress_set, url
+            ):
+                logger.info("Product '%s' is being proccessed!" % url)
             time.sleep(wait_time)
             time_index += wait_time
             if time_index >= time_limit or not await client.sismember(
@@ -114,14 +119,17 @@ async def register(product: Product, request: Request):
                 break
 
         if time_index >= time_limit:
+            logger.info("Timeout while registering '%s'" % url)
             message = {"message": f"Timeout while registering '{url}'"}
             return JSONResponse(status_code=400, content=message)
 
         if await client.sismember(success_set, url):
+            logger.info("Item '%s' was successfully registered" % url)
             message = {"message": f"Item '{url}' was successfully registered"}
             return JSONResponse(status_code=200, content=message)
 
         elif await client.sismember(failure_set, url):
+            logger.info("Failed to register product %s" % url)
             message = {"message": f"Failed to register product {url}"}
             return JSONResponse(status_code=400, content=message)
 
