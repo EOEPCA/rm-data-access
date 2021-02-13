@@ -180,7 +180,8 @@ class ISOMetadata:
         product_type = f"eo:productType:{exml.xpath('//PRODUCT_TYPE/text()')[0]}"
         orbit_number = f"eo:orbitNumber:{exml.xpath('//SENSING_ORBIT_NUMBER/text()')[0]}"
         orbit_direction = f"eo:orbitDirection:{exml.xpath('//SENSING_ORBIT_DIRECTION/text()')[0]}"
-        snow_cover = f"eo:snowCover:{exml.xpath('//SNOW_ICE_PERCENTAGE/text()')[0]}"
+        if len(exml.xpath('//SNOW_ICE_PERCENTAGE/text()') > 0):
+            snow_cover = f"eo:snowCover:{exml.xpath('//SNOW_ICE_PERCENTAGE/text()')[0]}"
 
         mcf['identification']['keywords']['product'] = {
                 'keywords': [
@@ -197,7 +198,8 @@ class ISOMetadata:
         mcf['identification']['maintenancefrequency'] = 'continual'
         mcf['identification']['accessconstraints'] = m.identification.accessconstraints[0]
 
-        mcf['content_info']['cloud_cover'] = exml.xpath('//Cloud_Coverage_Assessment/text()')[0]
+        if len(exml.xpath('//Cloud_Coverage_Assessment/text()') > 0):
+            mcf['content_info']['cloud_cover'] = exml.xpath('//Cloud_Coverage_Assessment/text()')[0]
         mcf['content_info']['processing_level'] = exml.xpath('//PROCESSING_LEVEL/text()')[0]
 
         for d in exml.xpath('//Spectral_Information_List/Spectral_Information'):
