@@ -177,28 +177,30 @@ class ISOMetadata:
             }
             mcf['identification']['keywords'][kw_set]['keywords_type'] = kws['type'] or 'theme'
 
-        product_type = f"eo:productType:{exml.xpath('//PRODUCT_TYPE/text()')[0]}"
-        orbit_number = f"eo:orbitNumber:{exml.xpath('//SENSING_ORBIT_NUMBER/text()')[0]}"
-        orbit_direction = f"eo:orbitDirection:{exml.xpath('//SENSING_ORBIT_DIRECTION/text()')[0]}"
-        if len(exml.xpath('//SNOW_ICE_PERCENTAGE/text()') > 0):
-            snow_cover = f"eo:snowCover:{exml.xpath('//SNOW_ICE_PERCENTAGE/text()')[0]}"
+        keyword_xpaths = {
+            'eo:productType': '//PRODUCT_TYPE/text()',
+            'eo:orbitNumber': '//SENSING_ORBIT_NUMBER/text()',
+            'eo:orbitDirection': '//SENSING_ORBIT_DIRECTION/text()',
+            'eo:snowCover': '//SNOW_ICE_PERCENTAGE/text()'
+        }
 
         mcf['identification']['keywords']['product'] = {
-                'keywords': [
-                    product_type,
-                    orbit_number,
-                    orbit_direction,
-                    snow_cover
-                ],
-                'keywords_type': 'theme'
+            'keywords': [],
+            'keywords_type': 'theme'
         }
+
+        for key, value in keyword_xpaths.items():
+            if len(exml.xpath(value)) > 0:
+                keyword = value[0]
+                mcf['identification']['keywords']['product']['keywords'].append(
+                    f"{key}:{keyword}")
 
         mcf['identification']['topiccategory'] = [m.identification.topiccategory[0]]
         mcf['identification']['status'] = 'onGoing'
         mcf['identification']['maintenancefrequency'] = 'continual'
         mcf['identification']['accessconstraints'] = m.identification.accessconstraints[0]
 
-        if len(exml.xpath('//Cloud_Coverage_Assessment/text()') > 0):
+        if len(exml.xpath('//Cloud_Coverage_Assessment/text()')) > 0:
             mcf['content_info']['cloud_cover'] = exml.xpath('//Cloud_Coverage_Assessment/text()')[0]
         mcf['content_info']['processing_level'] = exml.xpath('//PROCESSING_LEVEL/text()')[0]
 
