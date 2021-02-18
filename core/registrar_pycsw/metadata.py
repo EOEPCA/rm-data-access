@@ -15,7 +15,6 @@ logger = logging.getLogger(__name__)
 
 class ISOMetadata:
     def __init__(self, base_url: str):
-
         logger.debug('Adding s3 to urllib supported protocols for urljoin')
         uses_netloc.append('s3')
         uses_relative.append('s3')
@@ -53,7 +52,7 @@ class ISOMetadata:
             'distribution': {}
         }
 
-    def from_stac_item(self, stac_item: str) -> str:
+    def from_stac_item(self, stac_item: str, collections: list) -> str:
         mcf = deepcopy(self.mcf)
 
         si = json.loads(stac_item)
@@ -93,6 +92,15 @@ class ISOMetadata:
             'keywords_type': 'theme'
         }
 
+        mcf['dataquality'] = {
+            'scope': {
+                'level': 'dataset'
+            },
+            'lineage': {
+                'statement': f"Processed from platform {si['properties']['eo:platform']}, instrument {si['properties']['eo:instrument']}"  # noqa
+            }
+        }
+
         mcf['acquisition'] = {
             'platforms': [{
                 'identifier': si['properties']['eo:platform'],
@@ -128,11 +136,15 @@ class ISOMetadata:
 
         return iso_os.write(mcf)
 
-    def from_esa_iso_xml(self, esa_xml: bytes, inspire_xml: bytes) -> str:
+    def from_esa_iso_xml(self, esa_xml: bytes, inspire_xml: bytes,
+                         collections: list) -> str:
+
         mcf = deepcopy(self.mcf)
 
         exml = etree.fromstring(esa_xml)
         ixml = etree.fromstring(inspire_xml)
+
+        product_type = exml.xpath('//PRODUCT_TYPE/text()')[0]
 
         m = MD_Metadata(ixml)
 
@@ -142,6 +154,9 @@ class ISOMetadata:
         mcf['metadata']['identifier'] = product_manifest
         mcf['metadata']['hierarchylevel'] = m.hierarchy
         mcf['metadata']['datestamp'] = exml.xpath('//Product_Info/GENERATION_TIME/text()')[0]
+
+        if product_type in collections:
+            mcf['metadata']['parentidentifier'] = product_type
 
         gfp = exml.xpath('//Global_Footprint/EXT_POS_LIST/text()')[0].split()
 
@@ -249,7 +264,7 @@ class ISOMetadata:
                 'description': exml.xpath('//SPACECRAFT_NAME/text()')[0],
                 'instruments': [{
                     'identifier': exml.xpath('//DATATAKE_TYPE/text()')[0],
-                    'type': exml.xpath('//PRODUCT_TYPE/text()')[0]
+                    'type': product_type
                 }]
             }]
         }

@@ -1,0 +1,68 @@
+mcf:
+    version: 1.0
+
+metadata:
+    identifier: S2MSI2A
+    language: eng
+    charset: utf8
+    hierarchylevel: dataset
+    datestamp: 2021-02-16
+    dataseturi: https://sentinel.esa.int/web/sentinel/user-guides/sentinel-2-msi
+
+spatial:
+    datatype: grid
+    geomtype: solid
+
+identification:
+    language: eng
+    charset: utf8
+    title: Sentinel-2 MSI
+    abstract: Sentinel-2 MultiSpectral Instrument
+    dates:
+        creation: 2015-06-21
+        publication: 2015-06-21
+    keywords:
+        default:
+            keywords: [sentinel-2
+    topiccategory:
+        - imageryBaseMapsEarthCover
+    extents:
+        spatial:
+            - bbox: [-180,-56,180,82]
+              crs: 4326
+        temporal:
+            - begin: 2015-06-21
+              end: now
+    fees: None
+    accessconstraints: None
+    rights: https://sentinels.copernicus.eu/documents/247904/690755/Sentinel_Data_Legal_Notice
+    url: https://sentinel.esa.int/web/sentinel/user-guides/sentinel-2-msi
+    status: onGoing
+    maintenancefrequency: continual
+
+contact:
+    main: &contact_main
+        organization: European Space Agency
+        url: https://www.esa.int
+        individualname: Firstname Lastname
+        positionname: Position name
+        phone: TBD
+        fax: TBD
+        address: TBD
+        city: TBD
+        administrativearea: TBD
+        postalcode: TBD
+        country: TBD
+        email: TBD
+        hoursofservice: TBD
+        contactinstructions: TBD
+
+    distribution: *contact_main
+
+distribution:
+    wms:
+        url: http://example.org/
+        type: OGC:WMS
+        name: TBD
+        description: TBD
+        function: download
