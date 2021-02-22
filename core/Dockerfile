@@ -42,6 +42,8 @@ ADD registrar_pycsw/ \
     /registrar_pycsw/registrar_pycsw
 ADD setup.py \
     /registrar_pycsw
+ADD MANIFEST.in \
+    /registrar_pycsw
 
 RUN cd /registrar_pycsw && \
     python3 setup.py install && \
