@@ -29,11 +29,13 @@ class PycswBackend(Backend):
         logger.debug('Initializing pycsw repository')
         self.repo = repository.Repository(repository_database_uri,
                                           self.context, table='records')
+        logger.debug('Loading collection level metadata identifiers')
+        for clm in os.listdir(COLLECTION_LEVEL_METADATA):
+            self.collections.append(os.path.splitext(clm)[0])
 
     def load_collection_level_metadata(self):
         logger.debug('Loading collection level metadata')
         for clm in os.listdir(COLLECTION_LEVEL_METADATA):
-            self.collections.append(clm)
             logger.debug(f'collection metadata file: {clm}')
             clm_ = os.path.join(COLLECTION_LEVEL_METADATA, clm)
             clm_mcf = read_mcf(clm_)
