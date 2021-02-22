@@ -46,3 +46,5 @@ ADD setup.py \
 RUN cd /registrar_pycsw && \
     python3 setup.py install && \
     pip3 install .
+
+ENV STARTUP_SCRIPTS="/registrar_pycsw/registrar_pycsw/initialize-collections.sh"
