@@ -23,7 +23,7 @@ identification:
         publication: 2015-06-21
     keywords:
         default:
-            keywords: [sentinel-2
+            keywords: [sentinel-2]
     topiccategory:
         - imageryBaseMapsEarthCover
     extents:
