@@ -2,7 +2,7 @@ mcf:
     version: 1.0
 
 metadata:
-    identifier: S2MSI2A
+    identifier: S2MSI1C
     language: eng
     charset: utf8
     hierarchylevel: dataset
@@ -23,7 +23,7 @@ identification:
         publication: 2015-06-21
     keywords:
         default:
-            keywords: [sentinel-2,level-2a]
+            keywords: [sentinel-2,level-1c]
     topiccategory:
         - imageryBaseMapsEarthCover
     extents:
