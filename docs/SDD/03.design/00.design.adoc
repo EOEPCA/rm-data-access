@@ -1,6 +1,8 @@
 [[mainDesign]]
 = Building Block Design
 
+image::eoepca-rm-da.png[EOEPCA Ressource Management Data Access service structure]
+
 ================================
 
 ================================
@@ -21,6 +23,55 @@ This service does not provide any interfaces.
 
 === Data
 
+==== Data Model
+
+The following image shows the registrars (and also the renderers) internal data model:
+
+image::eoepca-rm-da-er.png[EOEPCA Ressource Management Data Access data model]
+
+===== Collection/CollectionType
+
+Collections are used to form variant groupings of products and/or coverages. They can either be homogenous, semi-homogenous or non-homogenous, depending on the configuration of the Collections associated CollectionType. The CollectionType can limit the insertion of Products and Coverages by specifying allowed Product-/CoverageTypes, which are then the only types of Products/Coverages that can be inserted.
+
+The spatio-temporal metadata (time-span and footprint) is always the summary of all entailed items.
+
+===== Product/ProductType
+
+A Product is a collection of spatio-temporally and acquisition related data items. Each Product has a unique identifier, a spetio-temporal coverage and optionally additional metadata associated.
+Each Product is of a specific ProductType, limiting in which Collections it can be inserted and what Coverages can be part of a Product.
+
+===== Coverage/CoverageType
+
+A Coverage is an n-dimensional construct of a specific grid. It consists of at one data file that stores the actual values of the Coverage. Each Coverage is associated with a CoverageType, adding additional metadata to the internal structure of each such Coverage and limiting the possible Products this Coverage can be assoctiated with. Each Coverage can only be part of one Product.
+
+===== Browse/BrowseType
+
+A Browse is a visual representation of a Product and the BrowseType is the blueprint to create such a representation of a given Product. Each Browse is associated with a BrowseType but it is not required for each Product to have a Browse of each available BrowseType. In this case, the browse is considered virtual and the representation will be generated from the Products associated Coverages every time.
+
+The BrowseType consists of expressions and ranges that allow to generate the greyscale, RGB or RGBA images.
+
+===== Product/Coverage Metadata
+
+This model store additional Product/Coverage level metadata (such as snow- or cloud coverage) that can be used in filters.
+
+===== ArrayData Item
+
+This is a link to a "file" containing the raster data for a specific Coverage.
+
+===== MetaData Item
+
+This is a link to a file containing Product/Coverage metadata.
+
+Each DataItem can be associated with a Storage, which specifies the actual location of the DataItem. If no Storage is specified the DataItem points to a file on the local filesystem.
+
+===== Storage
+
+A Storage describes a physical storage location such as an HTTP server, FTP service or Object Storage of various types. For services requiring more elaborate authentication/authorization the Storage must be linked to a StorageAuth of a compatible type.
+
+===== StorageAuth
+
+This model stores the authentication/authorization values for any number of Storages. This may include, but is not limited to access tokens, access credentials, public/private keys, etc.
+
 ==== Configuration
 
 This service uses a YAML based configuration to allow the highly configurable configuration from various data sources parsed using various schemas into the backends.
@@ -32,12 +83,23 @@ When such a registration request is passed via the queue, the respective data st
 
 The registrar allows for various item schemes:
 
-* Sentinel-2 L2A: This expects an unpacked Sentinel-2 Level 2A SAFE package as the path input. It will parse all product and granule related metadata and will register the product as a single item.
+* Sentinel-2 L1C/L2A: This expects an unpacked Sentinel-2 Level 1C or 2A SAFE package as the path input. It will parse all product and granule related metadata and will register the product as a single item. Each Product will be registered for the Data Access building block in the following manner:
+
+** Product: the whole SAFE package will be referenced as a single Product. The root and tile metadata files are associated as its MetaData items. The ProductType is the pre-created type for either Sentinel-2 L1C or L2A.
+
+** Coverage: each raster data file in the scene will be added as a single Coverage, using the Products identifier as a common base name and using the band identifier as a postfix. This includes the following bands: B01, B02, B03, B04, B05, B06, B07, B08, B8A, B09, B10 (only L1C), B11, B12. In case of L2A, only the band with the highest resolution will be used. The CoverageType for each Coverage is the pre-registered band specific CoverageType for the used ProductType.
+
+** Browse: The TCI image of each SAFE will be registered as the Products default representation. For L2A, only the highest resolution TCI is used. Some pre-registered BrowseTypes (TRUE_COLOR, FALSE_COLOR, and NDVI) are used in a virtual manner.
+
 * STAC-Catalog: This scheme requires a path to a directory containing at least one `catalog.json` file that will be read and parsed for both sub-catalogs and/or referenced STAC items. All STAC items found this way will be registered into all the backends.
 
-=== Applicable Resources
+** The Items Product-/CoverageTypes will be looked up using the STAC Items asset identifiers or created if necessary.
 
-TODO
+** Product: each STAC Item is translated to a Product, using the Items identifier as the Product identifier. The product type will be the one earlier looked up or created.
+
+** Coverage: each associated asset in the STAC Item having a `eo:band` property will be added as a Coverage, using the Products identifier as a prefix and the asset identifier as a postfix.
+
+=== Applicable Resources
 
 == Renderer Service
 
@@ -53,9 +115,36 @@ This service is based upon the Renderer Service of the View Server software syst
 
 ==== OGC Web Service (OWS) interfaces
 
-===== Web Coverage Service (WMS)
+The renderer service provides various OGC compliant service endpoints, to enable the creation of dynamic renderings/processings of the referenced datasets.
+
+===== Web Coverage Service (WCS)
+
+With the OGC Web Coverage Service (WCS) interface, users can access the raw raster data values of the stored Earth Observation data or coverages. A coverage is a multidimensional spatio-temporal object and can be subset along any axis and/or field.
+With the EO extension (EO-WCS), it is possible to define homogeneous or heterogeneous collections (Stitched Mosaics and Dataset Series respectively) of EO metadata enriched coverages that can be searched in time and space.
+
+In this service, each Collection is represented as a `DatasetSeries`, which can be queried using the `DescribeEOCoverageSet`. Each Collection is thus advertised in the Capabilities document of the service.
+
+Each Product is also represented as a `DatasetSeries` but in contrast to Collections not advertised in the Capabilities document.
+
+Each Coverage is represented as a Coverage directly, but not listed in the Capabilities document.
 
 ===== Web Map Service (WMS)
+
+The OGC Web Map Service (WMS) interface standard provides rendered maps (images) to be displayed in the users’ graphical user interface or similar application. This interface revolves around the concept of the layer, from which subsets can be fetched. This can be static data prepared for each request or can have dynamic filters such as specific rendering instructions or data filters applied.
+The Earth Observation Application Profile (EO-WMS) provides guidance how to apply WMS on Earth Observation data. For example, it details how to provide a collection or dataset like the whole Sentinel-2 archive as one WMS layer. Subsets down to individual products can be visualized using the TIME dimension or parameter.
+Additional extension exists via custom or vendor specific parameters. One such extension is the CQL (Common Query Language) parameter as used in ESA’s PRISM activity for example to select individual products based on ID or to filter on additional parameters like cloud coverage.
+
+Each registered Collection is represented as a hierarchy of layers in the following form:
+
+* A root layer with the same name as the Collection with the following sub-layers with the associated suffixes:
+
+** The Root layer is rendered using the default Browse representation of each Product.
+
+** Outlines (`..._outlines`): This shows the outlines of each Product in the collection.
+
+** Browse Type (`..._<browse-type-name>`): this renders each product in the collection with the specified browse type. When a pre-rendered browse is available it is used, otherwise the dynamic rendering process is used.
+
+Each Product is also represented in the same structure as Collections with the sole difference that they are not by default represented in the Capabilities document, only when a CQL query using the `cql` parameter matches this Product is passed.
 
 ===== OpenSearch
 
@@ -155,6 +244,8 @@ This component exposes a single HTTP endpoint, allowing registration requests to
 == Database Service
 
 === Overview and Purpose
+
+This service provides the main database facilities for the other services requiring relational table storage.
 
 === Software Reuse and Dependencies
 

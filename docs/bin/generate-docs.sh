@@ -38,6 +38,7 @@ EOL
 
 for doc in SDD ICD; do
   # Prepare output/ directory
+  mkdir output/$doc
   cp -r $doc/images output/$doc
   cp -r $doc/stylesheets output/$doc
 
