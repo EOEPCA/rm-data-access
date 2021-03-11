@@ -148,6 +148,24 @@ Each Product is also represented in the same structure as Collections with the s
 
 ===== OpenSearch
 
+OpenSearch is a collection of simple formats for the sharing of search results. The OpenSearch description document format can be used to describe a search engine so that it can be used by search client applications. The OpenSearch description format allows the use of extensions that allow search engines to request a specific and contextual query parameter from search clients. The OpenSearch response elements can be used to extend existing syndication formats, such as RSS and Atom, with the extra metadata needed to return search results.
+The CEOS OpenSearch Best Practice Document is providing server implementation best practices for EO OpenSearch search services that allow for standardized and harmonized access to metadata and data for CEOS agencies. Within this context, the following OGC extensions and recommendations are applicable:
+
+* OpenSearch GEO: OpenSearch Geo and Time Extensions
+* OpenSearch EO: OGC OpenSearch Extension for Earth Observation
+
+The OGC OpenSearch Geo and Time standard specifies the Geo and Time extensions to the OpenSearch query protocol to geographically constrain search results.
+The Earth Observation Extension specifies a series of parameters that can be used to constrain search results. In short, provision is made to filter results by sensor information, acquisition, processing parameters and other information. The purpose of the OpenSearch Extension for Earth Observation is to make sure that OpenSearch parameters are aligned with OGC 10-157r4 that describes EO products metadata and with ISO19115(-1)/ISO19115-2 that is used for describing EO collection metadata. In a typical search scenario, a client will first search for the appropriate EO Collection with the parameters appropriate to EO Collections. In the search response he will find the details (e.g. the identifier or the link to the OpenSearch description document) to search for EO Products of that EO Collection that he identifies as most appropriate.
+OGC defines a GeoJSON and JSON-LD encoding standard of Earth Observation (EO) metadata for collections (a.k.a. dataset series). The standard provides document models for the exchange of information describing EO collections, both within and between different organisations.
+EO collections are collections of datasets sharing the same product specification. These collections are also called dataset series as they may be mapped to ‘dataset series’ following the terminology defined in ISO 19113, ISO 19114 and ISO 19115. An EO collection typically corresponds to a series of EO datasets (also called EO products) derived from data acquired:
+
+* Either from an instrument in a dedicated mode on board a single satellite platform; or
+
+* by a series of instruments, possibly from different satellite platforms, but in this case working in the same instrument mode
+
+In this service, Collections are searched in the first step of the two-step search. The resulting search
+
+
 ===== Admin Interface
 
 === Data
@@ -178,6 +196,25 @@ This service is realized using the COTS MapCache with a custom confugation.
 === Interfaces
 
 This service exposes the WMS and WMTS OGC Web Services endpoints.
+
+
+==== OGC Web Service (OWS) interfaces
+
+The Cache Service provides various OGC Web Service endpoints. The provided layers use a static configuration, mimicking the dynamic status of the contents of the Renderer Service.
+
+
+
+===== Web Map Tile Service (WMTS)
+
+The OGC Web Map Tile Service (WMTS) interface standard is very similar in nature to the WMS, as it provides rendered images of stored data. In contrast, however, only tiles of one of the pre-defined tile grids can be accessed and only in a limited number of predefined styles.
+This way, the tiles can be efficiently pre-processed and cached, allowing for better performance when accessing the service.
+The EO-WMS guidance can be applied on WMTS as well for example to support the TIME dimension on collection level layers.
+
+===== Web Map Service (WMS)
+
+The OGC Web Map Service (WMS) interface standard provides rendered maps (images) to be displayed in the users’ graphical user interface or similar application. This interface revolves around the concept of the layer, from which subsets can be fetched. This can be static data prepared for each request or can have dynamic filters such as specific rendering instructions or data filters applied.
+The Earth Observation Application Profile (EO-WMS) provides guidance how to apply WMS on Earth Observation data. For example, it details how to provide a collection or dataset like the whole Sentinel-2 archive as one WMS layer. Subsets down to individual products can be visualized using the TIME dimension or parameter.
+Additional extension exists via custom or vendor specific parameters. One such extension is the CQL (Common Query Language) parameter as used in ESA’s PRISM activity for example to select individual products based on ID or to filter on additional parameters like cloud coverage.
 
 === Data
 
