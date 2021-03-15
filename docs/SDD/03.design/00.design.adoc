@@ -101,6 +101,8 @@ The registrar allows for various item schemes:
 
 === Applicable Resources
 
+https://docs.eoxserver.org/en/master/
+
 == Renderer Service
 
 === Overview and Purpose
@@ -142,6 +144,8 @@ Each registered Collection is represented as a hierarchy of layers in the follow
 
 ** Outlines (`..._outlines`): This shows the outlines of each Product in the collection.
 
+** Outlined root layer (`..._outlined`): This shows the outlines of each Product in the collection overlayed over the default browse representation.
+
 ** Browse Type (`..._<browse-type-name>`): this renders each product in the collection with the specified browse type. When a pre-rendered browse is available it is used, otherwise the dynamic rendering process is used.
 
 Each Product is also represented in the same structure as Collections with the sole difference that they are not by default represented in the Capabilities document, only when a CQL query using the `cql` parameter matches this Product is passed.
@@ -163,10 +167,11 @@ EO collections are collections of datasets sharing the same product specificatio
 
 * by a series of instruments, possibly from different satellite platforms, but in this case working in the same instrument mode
 
-In this service, Collections are searched in the first step of the two-step search. The resulting search
-
+In this service, Collections are searched in the first step of the two-step search, whereas Products within those Collections are searched in the second step.
 
 ===== Admin Interface
+
+The admin interface allows operators to inspect and ultimately alter the internal data models of the service. The interface is structured very similarly to the model layout as detailed in the registrar section.
 
 === Data
 
@@ -180,6 +185,7 @@ As a web service, the renderer awaits user requests which are then processed. Fo
 
 === Applicable Resources
 
+https://docs.eoxserver.org/en/master/
 
 == Cache Service
 
@@ -197,12 +203,9 @@ This service is realized using the COTS MapCache with a custom confugation.
 
 This service exposes the WMS and WMTS OGC Web Services endpoints.
 
-
 ==== OGC Web Service (OWS) interfaces
 
 The Cache Service provides various OGC Web Service endpoints. The provided layers use a static configuration, mimicking the dynamic status of the contents of the Renderer Service.
-
-
 
 ===== Web Map Tile Service (WMTS)
 
@@ -214,15 +217,18 @@ The EO-WMS guidance can be applied on WMTS as well for example to support the TI
 
 The OGC Web Map Service (WMS) interface standard provides rendered maps (images) to be displayed in the users’ graphical user interface or similar application. This interface revolves around the concept of the layer, from which subsets can be fetched. This can be static data prepared for each request or can have dynamic filters such as specific rendering instructions or data filters applied.
 The Earth Observation Application Profile (EO-WMS) provides guidance how to apply WMS on Earth Observation data. For example, it details how to provide a collection or dataset like the whole Sentinel-2 archive as one WMS layer. Subsets down to individual products can be visualized using the TIME dimension or parameter.
-Additional extension exists via custom or vendor specific parameters. One such extension is the CQL (Common Query Language) parameter as used in ESA’s PRISM activity for example to select individual products based on ID or to filter on additional parameters like cloud coverage.
 
 === Data
 
 ==== Configuration
 
-A single configuration file defines the cache behavior.
+A single configuration file defines the cache behavior. The structure of this XML based configuration file can be inspected on the MapCache homepage.
 
 ==== Data flow
+
+
+image::eoepca-rm-da-cache-sequence.png[Cache Sequence]
+
 
 Similarly to the renderer service, the cache service exposes an HTTP endpoint that dispatches requests for the provided OGC Web Services. Depending on the request, a database query may be involved in order to resolve the time axis.
 Now it is checked, whether the tiles involved with the request are already cached or need to be rendered by the renderer service. Each tile that is missing in the cache is now requested from the renderer and subsequently cached in the backend, the configured object storage.
@@ -230,6 +236,7 @@ The final response is now merged from all intersecting tiles and returned to the
 
 === Applicable Resources
 
+The MapCache documentation can be found here: https://mapserver.org/mapcache/
 
 == Client Service
 
@@ -254,27 +261,6 @@ This service provides an HTTP endpoint to retrieve the client files.
 ==== Data flow
 
 When requested, the client JavaScript bundle is downloaded by the browser and the application is initialized. This application will connect to the endpoints of various services such as the cache and renderer, but also external sources for map base-, or overlay layer tiles. The requested map tiles and metadata will be visualized within the app or made available as a downloaded file.
-
-=== Applicable Resources
-
-
-== Registration Endpoint Service
-
-=== Overview and Purpose
-
-This service provides an HTTP interface for the registrar service, allowing authorized clients to start, and receive notice when the registration has finished.
-
-=== Software Reuse and Dependencies
-
-=== Interfaces
-
-This component exposes a single HTTP endpoint, allowing registration requests to be sent against. User authentication in the form of a JWT is used to discern the internal queue and object storage information used. The location of the item to be registered is passed as a JSON structure.
-
-=== Data
-
-==== Configuration
-
-==== Data flow
 
 === Applicable Resources
 
@@ -325,3 +311,4 @@ No additonal configuration is used beyond the default settings.
 
 === Applicable Resources
 
+https://redis.io/documentation
