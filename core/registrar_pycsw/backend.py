@@ -21,7 +21,7 @@ COLLECTION_LEVEL_METADATA = f'{THISDIR}/resources'
 
 
 class PycswBackend(Backend):
-    def __init__(self, repository_database_uri, ows_url: str):
+    def __init__(self, repository_database_uri, ows_url: str=''):
         self.collections = []
         self.ows_url = ows_url
 
