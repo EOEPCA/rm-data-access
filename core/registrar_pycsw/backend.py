@@ -21,8 +21,10 @@ COLLECTION_LEVEL_METADATA = f'{THISDIR}/resources'
 
 
 class PycswBackend(Backend):
-    def __init__(self, repository_database_uri):
+    def __init__(self, repository_database_uri, ows_url: str):
         self.collections = []
+        self.ows_url = ows_url
+
         logger.debug('Setting up static context')
         self.context = pycsw.core.config.StaticContext()
 
@@ -43,7 +45,7 @@ class PycswBackend(Backend):
             logger.debug(f'Upserting metadata: {clm_}')
             self._parse_and_upsert_metadata(clm_iso)
 
-    def _parse_and_upsert_metadata(self, md):
+    def _parse_and_upsert_metadata(self, md: str):
         logger.debug('Parsing XML')
         try:
             xml = etree.fromstring(md)
@@ -133,7 +135,7 @@ class PycswBackend(Backend):
 
             with open(esa_xml_local, 'rb') as a, open(inspire_xml_local, 'rb') as b:  # noqa
                 iso_metadata = imo.from_esa_iso_xml(
-                    a.read(), b.read(), self.collections)
+                    a.read(), b.read(), self.collections, self.ows_url)
 
             for tmp_file in [esa_xml_local, inspire_xml_local]:
                 logger.debug(f"Removing temporary file {tmp_file}")
