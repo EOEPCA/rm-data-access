@@ -2,7 +2,7 @@ import logging
 
 from copy import deepcopy
 import json
-from urllib.parse import uses_netloc, uses_relative, urljoin
+from urllib.parse import urlencode, urljoin, uses_netloc, uses_relative
 
 from lxml import etree
 from owslib.iso import MD_Metadata
@@ -137,7 +137,7 @@ class ISOMetadata:
         return iso_os.write(mcf)
 
     def from_esa_iso_xml(self, esa_xml: bytes, inspire_xml: bytes,
-                         collections: list) -> str:
+                         collections: list, ows_url: str) -> str:
 
         mcf = deepcopy(self.mcf)
 
@@ -257,6 +257,35 @@ class ISOMetadata:
                 'function': 'download'
             }
             mcf['distribution'][image_file] = dist
+
+        logger.debug('Adding WMS/WCS links')
+        wms_link_params = {
+            'service': 'WMS',
+            'version': '1.3.0',
+            'request': 'GetCapabilities',
+            'cql': f'identifier="{product_manifest}"'
+        }
+
+        mcf['distribution']['wms_link'] = {
+            'url': f'{ows_url}?{urlencode(wms_link_params)}',
+            'type': 'OGC:WMS',
+            'name': product_manifest,
+            'description': f'WMS GetMap URL for {product_manifest}',
+        }
+
+        wcs_link_params = {
+            'service': 'WCS',
+            'version': '2.0.1',
+            'request': 'DescribeEOCoverageSet',
+            'eoid': product_manifest
+        }
+
+        mcf['distribution']['wcs_link'] = {
+            'url': f'{ows_url}?{urlencode(wcs_link_params)}',
+            'type': 'OGC:WCS',
+            'name': product_manifest,
+            'description': f'WCS GetCoverage URL for {product_manifest}',
+        }
 
         mcf['acquisition'] = {
             'platforms': [{
