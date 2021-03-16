@@ -270,7 +270,7 @@ class ISOMetadata:
             'url': f'{ows_url}?{urlencode(wms_link_params)}',
             'type': 'OGC:WMS',
             'name': product_manifest,
-            'description': f'WMS GetMap URL for {product_manifest}',
+            'description': f'WMS URL for {product_manifest}',
         }
 
         wcs_link_params = {
@@ -284,7 +284,7 @@ class ISOMetadata:
             'url': f'{ows_url}?{urlencode(wcs_link_params)}',
             'type': 'OGC:WCS',
             'name': product_manifest,
-            'description': f'WCS GetCoverage URL for {product_manifest}',
+            'description': f'WCS URL for {product_manifest}',
         }
 
         mcf['acquisition'] = {
