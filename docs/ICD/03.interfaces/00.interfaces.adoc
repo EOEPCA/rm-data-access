@@ -290,7 +290,231 @@ Returns the root OpenSearch Description document of the Renderer.
 ====== Query Parameters
 
 
+[cols="2,3,1"]
+|===
 
+| q
+|
+|
+
+| count
+| The maximum amount of elements to be returned in one single response.
+|
+
+| startIndex
+| The used start index when used when paging through bigger result sets
+|
+
+| product
+|
+|
+
+| parentIdentifier
+|
+|
+
+| productionStatus
+| One of `ARCHIVED`, `ACQUIRED`, `CANCELLED`
+|
+
+| acquisitionType
+| One of `NOMINAL`, `CALIBRATION`, `OTHER`
+|
+
+| orbitNumber
+|
+|
+
+| orbitDirection
+| One of `ASCENDING`, `DESCENDING`
+|
+
+
+| track
+|
+|
+
+| frame
+|
+|
+
+| swathIdentifier
+|
+|
+
+| productVersion
+|
+|
+
+| productQualityStatus
+| One of `NOMINAL`, `DEGRAGED`
+|
+
+| productQualityDegradationTag
+|
+|
+
+| processorName
+|
+|
+
+| processingCenter
+|
+|
+
+| creationDate
+|
+|
+
+| modificationDate
+|
+|
+
+| processingDate
+|
+|
+
+| sensorMode
+|
+|
+
+| archivingCenter
+|
+|
+
+| processingMode
+|
+|
+
+| availabilityTime
+|
+|
+
+| acquisitionStation
+|
+|
+
+| acquisitionSubType
+|
+|
+
+| startTimeFromAscendingNode
+|
+|
+
+| completionTimeFromAscendingNode
+|
+|
+
+| illuminationAzimuthAngle
+|
+|
+
+| illuminationZenithAngle
+|
+|
+
+| illuminationElevationAngle
+|
+|
+
+| polarisationMode
+| One of `single`, `dual`, `twin`, `quad`, `UNDEFINED`
+|
+
+| polarizationChannels
+| One of `HV`, `HV, VH`, `VH`, `VV`, `HH, VV`, `HH, VH`, `HH, HV`, `VH, VV`, `VH, HV`, `VV, HV`, `VV, VH`, `HH`, `HH, HV, VH, VV`, `UNDEFINED`
+|
+
+| antennaLookDirection
+| One of `LEFT`, `RIGHT`
+|
+
+| minimumIncidenceAngle
+|
+|
+
+| maximumIncidenceAngle
+|
+|
+
+| acrossTrackIncidenceAngle
+|
+|
+
+| alongTrackIncidenceAngle
+|
+|
+
+| dopplerFrequency
+|
+|
+
+| incidenceAngleVariation
+|
+|
+
+| cloudCover
+|
+|
+
+| snowCover
+|
+|
+
+| lowestLocation
+|
+|
+
+| highestLocation
+|
+|
+
+| bbox
+| The 4-tuple of a WGS84 bounding box for geospatial filters.
+|
+
+| geom
+| A WKT encoded geometry to use in a geospatial filter.
+|
+
+| lon
+| The longitude of a point/radius search
+|
+
+| lat
+| The latitude of a point/radius search
+|
+
+| r
+| The radious for
+|
+
+| georel
+| One of `intersects`, `contains`, `disjoint`. Defines the behavior of the `geom`, `bbox` and `lon`/`lat`/`r` parameters.
+|
+
+| uid
+| A specific product ID.
+|
+
+| start
+| The start date-time for a specified time interval encoded in an ISO8601 datetime string
+|
+
+| end
+| The end date-time for a specified time interval encoded in an ISO8601 datetime string
+|
+
+| timerel
+| One of `intersects`, `contains`, `disjoint`, `equals`. Defines the behaviour of the `start` and `end` parameters
+|
+
+| cql
+| A CQL encoded filter
+|
+
+|===
 
 ===== Content Type
 
@@ -416,12 +640,6 @@ Renders a map from the specified parameters.
 |
 
 |===
-
-
-
-
-
-
 
 ==== WCS Coverage Description
 
@@ -682,67 +900,5 @@ Renders the specified coverage according to the parameters
 | 500
 |
 |
-
-|===
-
-
-
-
-
-
-
-=== Registrar
-
-==== Registration
-
-`POST /registration`
-
-===== Description
-
-Starts the registration of the specified catalog.json.
-
-===== Parameters
-
-====== Header Parameters
-
-This interface requires a valid JWT in the `Authorization` header using the `Bearer` scheme.
-
-====== JSON Parameters
-
-[cols="2,3,1"]
-|===
-| Name | Description | Required
-
-| url
-| The full S3 URL to the directory name of the catalog.json
-| X
-
-| item
-| The type of the registration. Unused for now.
-|
-
-|===
-
-===== Content Type
-
-* application/json
-
-===== Responses
-
-[cols="2,3,1"]
-|===
-| Code | Message | Datatype
-
-| 200
-| The registration started successfully
-| application/json
-
-| 400
-| Failed to start the registration of the specified catalog.json
-| application/json
-
-| 401
-| Failed to authorize the JWT
-| application/json
 
 |===
