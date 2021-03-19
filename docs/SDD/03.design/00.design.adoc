@@ -5,6 +5,12 @@ image::eoepca-rm-da.png[EOEPCA Ressource Management Data Access service structur
 
 ================================
 
+When discussing the Data Access Building Block it needs to be stressed, that there are actually two kinds of deployments of the same software stack in two slightly different roles.
+
+The first role is sort of system global instances, registering and serving upstream data products whereas the second one is used within the context of a user workspace. In this second context, only user provided data will be registered and served.
+
+The global instance is installed in a global namespace using a GitOps approach, whereas the user workspace deployment of the Data Access Service is deployed via the Workspace API dynamically.
+
 ================================
 
 == Registrar Service
@@ -226,9 +232,7 @@ A single configuration file defines the cache behavior. The structure of this XM
 
 ==== Data flow
 
-
 image::eoepca-rm-da-cache-sequence.png[Cache Sequence]
-
 
 Similarly to the renderer service, the cache service exposes an HTTP endpoint that dispatches requests for the provided OGC Web Services. Depending on the request, a database query may be involved in order to resolve the time axis.
 Now it is checked, whether the tiles involved with the request are already cached or need to be rendered by the renderer service. Each tile that is missing in the cache is now requested from the renderer and subsequently cached in the backend, the configured object storage.
@@ -256,13 +260,15 @@ This service provides an HTTP endpoint to retrieve the client files.
 
 ==== Configuration
 
-
+The client is configured using JavaScript inside the main index.html.
 
 ==== Data flow
 
 When requested, the client JavaScript bundle is downloaded by the browser and the application is initialized. This application will connect to the endpoints of various services such as the cache and renderer, but also external sources for map base-, or overlay layer tiles. The requested map tiles and metadata will be visualized within the app or made available as a downloaded file.
 
 === Applicable Resources
+
+The git repository with additional ressources for EOxC can be found at the projects repository: https://github.com/eoxc/eoxc
 
 == Database Service
 
@@ -272,15 +278,23 @@ This service provides the main database facilities for the other services requir
 
 === Software Reuse and Dependencies
 
+This service is using the COTS version of the popular PostgreSQL system software.
+
 === Interfaces
+
+This service provides a single TCP based access mechanism through which commands can be executed.
 
 === Data
 
 ==== Configuration
 
+This service is configures via a configuration file.
+
 ==== Data flow
 
 === Applicable Resources
+
+The documentation for PostgreSQL can be found here: https://www.postgresql.org/docs/
 
 == Queue Service
 

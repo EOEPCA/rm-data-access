@@ -25,7 +25,7 @@ cat > output/index.html <<EOL
     <title>Document</title>
   </head>
   <body>
-    <h1>Login Service Documentation</h1>
+    <h1>Data Access Service Documentation</h1>
     <div>
       <ul>
         <li><a href="SDD/">Software Design Document</a></li>
