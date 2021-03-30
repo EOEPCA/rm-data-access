@@ -1,12 +1,15 @@
 import logging
 
 from copy import deepcopy
+from datetime import datetime
 import json
 from urllib.parse import urlencode, urljoin, uses_netloc, uses_relative
 
 from lxml import etree
 from owslib.iso import MD_Metadata
+from pygeometa.schemas.iso19139 import ISO19139OutputSchema
 from pygeometa.schemas.iso19139_2 import ISO19139_2OutputSchema
+import yaml
 
 LANGUAGE = 'eng'
 
@@ -52,6 +55,50 @@ class ISOMetadata:
             'distribution': {}
         }
 
+    def from_cwl(self, cwl_item: str) -> str:
+        mcf = deepcopy(self.mcf)
+
+        now = datetime.now().isoformat()
+
+        cwl = yaml.load(cwl_item, Loader=yaml.SafeLoader)
+
+        wf = list(filter(lambda x: x['class'] == 'Workflow', cwl['$graph']))[0]
+
+        mcf['metadata']['identifier'] = wf['id']
+        mcf['metadata']['datestamp'] = now
+        mcf['identification']['title'] = wf['label']
+        mcf['identification']['abstract'] = wf['doc']
+
+        mcf['identification']['keywords']['default'] = {
+            'keywords': [cwl['s:softwareVersion']],
+            'keywords_type': 'theme'
+        }
+
+        mcf['identification']['dates'] = {
+            'creation': now
+        }
+
+        mcf['distribution']['cwl'] = {
+            'url': self.base_url,
+            'type': 'application/x-yaml',
+            'name': wf['label'],
+            'description': wf['doc'],
+            'function': 'information'
+        }
+
+        mcf['identification']['extents'] = {
+            'spatial': [{
+                'bbox': [-180, -90, 180, 90],
+                'crs': 4326
+            }],
+        }
+
+        logger.debug('MCF: {}'.format(mcf))
+
+        iso_os = ISO19139OutputSchema()
+
+        return iso_os.write(mcf)
+
     def from_stac_item(self, stac_item: str, collections: list) -> str:
         mcf = deepcopy(self.mcf)
 
@@ -59,6 +106,7 @@ class ISOMetadata:
 
         mcf['metadata']['identifier'] = si['id']
         mcf['metadata']['datestamp'] = si['properties']['datetime']
+        mcf['metadata']['hierarchylevel'] = 'application'
 
         mcf['identification']['title'] = si['id']
 
