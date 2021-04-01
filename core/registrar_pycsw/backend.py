@@ -50,7 +50,7 @@ class PycswBackend(Backend):
         try:
             xml = etree.fromstring(md)
         except Exception as err:
-            logger.error('XML parsing failed: {}'.format(err))
+            logger.error(f'XML parsing failed: {err}')
             raise
 
         logger.debug('Processing metadata')
@@ -59,7 +59,7 @@ class PycswBackend(Backend):
             record.xml = record.xml.decode()
             logger.info(f"identifier: {record.identifier}")
         except Exception as err:
-            logger.error('Metadata parsing failed: {}'.format(err))
+            logger.error(f'Metadata parsing failed: {err}')
             raise
 
         if self.repo.query_ids([record.identifier]):
@@ -68,7 +68,7 @@ class PycswBackend(Backend):
                 self.repo.update(record)
                 logger.info('record updated')
             except Exception as err:
-                logger.error('record update failed: {}'.format(err))
+                logger.error(f'record update failed: {err}')
                 raise
         else:
             logger.info('Inserting record')
@@ -76,19 +76,19 @@ class PycswBackend(Backend):
                 self.repo.insert(record, 'local', util.get_today_and_now())
                 logger.info('record inserted')
             except Exception as err:
-                logger.error('record insertion failed: {}'.format(err))
+                logger.error(f'record insertion failed: {err}')
                 raise
 
         return
 
     def exists(self, source: Source, item: Context) -> bool:
         # TODO: sort out identifier problem in ISO XML
-        logger.info('Checking for identifier {}'.format(item.identifier))
+        logger.info(f'Checking for identifier {item.identifier}')
         if self.repo.query_ids([item.identifier]):
-            logger.info('Identifier {} exists'.format(item.identifier))
+            logger.info(f'Identifier {item.identifier} exists')
             return True
         else:
-            logger.info('Identifier {} does not exist'.format(item.identifier))
+            logger.info(f'Identifier {item.identifier} does not exist')
             return False
 
     def register(self, source: Source, item: Context,
@@ -99,13 +99,27 @@ class PycswBackend(Backend):
             stac_item_local = '/tmp/item.json'
             source.get_file(item.path, stac_item_local)
             with open(stac_item_local) as f:
-                logger.debug('base URL {}'.format(item.path))
-                base_url = 's3://{}'.format(os.path.dirname(item.path))
+                logger.debug(f'base URL {item.path}')
+                base_url = f's3://{os.path.dirname(item.path)}'
                 imo = ISOMetadata(base_url)
                 iso_metadata = imo.from_stac_item(f.read(), self.collections)
 
             logger.debug(f"Removing temporary file {stac_item_local}")
             os.remove(stac_item_local)
+
+        elif item.scheme == 'cwl':
+            logger.info('Ingesting CWL')
+            cwl_local = '/tmp/cwl.yaml'
+            source.get_file(item.path, cwl_local)
+
+            with open(cwl_local) as f:
+                logger.debug(f'base URL {item.path}')
+                base_url = f's3://{os.path.dirname(item.path)}'
+                imo = ISOMetadata(base_url)
+                iso_metadata = imo.from_cwl(f.read())
+
+            logger.debug(f"Removing temporary file {cwl_local}")
+            os.remove(cwl_local)
 
         else:
             logger.info('Ingesting product')
@@ -120,8 +134,8 @@ class PycswBackend(Backend):
 
             logger.info(f"INSPIRE XML metadata file: {inspire_xml}")
 
-            logger.debug('base URL {}'.format(item.path))
-            base_url = 's3://{}'.format(item.path)
+            logger.debug(f'base URL {item.path}')
+            base_url = f's3://{item.path}'
 
             try:
                 source.get_file(inspire_xml, inspire_xml_local)

@@ -93,7 +93,7 @@ class ISOMetadata:
             }],
         }
 
-        logger.debug('MCF: {}'.format(mcf))
+        logger.debug(f'MCF: {mcf}')
 
         iso_os = ISO19139OutputSchema()
 
@@ -178,7 +178,7 @@ class ISOMetadata:
             'function': 'download'
         }
 
-        logger.debug('MCF: {}'.format(mcf))
+        logger.debug(f'MCF: {mcf}')
 
         iso_os = ISO19139_2OutputSchema()
 
@@ -233,7 +233,7 @@ class ISOMetadata:
         }
 
         for i, kws in enumerate(m.identification.keywords):
-            kw_set = 'kw{}'.format(i)
+            kw_set = f'kw{i}'
 
             mcf['identification']['keywords'][kw_set] = {
                 'keywords': kws['keywords']
@@ -292,7 +292,7 @@ class ISOMetadata:
             mime_type = 'image/x.geotiff'
             file_extension = 'tif'
         else:
-            logger.warning('unknown product format: {}'.format(product_format))
+            logger.warning(f'unknown product format: {product_format}')
             mime_type = 'NA'
             file_extension = 'NA'
 
@@ -346,7 +346,7 @@ class ISOMetadata:
             }]
         }
 
-        logger.debug('MCF: {}'.format(mcf))
+        logger.debug(f'MCF: {mcf}')
 
         iso_os = ISO19139_2OutputSchema()
 
