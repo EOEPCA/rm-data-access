@@ -9,3 +9,7 @@ terraform.tfstate
 terraform.tfstate.backup
 
 .terraform
+
+build
+dist
+*.egg-info
