@@ -5,13 +5,9 @@ from typing import List
 
 from registrar.source import Source
 from registrar.context import Context
+from registrar.scheme import RegistrationScheme
 
 logger = logging.getLogger(__name__)
-
-
-class RegistrationScheme:
-    def get_context(self, source: Source, path: str) -> List[Context]:
-        raise NotImplementedError
 
 
 class CWLRegistrationScheme(RegistrationScheme):
