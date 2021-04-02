@@ -65,12 +65,13 @@ class ISOMetadata:
         wf = list(filter(lambda x: x['class'] == 'Workflow', cwl['$graph']))[0]
 
         mcf['metadata']['identifier'] = wf['id']
+        mcf['metadata']['hierarchylevel'] = 'application'
         mcf['metadata']['datestamp'] = now
         mcf['identification']['title'] = wf['label']
         mcf['identification']['abstract'] = wf['doc']
 
         mcf['identification']['keywords']['default'] = {
-            'keywords': [cwl['s:softwareVersion']],
+            'keywords': [f'softwareVersion:{cwl["s:softwareVersion"]}'],
             'keywords_type': 'theme'
         }
 
@@ -99,14 +100,14 @@ class ISOMetadata:
 
         return iso_os.write(mcf)
 
-    def from_stac_item(self, stac_item: str, collections: list) -> str:
+    def from_stac_item(self, stac_item: str) -> str:
         mcf = deepcopy(self.mcf)
 
         si = json.loads(stac_item)
 
         mcf['metadata']['identifier'] = si['id']
         mcf['metadata']['datestamp'] = si['properties']['datetime']
-        mcf['metadata']['hierarchylevel'] = 'application'
+        mcf['metadata']['hierarchylevel'] = 'dataset'
 
         mcf['identification']['title'] = si['id']
 
