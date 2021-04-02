@@ -1,0 +1,102 @@
+{
+    "type": "Feature",
+    "stac_version": "0.8.1",
+    "id": "INDEX_S2A_MSIL2A_20191216T004701_N0213_R102_T53HPA_20191216T024808",
+    "properties": {
+        "datetime": "2019-12-16T00:47:01Z",
+        "eo:gsd": 10,
+        "eo:platform": "S2A",
+        "eo:instrument": "S2MSI",
+        "eo:bands": [
+            {
+                "name": "NBR",
+                "common_name": "nbr"
+            },
+            {
+                "name": "NDVI",
+                "common_name": "ndvi"
+            },
+            {
+                "name": "NDWI",
+                "common_name": "ndwi"
+            }
+        ]
+    },
+    "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+            [
+                [
+                    136.112726861895,
+                    -36.227897298303
+                ],
+                [
+                    137.333826362695,
+                    -36.2103069464338
+                ],
+                [
+                    137.305145407058,
+                    -35.2211228310596
+                ],
+                [
+                    136.099040812374,
+                    -35.2380875358202
+                ],
+                [
+                    136.112726861895,
+                    -36.227897298303
+                ]
+            ]
+        ]
+    },
+    "bbox": [
+        136.099040812374,
+        -36.227897298303,
+        137.333826362695,
+        -35.2211228310596
+    ],
+    "links": [
+        {
+            "rel": "root",
+            "href": "../catalog.json",
+            "type": "application/json"
+        },
+        {
+            "rel": "parent",
+            "href": "../catalog.json",
+            "type": "application/json"
+        }
+    ],
+    "assets": {
+        "nbr": {
+            "href": "./NBR_S2A_MSIL2A_20191216T004701_N0213_R102_T53HPA_20191216T024808.tif",
+            "type": "image/tiff; application=geotiff",
+            "title": "NBR",
+            "eo:bands": {
+                "name": "NBR",
+                "common_name": "nbr"
+            }
+        },
+        "ndvi": {
+            "href": "./NDVI_S2A_MSIL2A_20191216T004701_N0213_R102_T53HPA_20191216T024808.tif",
+            "type": "image/tiff; application=geotiff",
+            "title": "NDVI",
+            "eo:bands": {
+                "name": "NDVI",
+                "common_name": "ndvi"
+            }
+        },
+        "ndwi": {
+            "href": "./NDWI_S2A_MSIL2A_20191216T004701_N0213_R102_T53HPA_20191216T024808.tif",
+            "type": "image/tiff; application=geotiff",
+            "title": "NDWI",
+            "eo:bands": {
+                "name": "NDWI",
+                "common_name": "ndwi"
+            }
+        }
+    },
+    "stac_extensions": [
+        "eo"
+    ]
+}
