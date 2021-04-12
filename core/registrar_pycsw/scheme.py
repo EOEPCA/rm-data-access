@@ -19,10 +19,14 @@ class CWLRegistrationScheme(RegistrationScheme):
 
         cwl = yaml.load(cwl_file, Loader=yaml.SafeLoader)
 
-        wf = list(filter(lambda x: x['class'] == 'Workflow', cwl['$graph']))[0]
+        workflow = next(iter([
+            graph_item
+            for graph_item in cwl['$graph']
+            if graph_item['class'] == 'Workflow'
+        ]), None)
 
         return [Context(
-            identifier=wf['id'],
+            identifier=workflow['id'],
             path=path,
             scheme=self.name
         )]
