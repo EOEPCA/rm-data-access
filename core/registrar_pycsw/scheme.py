@@ -2,7 +2,7 @@ from os import remove
 from os.path import join, basename
 import logging
 import yaml
-from typing import List
+from typing import List, Union, Dict
 from tempfile import gettempdir
 
 from registrar.source import Source
