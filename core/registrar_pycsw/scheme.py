@@ -15,9 +15,9 @@ class CWLRegistrationScheme(RegistrationScheme):
 
     def get_context(self, source: Source, path: str) -> List[Context]:
         cwl_filenames = source.list_files(path, ['*.cwl', '*.CWL'])
-        cwl_file = cwl_filenames[0]
 
-        cwl = yaml.load(cwl_file, Loader=yaml.SafeLoader)
+        with open(cwl_filenames[0]) as cwl_file:
+            cwl = yaml.load(cwl_file, Loader=yaml.SafeLoader)
 
         workflow = next(iter([
             graph_item
