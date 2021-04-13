@@ -40,6 +40,6 @@ class CWLRegistrationScheme(RegistrationScheme):
 
         return [Context(
             identifier=workflow['id'],
-            path=path,
+            path=cwl_filenames[0],
             scheme=self.name
         )]
