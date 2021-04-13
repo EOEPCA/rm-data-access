@@ -80,7 +80,7 @@ class ISOMetadata:
         }
 
         mcf['distribution']['cwl'] = {
-            'url': self.base_url,
+            'url': self.base_url.rstrip('/'),
             'type': 'application/x-yaml',
             'name': wf['label'],
             'description': wf['doc'],
