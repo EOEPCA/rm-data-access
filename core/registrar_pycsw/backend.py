@@ -114,7 +114,7 @@ class PycswBackend(Backend):
 
             with open(cwl_local) as f:
                 logger.debug(f'base URL {item.path}')
-                base_url = f's3://{os.path.dirname(item.path)}'
+                base_url = f's3://{item.path}'
                 imo = ISOMetadata(base_url)
                 iso_metadata = imo.from_cwl(f.read())
 
