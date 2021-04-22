@@ -141,22 +141,26 @@ class ISOMetadata:
             'keywords_type': 'theme'
         }
 
+        properties = si['properties']
+        platform = properties.get('platform') or properties.get('eo:platform')
+        instrument = properties.get('instrument') or properties.get('eo:instrument')  # noqa
+
         mcf['dataquality'] = {
             'scope': {
                 'level': 'dataset'
             },
             'lineage': {
-                'statement': f"Processed from platform {si['properties']['eo:platform']}, instrument {si['properties']['eo:instrument']}"  # noqa
+                'statement': f"Processed from platform {platform}, instrument {instrument}"  # noqa
             }
         }
 
         mcf['acquisition'] = {
             'platforms': [{
-                'identifier': si['properties']['eo:platform'],
-                'description': si['properties']['eo:platform'],
+                'identifier': platform,
+                'description': platform,
                 'instruments': [{
-                    'identifier': si['properties']['eo:instrument'],
-                    'type': si['properties']['eo:instrument']
+                    'identifier': instrument,
+                    'type': instrument,
                 }]
             }]
         }
