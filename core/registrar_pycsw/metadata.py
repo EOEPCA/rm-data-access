@@ -205,7 +205,7 @@ class ISOMetadata:
         product_manifest_link = urljoin(self.base_url, product_manifest)
 
         mcf['metadata']['identifier'] = product_manifest
-        mcf['metadata']['hierarchylevel'] = m.hierarchy
+        mcf['metadata']['hierarchylevel'] = m.hierarchy or 'dataset'
         mcf['metadata']['datestamp'] = exml.xpath('//Product_Info/GENERATION_TIME/text()')[0]
 
         if product_type in collections:
