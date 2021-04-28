@@ -102,7 +102,7 @@ class PycswBackend(Backend):
                 logger.debug(f'base URL {item.path}')
                 base_url = f's3://{os.path.dirname(item.path)}'
                 imo = ISOMetadata(base_url)
-                iso_metadata = imo.from_stac_item(f.read())
+                iso_metadata = imo.from_stac_item(f.read(), self.ows_url)
 
             logger.debug(f"Removing temporary file {stac_item_local}")
             os.remove(stac_item_local)

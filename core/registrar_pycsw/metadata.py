@@ -100,10 +100,11 @@ class ISOMetadata:
 
         return iso_os.write(mcf)
 
-    def from_stac_item(self, stac_item: str) -> str:
+    def from_stac_item(self, stac_item: str, ows_url: str) -> str:
         mcf = deepcopy(self.mcf)
 
         si = json.loads(stac_item)
+        product_manifest = si['id']
 
         mcf['metadata']['identifier'] = si['id']
         mcf['metadata']['datestamp'] = si['properties']['datetime']
@@ -181,6 +182,35 @@ class ISOMetadata:
             'name': 'product',
             'description': 'product',
             'function': 'download'
+        }
+
+        logger.debug('Adding WMS/WCS links')
+        wms_link_params = {
+            'service': 'WMS',
+            'version': '1.3.0',
+            'request': 'GetCapabilities',
+            'cql': f'identifier="{product_manifest}"'
+        }
+
+        mcf['distribution']['wms_link'] = {
+            'url': f'{ows_url}?{urlencode(wms_link_params)}',
+            'type': 'OGC:WMS',
+            'name': product_manifest,
+            'description': f'WMS URL for {product_manifest}',
+        }
+
+        wcs_link_params = {
+            'service': 'WCS',
+            'version': '2.0.1',
+            'request': 'DescribeEOCoverageSet',
+            'eoid': product_manifest
+        }
+
+        mcf['distribution']['wcs_link'] = {
+            'url': f'{ows_url}?{urlencode(wcs_link_params)}',
+            'type': 'OGC:WCS',
+            'name': product_manifest,
+            'description': f'WCS URL for {product_manifest}',
         }
 
         logger.debug(f'MCF: {mcf}')
