@@ -55,7 +55,7 @@ class ISOMetadata:
             'distribution': {}
         }
 
-    def from_cwl(self, cwl_item: str) -> str:
+    def from_cwl(self, cwl_item: str, public_s3_url: str) -> str:
         mcf = deepcopy(self.mcf)
 
         now = datetime.now().isoformat()
@@ -71,7 +71,7 @@ class ISOMetadata:
         mcf['identification']['abstract'] = wf['doc']
 
         mcf['identification']['keywords']['default'] = {
-            'keywords': [f'softwareVersion:{cwl["s:softwareVersion"]}'],
+            'keywords': [f'softwareVersion:{cwl["s:softwareVersion"]}', 'application', 'CWL'],
             'keywords_type': 'theme'
         }
 
@@ -81,6 +81,14 @@ class ISOMetadata:
 
         mcf['distribution']['cwl'] = {
             'url': self.base_url.rstrip('/'),
+            'type': 'application/x-yaml',
+            'name': wf['label'],
+            'description': wf['doc'],
+            'function': 'information'
+        }
+
+        mcf['distribution']['http'] = {
+            'url': self.public_s3_url,
             'type': 'application/x-yaml',
             'name': wf['label'],
             'description': wf['doc'],

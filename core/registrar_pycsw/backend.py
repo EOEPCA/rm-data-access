@@ -21,9 +21,10 @@ COLLECTION_LEVEL_METADATA = f'{THISDIR}/resources'
 
 
 class PycswBackend(Backend):
-    def __init__(self, repository_database_uri, ows_url: str = ''):
+    def __init__(self, repository_database_uri, ows_url: str = '', public_s3_url: str = ''):
         self.collections = []
         self.ows_url = ows_url
+        self.public_s3_url = public_s3_url
 
         logger.debug('Setting up static context')
         self.context = pycsw.core.config.StaticContext()
@@ -116,7 +117,7 @@ class PycswBackend(Backend):
                 logger.debug(f'base URL {item.path}')
                 base_url = f's3://{item.path}'
                 imo = ISOMetadata(base_url)
-                iso_metadata = imo.from_cwl(f.read())
+                iso_metadata = imo.from_cwl(f.read(), self.public_s3_url)
 
             logger.debug(f"Removing temporary file {cwl_local}")
             os.remove(cwl_local)
