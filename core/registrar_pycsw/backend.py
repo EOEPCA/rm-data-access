@@ -10,6 +10,7 @@ from pygeometa.schemas.iso19139 import ISO19139OutputSchema
 from registrar.backend import Backend, RegistrationResult
 from registrar.source import Source
 from registrar.context import Context
+from urllib.parse import urlparse, urljoin
 
 from .metadata import ISOMetadata
 
@@ -117,7 +118,10 @@ class PycswBackend(Backend):
                 logger.debug(f'base URL {item.path}')
                 base_url = f's3://{item.path}'
                 imo = ISOMetadata(base_url)
-                iso_metadata = imo.from_cwl(f.read(), self.public_s3_url)
+                parsed = urlparse(self.public_s3_url)
+                parsed.path = os.path.join(parsed.path, item.path)
+                public_url = urljoin(parsed)
+                iso_metadata = imo.from_cwl(f.read(), public_url)
 
             logger.debug(f"Removing temporary file {cwl_local}")
             os.remove(cwl_local)
