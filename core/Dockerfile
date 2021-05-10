@@ -34,9 +34,8 @@ LABEL name="EOEPCA data access core" \
       type="EOEPCA data access core" \
       version="1.0.0"
 
-RUN pip3 install PyYAML SQLAlchemy && \
+RUN pip3 install PyYAML SQLAlchemy OWSLib && \
     pip3 install https://github.com/geopython/pygeometa/archive/master.zip && \
-    pip3 install https://github.com/geopython/OWSLib/archive/master.zip && \
     pip3 install https://github.com/geopython/pycsw/archive/master.zip
 
 RUN mkdir /registrar_pycsw
