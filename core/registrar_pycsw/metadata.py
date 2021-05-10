@@ -130,7 +130,15 @@ class ISOMetadata:
              }]
         }
 
-        for eo_band in si['properties']['eo:bands']:
+        if 'eo:bands' in si['properties']:
+            bands = si['properties']['eo:bands']
+        else:
+            bands = []
+            for asset in si['assets'].values():
+                if 'eo:bands' in asset:
+                    bands.extend(asset['eo:bands'])
+
+        for eo_band in bands:
             mcf['content_info']['dimensions'].append({
                 'name': eo_band['name']
             })
@@ -141,7 +149,7 @@ class ISOMetadata:
         }
 
         mcf['identification']['keywords']['eo:bands'] = {
-            'keywords': [x['common_name'] for x in si['properties']['eo:bands']],
+            'keywords': [x['common_name'] for x in bands],
             'keywords_type': 'theme'
         }
 
