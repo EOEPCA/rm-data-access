@@ -88,7 +88,7 @@ class ISOMetadata:
         }
 
         mcf['distribution']['http'] = {
-            'url': self.public_s3_url,
+            'url': public_s3_url,
             'type': 'application/x-yaml',
             'name': wf['label'],
             'description': wf['doc'],
