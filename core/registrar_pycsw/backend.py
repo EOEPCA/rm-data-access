@@ -119,8 +119,9 @@ class PycswBackend(Backend):
                 base_url = f's3://{item.path}'
                 imo = ISOMetadata(base_url)
                 parsed = urlparse(self.public_s3_url)
-                parsed.path = os.path.join(parsed.path, item.path)
-                public_url = urljoin(parsed)
+                new_path=os.path.join(parsed.path,item_path)
+                new_scheme=f'{parsed.scheme}://{parsed.netloc}'
+                public_url = urljoin(new_scheme, new_path)
                 iso_metadata = imo.from_cwl(f.read(), public_url)
 
             logger.debug(f"Removing temporary file {cwl_local}")
