@@ -22,7 +22,8 @@ COLLECTION_LEVEL_METADATA = f'{THISDIR}/resources'
 
 
 class PycswBackend(Backend):
-    def __init__(self, repository_database_uri, ows_url: str = '', public_s3_url: str = ''):
+    def __init__(self, repository_database_uri, ows_url: str = '',
+                 public_s3_url: str = ''):
         self.collections = []
         self.ows_url = ows_url
         self.public_s3_url = public_s3_url
@@ -119,10 +120,10 @@ class PycswBackend(Backend):
                 base_url = f's3://{item.path}'
                 imo = ISOMetadata(base_url)
                 parsed = urlparse(self.public_s3_url)
-                if len(parsed.path.split(':'))>1:
+                if len(parsed.path.split(':')) > 1:
                     new_path = parsed.path.split(':')[0] + ':' + item.path
                 else:
-                    new_path = os.path.join(parsed.path,item.path)
+                    new_path = os.path.join(parsed.path, item.path)
                 new_scheme = f'{parsed.scheme}://{parsed.netloc}'
                 public_url = urljoin(new_scheme, new_path)
                 iso_metadata = imo.from_cwl(f.read(), public_url)
@@ -168,3 +169,19 @@ class PycswBackend(Backend):
         self._parse_and_upsert_metadata(iso_metadata)
 
         return
+
+    def deregister(self, item: Context):
+        logger.info(f'Deleting record {item.identifier}')
+        constraint = {
+            'type': 'filter',
+            'values': item.identifier,
+            'where': 'identifier = :pvalue0'
+        }
+        try:
+            rows = self.repo.delete(constraint)
+            logger.info(f'{rows} records deleted')
+        except Exception as err:
+            logger.error(f'delete failed: {err}')
+            raise
+
+        return [item.identifier]
