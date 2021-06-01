@@ -179,7 +179,7 @@ class PycswBackend(Backend):
 
         constraint = {
             'type': 'filter',
-            'values': identifier,
+            'values': [identifier],
             'where': 'identifier = :pvalue0'
         }
         try:
