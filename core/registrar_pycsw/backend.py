@@ -172,9 +172,14 @@ class PycswBackend(Backend):
 
     def deregister(self, item: Context):
         logger.info(f'Deleting record {item.identifier}')
+        if self.repo.query_ids([item.identifier]):
+            identifier = item.identifier
+        else:
+            identifier = item.identifier+".SAFE"
+
         constraint = {
             'type': 'filter',
-            'values': item.identifier,
+            'values': identifier,
             'where': 'identifier = :pvalue0'
         }
         try:
