@@ -172,10 +172,13 @@ class PycswBackend(Backend):
 
     def deregister(self, item: Context):
         logger.info(f'Deleting record {item.identifier}')
+        # TODO: identifier alignment required with other components
         if self.repo.query_ids([item.identifier]):
+            logger.debug('found matching identifier')
             identifier = item.identifier
         else:
-            identifier = item.identifier+".SAFE"
+            logger.debug('did not find matching identifier, adding .SAFE')
+            identifier = f'{item.identifier}.SAFE'
 
         constraint = {
             'type': 'filter',
