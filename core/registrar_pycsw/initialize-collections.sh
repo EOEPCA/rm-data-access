@@ -9,7 +9,7 @@ from registrar.context import Context
 
 config = load_config(open('/config.yaml'))
 
-context = Context()
+context = Context(identifier='None', path='None', scheme='None')
 context.schema = context.path = None
 
 for backend in get_backends(config, context):
