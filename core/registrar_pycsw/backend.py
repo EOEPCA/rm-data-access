@@ -7,9 +7,9 @@ import pycsw.core.admin
 import pycsw.core.config
 from pygeometa.core import read_mcf
 from pygeometa.schemas.iso19139 import ISO19139OutputSchema
-from registrar.backend import Backend, RegistrationResult
+from pystac import Item
+from registrar.backend import Backend
 from registrar.source import Source
-from registrar.context import Context
 from urllib.parse import urlparse, urljoin
 
 from .metadata import ISOMetadata
@@ -84,7 +84,7 @@ class PycswBackend(Backend):
 
         return
 
-    def exists(self, source: Source, item: Context) -> bool:
+    def exists(self, source: Source, item: Item) -> bool:
         # TODO: sort out identifier problem in ISO XML
         logger.info(f'Checking for identifier {item.identifier}')
         if self.repo.query_ids([item.identifier]):
@@ -94,8 +94,8 @@ class PycswBackend(Backend):
             logger.info(f'Identifier {item.identifier} does not exist')
             return False
 
-    def register(self, source: Source, item: Context,
-                 replace: bool) -> RegistrationResult:
+    def register(self, source: Source, item: Item,
+                 replace: bool):
         # For path for STAC items
         if item.scheme == 'stac-item':
             logger.info('Ingesting processing result')
@@ -170,7 +170,7 @@ class PycswBackend(Backend):
 
         return
 
-    def deregister(self, item: Context):
+    def deregister(self, item: Item):
         logger.info(f'Deleting record {item.identifier}')
         # TODO: identifier alignment required with other components
         if self.repo.query_ids([item.identifier]):
