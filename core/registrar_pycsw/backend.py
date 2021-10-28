@@ -21,6 +21,11 @@ THISDIR = os.path.dirname(__file__)
 COLLECTION_LEVEL_METADATA = f'{THISDIR}/resources'
 
 
+def href_to_path(href):
+    parsed = urlparse(href)
+    return f'{parsed.netloc}{parsed.path}'
+
+
 class PycswBackend(Backend):
     def __init__(self, repository_database_uri, ows_url: str = '',
                  public_s3_url: str = ''):
@@ -86,84 +91,115 @@ class PycswBackend(Backend):
 
     def exists(self, source: Source, item: Item) -> bool:
         # TODO: sort out identifier problem in ISO XML
-        logger.info(f'Checking for identifier {item.identifier}')
-        if self.repo.query_ids([item.identifier]):
-            logger.info(f'Identifier {item.identifier} exists')
+        logger.info(f'Checking for identifier {item.id}')
+        if self.repo.query_ids([item.id]):
+            logger.info(f'Identifier {item.id} exists')
             return True
         else:
-            logger.info(f'Identifier {item.identifier} does not exist')
+            logger.info(f'Identifier {item.id} does not exist')
             return False
 
     def register(self, source: Source, item: Item,
                  replace: bool):
         # For path for STAC items
-        if item.scheme == 'stac-item':
-            logger.info('Ingesting processing result')
-            stac_item_local = '/tmp/item.json'
-            source.get_file(item.path, stac_item_local)
-            with open(stac_item_local) as f:
-                logger.debug(f'base URL {item.path}')
-                base_url = f's3://{os.path.dirname(item.path)}'
-                imo = ISOMetadata(base_url)
-                iso_metadata = imo.from_stac_item(f.read(), self.ows_url)
+        # if item.scheme == 'stac-item':
+        #     logger.info('Ingesting processing result')
+        #     stac_item_local = '/tmp/item.json'
+        #     source.get_file(item.path, stac_item_local)
+        #     with open(stac_item_local) as f:
+        #         logger.debug(f'base URL {item.path}')
+        #         base_url = f's3://{os.path.dirname(item.path)}'
+        #         imo = ISOMetadata(base_url)
+        #         iso_metadata = imo.from_stac_item(f.read(), self.ows_url)
 
-            logger.debug(f"Removing temporary file {stac_item_local}")
-            os.remove(stac_item_local)
+        #     logger.debug(f"Removing temporary file {stac_item_local}")
+        #     os.remove(stac_item_local)
 
-        elif item.scheme == 'cwl':
-            logger.info('Ingesting CWL')
-            cwl_local = '/tmp/cwl.yaml'
-            source.get_file(item.path, cwl_local)
+        # elif item.scheme == 'cwl':
+        #     logger.info('Ingesting CWL')
+        #     cwl_local = '/tmp/cwl.yaml'
+        #     source.get_file(item.path, cwl_local)
 
-            with open(cwl_local) as f:
-                logger.debug(f'base URL {item.path}')
-                base_url = f's3://{item.path}'
-                imo = ISOMetadata(base_url)
-                parsed = urlparse(self.public_s3_url)
-                if len(parsed.path.split(':')) > 1:
-                    new_path = parsed.path.split(':')[0] + ':' + item.path
-                else:
-                    new_path = os.path.join(parsed.path, item.path)
-                new_scheme = f'{parsed.scheme}://{parsed.netloc}'
-                public_url = urljoin(new_scheme, new_path)
-                iso_metadata = imo.from_cwl(f.read(), public_url)
+        #     with open(cwl_local) as f:
+        #         logger.debug(f'base URL {item.path}')
+        #         base_url = f's3://{item.path}'
+        #         imo = ISOMetadata(base_url)
+        #         parsed = urlparse(self.public_s3_url)
+        #         if len(parsed.path.split(':')) > 1:
+        #             new_path = parsed.path.split(':')[0] + ':' + item.path
+        #         else:
+        #             new_path = os.path.join(parsed.path, item.path)
+        #         new_scheme = f'{parsed.scheme}://{parsed.netloc}'
+        #         public_url = urljoin(new_scheme, new_path)
+        #         iso_metadata = imo.from_cwl(f.read(), public_url)
 
-            logger.debug(f"Removing temporary file {cwl_local}")
-            os.remove(cwl_local)
+        #     logger.debug(f"Removing temporary file {cwl_local}")
+        #     os.remove(cwl_local)
 
-        else:
-            logger.info('Ingesting product')
-            esa_xml_local = '/tmp/esa-metadata.xml'
-            inspire_xml_local = '/tmp/inspire-metadata.xml'
+        # else:
+        #     logger.info('Ingesting product')
+        #     esa_xml_local = '/tmp/esa-metadata.xml'
+        #     inspire_xml_local = '/tmp/inspire-metadata.xml'
 
-            esa_xml = item.metadata_files[0]
-            logger.info(f"ESA XML metadata file: {esa_xml}")
+        #     esa_xml = item.metadata_files[0]
+        #     logger.info(f"ESA XML metadata file: {esa_xml}")
 
-            inspire_xml = os.path.dirname(
-                item.metadata_files[0]) + "/INSPIRE.xml"
+        #     inspire_xml = os.path.dirname(
+        #         item.metadata_files[0]) + "/INSPIRE.xml"
 
-            logger.info(f"INSPIRE XML metadata file: {inspire_xml}")
+        #     logger.info(f"INSPIRE XML metadata file: {inspire_xml}")
 
-            logger.debug(f'base URL {item.path}')
-            base_url = f's3://{item.path}'
+        #     logger.debug(f'base URL {item.path}')
+        #     base_url = f's3://{item.path}'
 
-            try:
-                source.get_file(inspire_xml, inspire_xml_local)
-                source.get_file(esa_xml, esa_xml_local)
-            except Exception as err:
-                logger.error(err)
-                raise
+        #     try:
+        #         source.get_file(inspire_xml, inspire_xml_local)
+        #         source.get_file(esa_xml, esa_xml_local)
+        #     except Exception as err:
+        #         logger.error(err)
+        #         raise
 
-            logger.info('Generating ISO XML based on ESA and INSPIRE XML')
-            imo = ISOMetadata(base_url)
+        #     logger.info('Generating ISO XML based on ESA and INSPIRE XML')
+        #     imo = ISOMetadata(base_url)
 
-            with open(esa_xml_local, 'rb') as a, open(inspire_xml_local, 'rb') as b:  # noqa
-                iso_metadata = imo.from_esa_iso_xml(
-                    a.read(), b.read(), self.collections, self.ows_url)
+        #     with open(esa_xml_local, 'rb') as a, open(inspire_xml_local, 'rb') as b:  # noqa
+        #         iso_metadata = imo.from_esa_iso_xml(
+        #             a.read(), b.read(), self.collections, self.ows_url)
 
-            for tmp_file in [esa_xml_local, inspire_xml_local]:
-                logger.debug(f"Removing temporary file {tmp_file}")
-                os.remove(tmp_file)
+        #     for tmp_file in [esa_xml_local, inspire_xml_local]:
+        #         logger.debug(f"Removing temporary file {tmp_file}")
+        #         os.remove(tmp_file)
+
+        logger.info('Ingesting product')
+
+        assets = item.get_assets()
+
+        inspire_xml = href_to_path(assets['inspire-metadata'].href)
+        esa_xml = href_to_path(assets['product-metadata'].href)
+
+        esa_xml_local = '/tmp/esa-metadata.xml'
+        inspire_xml_local = '/tmp/inspire-metadata.xml'
+
+        logger.info(f"ESA XML metadata file: {esa_xml}")
+        logger.info(f"INSPIRE XML metadata file: {inspire_xml}")
+
+        try:
+            source.get_file(inspire_xml, inspire_xml_local)
+            source.get_file(esa_xml, esa_xml_local)
+        except Exception as err:
+            logger.error(err)
+            raise
+
+        logger.info('Generating ISO XML based on ESA and INSPIRE XML')
+        imo = ISOMetadata(os.path.dirname(inspire_xml))
+
+        with open(esa_xml_local, 'rb') as a, open(inspire_xml_local, 'rb') as b:  # noqa
+            iso_metadata = imo.from_esa_iso_xml(
+                a.read(), b.read(), self.collections, self.ows_url)
+
+        for tmp_file in [esa_xml_local, inspire_xml_local]:
+            logger.debug(f"Removing temporary file {tmp_file}")
+            os.remove(tmp_file)
 
         logger.debug(f'Upserting metadata: {iso_metadata}')
         self._parse_and_upsert_metadata(iso_metadata)
