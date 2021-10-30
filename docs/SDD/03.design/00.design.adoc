@@ -1,7 +1,7 @@
 [[mainDesign]]
 = Building Block Design
 
-image::eoepca-rm-da.png[EOEPCA Ressource Management Data Access service structure]
+image::eoepca-rm-da.png[EOEPCA Resource Management Data Access service structure]
 
 ================================
 
@@ -17,7 +17,7 @@ The global instance is installed in a global namespace using a GitOps approach, 
 
 === Overview and Purpose
 
-The purpose of the registrar service is to register data products from either upstream data sources (such as Sentinel-2 data archives) into the Data Access Building Block and the Resource Catalougue Building Block where they are indexed for later access.
+The purpose of the registrar service is to register data products from either upstream data sources (such as Sentinel-2 data archives) into the Data Access Building Block and the Resource Catalogue Building Block where they are indexed for later access.
 
 === Software Reuse and Dependencies
 
@@ -33,7 +33,7 @@ This service does not provide any interfaces.
 
 The following image shows the registrars (and also the renderers) internal data model:
 
-image::eoepca-rm-da-er.png[EOEPCA Ressource Management Data Access data model]
+image::eoepca-rm-da-er.png[EOEPCA Resource Management Data Access data model]
 
 ===== Collection/CollectionType
 
@@ -268,7 +268,7 @@ When requested, the client JavaScript bundle is downloaded by the browser and th
 
 === Applicable Resources
 
-The git repository with additional ressources for EOxC can be found at the projects repository: https://github.com/eoxc/eoxc
+The git repository with additional resources for EOxC can be found at the projects repository: https://github.com/eoxc/eoxc
 
 == Database Service
 
