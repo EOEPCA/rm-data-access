@@ -1,5 +1,6 @@
 import os
 import logging
+from typing import Optional
 
 from lxml import etree
 from pycsw.core import metadata, repository, util
@@ -8,7 +9,7 @@ import pycsw.core.config
 from pygeometa.core import read_mcf
 from pygeometa.schemas.iso19139 import ISO19139OutputSchema
 from pystac import Item
-from registrar.backend import Backend
+from registrar.backend import ItemBackend, PathBackend
 from registrar.source import Source
 from urllib.parse import urlparse, urljoin
 
@@ -26,7 +27,7 @@ def href_to_path(href):
     return f'{parsed.netloc}{parsed.path}'
 
 
-class PycswBackend(Backend):
+class PycswMixIn:
     def __init__(self, repository_database_uri, ows_url: str = '',
                  public_s3_url: str = ''):
         self.collections = []
@@ -89,7 +90,9 @@ class PycswBackend(Backend):
 
         return
 
-    def exists(self, source: Source, item: Item) -> bool:
+
+class PycswItemBackend(ItemBackend, PycswMixIn):
+    def item_exists(self, source: Source, item: Item) -> bool:
         # TODO: sort out identifier problem in ISO XML
         logger.info(f'Checking for identifier {item.id}')
         if self.repo.query_ids([item.id]):
@@ -99,77 +102,8 @@ class PycswBackend(Backend):
             logger.info(f'Identifier {item.id} does not exist')
             return False
 
-    def register(self, source: Source, item: Item,
-                 replace: bool):
-        # For path for STAC items
-        # if item.scheme == 'stac-item':
-        #     logger.info('Ingesting processing result')
-        #     stac_item_local = '/tmp/item.json'
-        #     source.get_file(item.path, stac_item_local)
-        #     with open(stac_item_local) as f:
-        #         logger.debug(f'base URL {item.path}')
-        #         base_url = f's3://{os.path.dirname(item.path)}'
-        #         imo = ISOMetadata(base_url)
-        #         iso_metadata = imo.from_stac_item(f.read(), self.ows_url)
-
-        #     logger.debug(f"Removing temporary file {stac_item_local}")
-        #     os.remove(stac_item_local)
-
-        # elif item.scheme == 'cwl':
-        #     logger.info('Ingesting CWL')
-        #     cwl_local = '/tmp/cwl.yaml'
-        #     source.get_file(item.path, cwl_local)
-
-        #     with open(cwl_local) as f:
-        #         logger.debug(f'base URL {item.path}')
-        #         base_url = f's3://{item.path}'
-        #         imo = ISOMetadata(base_url)
-        #         parsed = urlparse(self.public_s3_url)
-        #         if len(parsed.path.split(':')) > 1:
-        #             new_path = parsed.path.split(':')[0] + ':' + item.path
-        #         else:
-        #             new_path = os.path.join(parsed.path, item.path)
-        #         new_scheme = f'{parsed.scheme}://{parsed.netloc}'
-        #         public_url = urljoin(new_scheme, new_path)
-        #         iso_metadata = imo.from_cwl(f.read(), public_url)
-
-        #     logger.debug(f"Removing temporary file {cwl_local}")
-        #     os.remove(cwl_local)
-
-        # else:
-        #     logger.info('Ingesting product')
-        #     esa_xml_local = '/tmp/esa-metadata.xml'
-        #     inspire_xml_local = '/tmp/inspire-metadata.xml'
-
-        #     esa_xml = item.metadata_files[0]
-        #     logger.info(f"ESA XML metadata file: {esa_xml}")
-
-        #     inspire_xml = os.path.dirname(
-        #         item.metadata_files[0]) + "/INSPIRE.xml"
-
-        #     logger.info(f"INSPIRE XML metadata file: {inspire_xml}")
-
-        #     logger.debug(f'base URL {item.path}')
-        #     base_url = f's3://{item.path}'
-
-        #     try:
-        #         source.get_file(inspire_xml, inspire_xml_local)
-        #         source.get_file(esa_xml, esa_xml_local)
-        #     except Exception as err:
-        #         logger.error(err)
-        #         raise
-
-        #     logger.info('Generating ISO XML based on ESA and INSPIRE XML')
-        #     imo = ISOMetadata(base_url)
-
-        #     with open(esa_xml_local, 'rb') as a, open(inspire_xml_local, 'rb') as b:  # noqa
-        #         iso_metadata = imo.from_esa_iso_xml(
-        #             a.read(), b.read(), self.collections, self.ows_url)
-
-        #     for tmp_file in [esa_xml_local, inspire_xml_local]:
-        #         logger.debug(f"Removing temporary file {tmp_file}")
-        #         os.remove(tmp_file)
-
+    def register_item(self, source: Source, item: Item,
+                      replace: bool):
         logger.info('Ingesting product')
 
         assets = item.get_assets()
@@ -204,17 +138,15 @@ class PycswBackend(Backend):
         logger.debug(f'Upserting metadata: {iso_metadata}')
         self._parse_and_upsert_metadata(iso_metadata)
 
-        return
-
-    def deregister(self, item: Item):
-        logger.info(f'Deleting record {item.identifier}')
+    def deregister_identifier(self, identifier: str):
+        logger.info(f'Deleting record {identifier}')
         # TODO: identifier alignment required with other components
-        if self.repo.query_ids([item.identifier]):
+        if self.repo.query_ids([identifier]):
             logger.debug('found matching identifier')
-            identifier = item.identifier
+            identifier = identifier
         else:
             logger.debug('did not find matching identifier, adding .SAFE')
-            identifier = f'{item.identifier}.SAFE'
+            identifier = f'{identifier}.SAFE'
 
         constraint = {
             'type': 'filter',
@@ -228,4 +160,35 @@ class PycswBackend(Backend):
             logger.error(f'delete failed: {err}')
             raise
 
-        return [item.identifier]
+        return identifier
+
+
+class PycswCWLBackend(PathBackend, PycswMixIn):
+    def path_exists(self, source: Optional[Source], path: str) -> bool:
+        pass
+
+    def register_path(self, source: Optional[Source], path: str, replace: bool):
+        logger.info('Ingesting CWL')
+        cwl_local = '/tmp/cwl.yaml'
+        source.get_file(path, cwl_local)
+        with open(cwl_local) as f:
+            logger.debug(f'base URL {path}')
+            base_url = f's3://{path}'
+            imo = ISOMetadata(base_url)
+            parsed = urlparse(self.public_s3_url)
+            if len(parsed.path.split(':')) > 1:
+                new_path = parsed.path.split(':')[0] + ':' + path
+            else:
+                new_path = os.path.join(parsed.path, path)
+            new_scheme = f'{parsed.scheme}://{parsed.netloc}'
+            public_url = urljoin(new_scheme, new_path)
+            iso_metadata = imo.from_cwl(f.read(), public_url)
+
+        logger.debug(f"Removing temporary file {cwl_local}")
+
+        os.remove(cwl_local)
+        logger.debug(f'Upserting metadata: {iso_metadata}')
+        self._parse_and_upsert_metadata(iso_metadata)
+
+    def deregister_path(self, source: Optional[Source], path: str) -> Optional[str]:
+        pass
