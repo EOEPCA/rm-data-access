@@ -41,7 +41,7 @@ identification:
     maintenancefrequency: continual
 
 contact:
-    main: &contact_main
+    pointOfContact: &contact_poc
         organization: European Space Agency
         url: https://www.esa.int
         individualname: Firstname Lastname
@@ -57,7 +57,7 @@ contact:
         hoursofservice: TBD
         contactinstructions: TBD
 
-    distribution: *contact_main
+    distributor: *contact_poc
 
 distribution:
     wms:
