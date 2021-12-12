@@ -49,8 +49,8 @@ class ISOMetadata:
                 'dimensions': []
             },
             'contact': {
-              'main': {},
-              'distribution': {}
+              'pointOfContact': {},
+              'distributor': {}
             },
             'distribution': {}
         }
