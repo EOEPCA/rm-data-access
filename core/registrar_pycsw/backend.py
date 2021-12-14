@@ -1,6 +1,7 @@
 import os
 import logging
 from typing import Optional
+import json
 
 from lxml import etree
 from pycsw.core import metadata, repository, util
@@ -11,7 +12,7 @@ from pygeometa.schemas.iso19139 import ISO19139OutputSchema
 from pystac import Item
 from registrar.backend import ItemBackend, PathBackend
 from registrar.source import Source
-from urllib.parse import urlparse, urljoin
+from urllib.parse import urlparse, urljoin, urlunparse
 
 from .metadata import ISOMetadata
 
@@ -107,33 +108,47 @@ class PycswItemBackend(ItemBackend, PycswMixIn):
         logger.info('Ingesting product')
 
         assets = item.get_assets()
+        if 'inspire-metadata' in assets and 'product-metadata' in assets:
+            inspire_xml = href_to_path(assets['inspire-metadata'].href)
+            esa_xml = href_to_path(assets['product-metadata'].href)
 
-        inspire_xml = href_to_path(assets['inspire-metadata'].href)
-        esa_xml = href_to_path(assets['product-metadata'].href)
+            esa_xml_local = '/tmp/esa-metadata.xml'
+            inspire_xml_local = '/tmp/inspire-metadata.xml'
 
-        esa_xml_local = '/tmp/esa-metadata.xml'
-        inspire_xml_local = '/tmp/inspire-metadata.xml'
+            logger.info(f"ESA XML metadata file: {esa_xml}")
+            logger.info(f"INSPIRE XML metadata file: {inspire_xml}")
 
-        logger.info(f"ESA XML metadata file: {esa_xml}")
-        logger.info(f"INSPIRE XML metadata file: {inspire_xml}")
+            try:
+                source.get_file(inspire_xml, inspire_xml_local)
+                source.get_file(esa_xml, esa_xml_local)
+            except Exception as err:
+                logger.error(err)
+                raise
 
-        try:
-            source.get_file(inspire_xml, inspire_xml_local)
-            source.get_file(esa_xml, esa_xml_local)
-        except Exception as err:
-            logger.error(err)
-            raise
+            logger.info('Generating ISO XML based on ESA and INSPIRE XML')
+            imo = ISOMetadata(os.path.dirname(inspire_xml))
 
-        logger.info('Generating ISO XML based on ESA and INSPIRE XML')
-        imo = ISOMetadata(os.path.dirname(inspire_xml))
+            with open(esa_xml_local, 'rb') as a, open(inspire_xml_local, 'rb') as b:  # noqa
+                iso_metadata = imo.from_esa_iso_xml(
+                    a.read(), b.read(), self.collections, self.ows_url)
 
-        with open(esa_xml_local, 'rb') as a, open(inspire_xml_local, 'rb') as b:  # noqa
-            iso_metadata = imo.from_esa_iso_xml(
-                a.read(), b.read(), self.collections, self.ows_url)
+            for tmp_file in [esa_xml_local, inspire_xml_local]:
+                logger.debug(f"Removing temporary file {tmp_file}")
+                os.remove(tmp_file)
+        else:
+            logger.info('Ingesting processing result')
+            self_href = item.get_links('self')[0].get_absolute_href()
+            parsed = urlparse(self_href)
+            parsed = parsed._replace(path=os.path.dirname(parsed.path))
+            base_url = urlunparse(parsed)
 
-        for tmp_file in [esa_xml_local, inspire_xml_local]:
-            logger.debug(f"Removing temporary file {tmp_file}")
-            os.remove(tmp_file)
+            logger.debug(f'base URL {base_url}')
+            base_url = f's3://{base_url}'
+            imo = ISOMetadata(base_url)
+            iso_metadata = imo.from_stac_item(
+                json.dumps(item.to_dict(transform_hrefs=False)),
+                self.ows_url
+            )
 
         logger.debug(f'Upserting metadata: {iso_metadata}')
         self._parse_and_upsert_metadata(iso_metadata)
