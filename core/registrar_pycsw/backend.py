@@ -135,6 +135,20 @@ class PycswItemBackend(ItemBackend, PycswMixIn):
             for tmp_file in [esa_xml_local, inspire_xml_local]:
                 logger.debug(f"Removing temporary file {tmp_file}")
                 os.remove(tmp_file)
+        elif 'iso-metadata' in assets:
+            iso_xml = href_to_path(assets['iso-metadata'].href)
+            iso_xml_local = '/tmp/iso-metadata.xml'
+
+            logger.info(f"Ingesting ISO XML metadata file: {iso_xml}")
+
+            try:
+                source.get_file(iso_xml, iso_xml_local)
+            except Exception as err:
+                logger.error(err)
+                raise
+
+            with open(iso_xml_local, 'r') as a:
+                iso_metadata = a.read()
         else:
             logger.info('Ingesting processing result')
             self_href = item.get_links('self')[0].get_absolute_href()
