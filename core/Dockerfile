@@ -26,7 +26,7 @@
 #-----------------------------------------------------------------------------
 
 # TODO: make this from a specific release, once released
-FROM registry.gitlab.eox.at/vs/core:release-2.0.43
+FROM registry.gitlab.eox.at/vs/core:release-2.0.44
 
 LABEL name="EOEPCA data access core" \
       vendor="EOX IT Services GmbH <https://eox.at>" \
