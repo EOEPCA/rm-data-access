@@ -130,7 +130,7 @@ class PycswItemBackend(ItemBackend, PycswMixIn):
 
             with open(esa_xml_local, 'rb') as a, open(inspire_xml_local, 'rb') as b:  # noqa
                 iso_metadata = imo.from_esa_iso_xml(
-                    a.read(), b.read(), self.collections, self.ows_url)
+                    a.read(), b.read(), self.collections, self.ows_url, item.id)
 
             for tmp_file in [esa_xml_local, inspire_xml_local]:
                 logger.debug(f"Removing temporary file {tmp_file}")

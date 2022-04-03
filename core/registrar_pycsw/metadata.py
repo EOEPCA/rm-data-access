@@ -236,7 +236,7 @@ class ISOMetadata:
         return iso_os.write(mcf)
 
     def from_esa_iso_xml(self, esa_xml: bytes, inspire_xml: bytes,
-                         collections: list, ows_url: str) -> str:
+                         collections: list, ows_url: str, stac_id: str) -> str:
 
         mcf = deepcopy(self.mcf)
 
@@ -250,7 +250,10 @@ class ISOMetadata:
         product_manifest = exml.xpath('//PRODUCT_URI/text()')[0]
         product_manifest_link = urljoin(self.base_url, product_manifest)
 
-        mcf['metadata']['identifier'] = product_manifest
+        if stac_id:
+            mcf['metadata']['identifier'] = stac_id
+        else:
+            mcf['metadata']['identifier'] = product_manifest
         mcf['metadata']['hierarchylevel'] = m.hierarchy or 'dataset'
         mcf['metadata']['datestamp'] = exml.xpath('//Product_Info/GENERATION_TIME/text()')[0]
 
