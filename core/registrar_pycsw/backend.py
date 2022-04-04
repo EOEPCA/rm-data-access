@@ -136,7 +136,7 @@ class PycswItemBackend(ItemBackend, PycswMixIn):
                 logger.debug(f"Removing temporary file {tmp_file}")
                 os.remove(tmp_file)
         elif 'iso-metadata' in assets:
-            iso_xml = href_to_path(assets['iso-metadata'].href)
+            iso_xml = assets['iso-metadata'].href
             iso_xml_local = '/tmp/iso-metadata.xml'
 
             logger.info(f"Ingesting ISO XML metadata file: {iso_xml}")
