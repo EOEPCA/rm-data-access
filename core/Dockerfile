@@ -26,13 +26,13 @@
 #-----------------------------------------------------------------------------
 
 # TODO: make this from a specific release, once released
-FROM registry.gitlab.eox.at/vs/core:release-2.0.44
+FROM registry.gitlab.eox.at/vs/core:release-2.0.48
 
 LABEL name="EOEPCA data access core" \
       vendor="EOX IT Services GmbH <https://eox.at>" \
       license="MIT Copyright (C) 2019 EOX IT Services GmbH <https://eox.at>" \
       type="EOEPCA data access core" \
-      version="1.0.0"
+      version="1.1.0"
 
 RUN pip3 install PyYAML SQLAlchemy OWSLib pygeometa && \
     pip3 install https://github.com/geopython/pycsw/archive/master.zip
