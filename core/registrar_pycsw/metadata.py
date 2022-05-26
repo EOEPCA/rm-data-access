@@ -50,7 +50,8 @@ class ISOMetadata:
             },
             'contact': {
               'pointOfContact': {},
-              'distributor': {}
+              'distributor': {},
+              'author': {}
             },
             'distribution': {}
         }
@@ -75,9 +76,30 @@ class ISOMetadata:
             'keywords_type': 'theme'
         }
 
-        mcf['identification']['dates'] = {
-            'creation': now
-        }
+        if 's:releaseNotes' in cwl:
+            mcf['dataquality']['lineage']['statement'] = cwl['s:releaseNotes']
+
+        if 's:version' in cwl:
+            mcf['identification']['edition'] = cwl['s:version']
+
+        if 's:author' in cwl:
+            mcf['contact']['author'] = {
+                'individualname': cwl['s:author']['s:name'],
+                'organization': cwl['s:author']['s:affiliation'],
+                'email': cwl['s:author']['s:email'],
+            }
+
+        if 's:contributor' in cwl:
+            mcf['contact']['pointOfContact'] = {
+                'individualname': cwl['s:author']['s:name'],
+                'organization': cwl['s:author']['s:affiliation'],
+                'email': cwl['s:author']['s:email'],
+            }
+
+        if 's:dateCreated' in cwl:
+            mcf['identification']['dates'] = {
+                'creation': cwl['s:dateCreated']
+            }
 
         mcf['distribution']['cwl'] = {
             'url': self.base_url.rstrip('/'),
@@ -93,6 +115,33 @@ class ISOMetadata:
             'name': wf['label'],
             'description': wf['doc'],
             'function': 'information'
+        }
+
+        if 's:citation' in cwl:
+            mcf['distribution']['citation'] = {
+                'url': cwl['s:citation'],
+                'type': 'text/html',
+                'name': 'citation',
+                'description': 'citation',
+                'function': 'citation'
+        }
+
+        if 's:codeRepository' in cwl:
+            mcf['distribution']['codeRepository'] = {
+                'url': cwl['s:codeRepository'],
+                'type': 'text/html',
+                'name': 'related',
+                'description': 'code repository',
+                'function': 'citation'
+        }
+
+        if 's:license' in cwl:
+            mcf['distribution']['license'] = {
+                'url': cwl['s:license'],
+                'type': 'text/html',
+                'name': 'license',
+                'description': 'license',
+                'function': 'license'
         }
 
         mcf['identification']['extents'] = {
