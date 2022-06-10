@@ -53,7 +53,8 @@ class ISOMetadata:
               'distributor': {},
               'author': {}
             },
-            'distribution': {}
+            'distribution': {},
+            'dataquality': {}
         }
 
     def from_cwl(self, cwl_item: str, public_s3_url: str) -> str:
