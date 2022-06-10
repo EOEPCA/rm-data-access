@@ -54,7 +54,9 @@ class ISOMetadata:
               'author': {}
             },
             'distribution': {},
-            'dataquality': {}
+            'dataquality': {
+                'lineage': {}
+            }
         }
 
     def from_cwl(self, cwl_item: str, public_s3_url: str) -> str:
