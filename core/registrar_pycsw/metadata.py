@@ -81,7 +81,7 @@ class ISOMetadata:
 
         if 's:releaseNotes' in cwl:
             mcf['dataquality']['lineage']['statement'] = cwl['s:releaseNotes']
-            mcf['dataquality']['scope']['level'] = 'application'
+            mcf['dataquality']['scope'] = {'level': 'application'}
 
         if 's:version' in cwl:
             mcf['identification']['edition'] = cwl['s:version']
