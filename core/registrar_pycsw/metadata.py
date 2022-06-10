@@ -87,16 +87,16 @@ class ISOMetadata:
 
         if 's:author' in cwl:
             mcf['contact']['author'] = {
-                'individualname': cwl['s:author']['s:name'],
-                'organization': cwl['s:author']['s:affiliation'],
-                'email': cwl['s:author']['s:email'],
+                'individualname': cwl['s:author'][0]['s:name'],
+                'organization': cwl['s:author'][0]['s:affiliation'],
+                'email': cwl['s:author'][0]['s:email'],
             }
 
         if 's:contributor' in cwl:
             mcf['contact']['pointOfContact'] = {
-                'individualname': cwl['s:author']['s:name'],
-                'organization': cwl['s:author']['s:affiliation'],
-                'email': cwl['s:author']['s:email'],
+                'individualname': cwl['s:contributor'][0]['s:name'],
+                'organization': cwl['s:contributor'][0]['s:affiliation'],
+                'email': cwl['s:contributor'][0]['s:email'],
             }
 
         if 's:dateCreated' in cwl:
@@ -127,7 +127,7 @@ class ISOMetadata:
                 'name': 'citation',
                 'description': 'citation',
                 'function': 'citation'
-        }
+            }
 
         if 's:codeRepository' in cwl:
             mcf['distribution']['codeRepository'] = {
@@ -136,7 +136,7 @@ class ISOMetadata:
                 'name': 'related',
                 'description': 'code repository',
                 'function': 'citation'
-        }
+            }
 
         if 's:license' in cwl:
             mcf['distribution']['license'] = {
@@ -145,7 +145,7 @@ class ISOMetadata:
                 'name': 'license',
                 'description': 'license',
                 'function': 'license'
-        }
+            }
 
         mcf['identification']['extents'] = {
             'spatial': [{
