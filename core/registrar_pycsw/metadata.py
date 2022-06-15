@@ -106,6 +106,7 @@ class ISOMetadata:
             }
 
         mcf['distribution']['cwl'] = {
+            'rel': 'manifest',
             'url': self.base_url.rstrip('/'),
             'type': 'application/x-yaml',
             'name': wf['label'],
@@ -114,6 +115,7 @@ class ISOMetadata:
         }
 
         mcf['distribution']['http'] = {
+            'rel': 'data',
             'url': public_s3_url,
             'type': 'application/x-yaml',
             'name': wf['label'],
@@ -123,6 +125,7 @@ class ISOMetadata:
 
         if 's:citation' in cwl:
             mcf['distribution']['citation'] = {
+                'rel': 'cite-as',
                 'url': cwl['s:citation'],
                 'type': 'text/html',
                 'name': 'citation',
@@ -132,6 +135,7 @@ class ISOMetadata:
 
         if 's:codeRepository' in cwl:
             mcf['distribution']['codeRepository'] = {
+                'rel': 'related',
                 'url': cwl['s:codeRepository'],
                 'type': 'text/html',
                 'name': 'related',
@@ -141,6 +145,7 @@ class ISOMetadata:
 
         if 's:license' in cwl:
             mcf['distribution']['license'] = {
+                'rel': 'license',
                 'url': cwl['s:license'],
                 'type': 'text/html',
                 'name': 'license',
@@ -237,6 +242,7 @@ class ISOMetadata:
 
         for key, value in si['assets'].items():
             dist = {
+                'rel': 'data',
                 'url': urljoin(self.base_url, value['href']),
                 'type': value['type'],
                 'name': value.get('title'),
@@ -246,6 +252,7 @@ class ISOMetadata:
             mcf['distribution'][key] = dist
 
         mcf['distribution'][si['id']] = {
+            'rel': 'enclosure',
             'url': self.base_url,
             'type': 'enclosure',
             'name': 'product',
@@ -255,6 +262,7 @@ class ISOMetadata:
 
         logger.debug('Adding WMS/WCS links')
         wms_link_params = {
+            'rel': 'http://www.opengis.net/def/serviceType/ogc/wms',
             'service': 'WMS',
             'version': '1.3.0',
             'request': 'GetCapabilities',
@@ -262,6 +270,7 @@ class ISOMetadata:
         }
 
         mcf['distribution']['wms_link'] = {
+            'rel': 'http://www.opengis.net/def/serviceType/ogc/wms',
             'url': f'{ows_url}?{urlencode(wms_link_params)}',
             'type': 'OGC:WMS',
             'name': product_manifest,
@@ -269,6 +278,7 @@ class ISOMetadata:
         }
 
         wcs_link_params = {
+            'rel': 'http://www.opengis.net/def/serviceType/ogc/wcs',
             'service': 'WCS',
             'version': '2.0.1',
             'request': 'DescribeEOCoverageSet',
@@ -276,6 +286,7 @@ class ISOMetadata:
         }
 
         mcf['distribution']['wcs_link'] = {
+            'rel': 'http://www.opengis.net/def/serviceType/ogc/wcs',
             'url': f'{ows_url}?{urlencode(wcs_link_params)}',
             'type': 'OGC:WCS',
             'name': product_manifest,
@@ -383,6 +394,7 @@ class ISOMetadata:
             })
 
         mcf['distribution'][product_manifest] = {
+            'rel': 'enclosure',
             'url': self.base_url,
             'type': 'enclosure',
             'name': 'product',
@@ -405,6 +417,7 @@ class ISOMetadata:
 
         for image_file in exml.xpath('//Product_Organisation//IMAGE_FILE/text()'):
             dist = {
+                'rel': 'data',
                 'url': urljoin(product_manifest_link, f'{image_file}.{file_extension}'),
                 'type': mime_type,
                 'name': 'granule',
@@ -422,6 +435,7 @@ class ISOMetadata:
         }
 
         mcf['distribution']['wms_link'] = {
+            'rel': 'http://www.opengis.net/def/serviceType/ogc/wms',
             'url': f'{ows_url}?{urlencode(wms_link_params)}',
             'type': 'OGC:WMS',
             'name': product_manifest,
@@ -436,6 +450,7 @@ class ISOMetadata:
         }
 
         mcf['distribution']['wcs_link'] = {
+            'rel': 'http://www.opengis.net/def/serviceType/ogc/wcs',
             'url': f'{ows_url}?{urlencode(wcs_link_params)}',
             'type': 'OGC:WCS',
             'name': product_manifest,
