@@ -111,7 +111,7 @@ class ISOMetadata:
             'type': 'application/x-yaml',
             'name': wf['label'],
             'description': wf['doc'],
-            'function': 'information'
+            'function': 'manifest'
         }
 
         mcf['distribution']['http'] = {
@@ -130,7 +130,7 @@ class ISOMetadata:
                 'type': 'text/html',
                 'name': 'citation',
                 'description': 'citation',
-                'function': 'citation'
+                'function': 'cite-as'
             }
 
         if 's:codeRepository' in cwl:
@@ -140,7 +140,7 @@ class ISOMetadata:
                 'type': 'text/html',
                 'name': 'related',
                 'description': 'code repository',
-                'function': 'citation'
+                'function': 'related'
             }
 
         if 's:license' in cwl:
