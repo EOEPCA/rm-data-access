@@ -138,7 +138,7 @@ class ISOMetadata:
                 'rel': 'related',
                 'url': cwl['s:codeRepository'],
                 'type': 'text/html',
-                'name': 'related',
+                'name': 'codeRepository',
                 'description': 'code repository',
                 'function': 'related'
             }
