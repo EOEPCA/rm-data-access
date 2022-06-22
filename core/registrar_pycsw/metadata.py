@@ -120,7 +120,7 @@ class ISOMetadata:
             'type': 'application/x-yaml',
             'name': wf['label'],
             'description': wf['doc'],
-            'function': 'information'
+            'function': 'enclosure'
         }
 
         if 's:citation' in cwl:
