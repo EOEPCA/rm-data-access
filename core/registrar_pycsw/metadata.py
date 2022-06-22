@@ -111,7 +111,7 @@ class ISOMetadata:
             'type': 'application/x-yaml',
             'name': wf['label'],
             'description': wf['doc'],
-            'function': 'manifest'
+            'function': 'enclosure'
         }
 
         mcf['distribution']['http'] = {
