@@ -82,6 +82,14 @@ class ISOMetadata:
         if 's:releaseNotes' in cwl:
             mcf['dataquality']['lineage']['statement'] = cwl['s:releaseNotes']
             mcf['dataquality']['scope'] = {'level': 'application'}
+            mcf['distribution']['releaseNotes'] = {
+                'rel': 'related',
+                'url': cwl['s:releaseNotes'],
+                'type': 'text/html',
+                'name': 'releaseNotes',
+                'description': 'release notes',
+                'function': 'version-history'
+            }
 
         if 's:version' in cwl:
             mcf['identification']['edition'] = cwl['s:version']
@@ -140,7 +148,7 @@ class ISOMetadata:
                 'type': 'text/html',
                 'name': 'codeRepository',
                 'description': 'code repository',
-                'function': 'related'
+                'function': 'working-copy-of'
             }
 
         if 's:license' in cwl:
