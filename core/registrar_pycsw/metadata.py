@@ -161,6 +161,16 @@ class ISOMetadata:
                 'function': 'license'
             }
 
+        if 's:logo' in cwl:
+            mcf['distribution']['logo'] = {
+                'rel': 'icon',
+                'url': cwl['s:logo'],
+                'type': 'text/html',
+                'name': 'logo',
+                'description': 'logo',
+                'function': 'icon'
+            }
+
         mcf['identification']['extents'] = {
             'spatial': [{
                 'bbox': [-180, -90, 180, 90],
