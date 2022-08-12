@@ -3,6 +3,7 @@ import logging
 from copy import deepcopy
 from datetime import datetime
 import json
+from typing import Optional
 from urllib.parse import urlencode, urljoin, uses_netloc, uses_relative
 
 from lxml import etree
@@ -59,7 +60,8 @@ class ISOMetadata:
             }
         }
 
-    def from_cwl(self, cwl_item: str, public_s3_url: str) -> str:
+    def from_cwl(self, cwl_item: str, public_s3_url: str,
+                 parent_identifier: Optional[str] = None) -> str:
         mcf = deepcopy(self.mcf)
 
         now = datetime.now().isoformat()
@@ -177,6 +179,9 @@ class ISOMetadata:
                 'crs': 4326
             }],
         }
+
+        if parent_identifier is not None:
+            mcf['metadata']['parentidentifier'] = parent_identifier
 
         logger.info(f'MCF: {mcf}')
 
