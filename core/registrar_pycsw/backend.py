@@ -2,6 +2,7 @@ import os
 import logging
 from typing import Optional
 import json
+from urllib.parse import urlparse, urljoin, urlunparse
 
 from lxml import etree
 from pycsw.core import metadata, repository, util
@@ -10,9 +11,8 @@ import pycsw.core.config
 from pygeometa.core import read_mcf
 from pygeometa.schemas.iso19139 import ISO19139OutputSchema
 from pystac import Item
-from registrar.backend import ItemBackend, PathBackend
+from registrar.abc import Backend
 from registrar.source import Source
-from urllib.parse import urlparse, urljoin, urlunparse
 
 from .metadata import ISOMetadata
 
@@ -24,11 +24,15 @@ COLLECTION_LEVEL_METADATA = f'{THISDIR}/resources'
 
 
 def href_to_path(href):
+    """ Gets the path component of a URL
+    """
     parsed = urlparse(href)
     return f'{parsed.netloc}{parsed.path}'
 
 
 class PycswMixIn:
+    """ Helper MixIn, to add some common functions when dealing with PyCSW
+    """
     def __init__(self, repository_database_uri, ows_url: str = '',
                  public_s3_url: str = ''):
         self.collections = []
@@ -92,8 +96,8 @@ class PycswMixIn:
         return
 
 
-class PycswItemBackend(ItemBackend, PycswMixIn):
-    def item_exists(self, source: Source, item: Item) -> bool:
+class ItemBackend(Backend[Item], PycswMixIn):
+    def exists(self, source: Source, item: Item) -> bool:
         # TODO: sort out identifier problem in ISO XML
         logger.info(f'Checking for identifier {item.id}')
         if self.repo.query_ids([item.id]):
@@ -103,8 +107,7 @@ class PycswItemBackend(ItemBackend, PycswMixIn):
             logger.info(f'Identifier {item.id} does not exist')
             return False
 
-    def register_item(self, source: Source, item: Item,
-                      replace: bool):
+    def register(self, source: Source, item: Item, replace: bool):
         logger.info('Ingesting product')
 
         assets = item.get_assets()
@@ -130,7 +133,8 @@ class PycswItemBackend(ItemBackend, PycswMixIn):
 
             with open(esa_xml_local, 'rb') as a, open(inspire_xml_local, 'rb') as b:  # noqa
                 iso_metadata = imo.from_esa_iso_xml(
-                    a.read(), b.read(), self.collections, self.ows_url, item.id)
+                    a.read(), b.read(), self.collections, self.ows_url, item.id
+                )
 
             for tmp_file in [esa_xml_local, inspire_xml_local]:
                 logger.debug(f"Removing temporary file {tmp_file}")
@@ -192,13 +196,15 @@ class PycswItemBackend(ItemBackend, PycswMixIn):
         return identifier
 
 
-class PycswCWLBackend(PathBackend, PycswMixIn):
-    def path_exists(self, source: Optional[Source], path: str) -> bool:
+class CWLBackend(Backend[dict], PycswMixIn):
+    def exists(self, source: Optional[Source], item: dict) -> bool:
         pass
 
-    def register_path(self, source: Optional[Source], path: str, replace: bool):
+    def register(self, source: Optional[Source], item: dict, replace: bool):
         logger.info('Ingesting CWL')
         cwl_local = '/tmp/cwl.yaml'
+
+        path = item["url"]
         source.get_file(path, cwl_local)
         with open(cwl_local) as f:
             logger.debug(f'base URL {path}')
@@ -211,7 +217,9 @@ class PycswCWLBackend(PathBackend, PycswMixIn):
                 new_path = os.path.join(parsed.path, path)
             new_scheme = f'{parsed.scheme}://{parsed.netloc}'
             public_url = urljoin(new_scheme, new_path)
-            iso_metadata = imo.from_cwl(f.read(), public_url)
+            iso_metadata = imo.from_cwl(
+                f.read(), public_url, item.get("parent_identifier")
+            )
 
         logger.debug(f"Removing temporary file {cwl_local}")
 
@@ -219,5 +227,19 @@ class PycswCWLBackend(PathBackend, PycswMixIn):
         logger.debug(f'Upserting metadata: {iso_metadata}')
         self._parse_and_upsert_metadata(iso_metadata)
 
-    def deregister_path(self, source: Optional[Source], path: str) -> Optional[str]:
+    def deregister(self, source: Optional[Source], item: dict):
+        pass
+
+
+class ADESBackend(Backend[dict], PycswMixIn):
+    def exists(self, source: Optional[Source], item: dict) -> bool:
+        pass
+
+    def register(self, source: Optional[Source], item: dict, replace: bool):
+        logger.info('Ingesting ADES')
+        url = item["url"]
+        iso_metadata = {"url": url}
+        self._parse_and_upsert_metadata(iso_metadata)
+
+    def deregister(self, source: Optional[Source], item: dict):
         pass

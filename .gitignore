@@ -13,3 +13,5 @@ terraform.tfstate.backup
 build
 dist
 *.egg-info
+
+.venv
