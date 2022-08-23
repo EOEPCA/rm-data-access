@@ -126,7 +126,8 @@ class PycswItemBackend(ItemBackend, PycswMixIn):
                 raise
 
             logger.info('Generating ISO XML based on ESA and INSPIRE XML')
-            imo = ISOMetadata(os.path.dirname(inspire_xml))
+            base_url = f's3://{os.path.dirname(inspire_xml)}'
+            imo = ISOMetadata(base_url)
 
             with open(esa_xml_local, 'rb') as a, open(inspire_xml_local, 'rb') as b:  # noqa
                 iso_metadata = imo.from_esa_iso_xml(
