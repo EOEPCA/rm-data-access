@@ -353,7 +353,7 @@ class ISOMetadata:
         for image_file in exml.xpath('//Product_Organisation//IMAGE_FILE/text()'):
             dist = {
                 'url': urljoin(product_manifest_link, f'{image_file}.{file_extension}'),
-                'type': mime_type,
+                'type': 'enclosure',
                 'name': 'granule',
                 'description': 'granule',
                 'function': 'download'
