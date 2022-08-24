@@ -329,13 +329,13 @@ class ISOMetadata:
                 'max': d.xpath('//MAX/text()')[0]
             })
 
-        # mcf['distribution'][product_manifest] = {
-        #     'url': self.base_url,
-        #     'type': 'enclosure',
-        #     'name': 'product',
-        #     'description': 'product',
-        #     'function': 'download'
-        # }
+        mcf['distribution'][product_manifest] = {
+            'url': self.base_url,
+            'type': 'application/octet-stream',
+            'name': 'product',
+            'description': 'product',
+            'function': 'download'
+        }
 
         product_format = exml.xpath('//Granule_List/Granule/@imageFormat')[0]
 
