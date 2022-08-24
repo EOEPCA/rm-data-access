@@ -417,9 +417,9 @@ class ISOMetadata:
             })
 
         mcf['distribution'][product_manifest] = {
-            'rel': 'enclosure',
+            'rel': 'alternate',
             'url': self.base_url,
-            'type': 'enclosure',
+            'type': 'application/octet-stream',
             'name': 'product',
             'description': 'product',
             'function': 'download'
@@ -440,7 +440,7 @@ class ISOMetadata:
 
         for image_file in exml.xpath('//Product_Organisation//IMAGE_FILE/text()'):
             dist = {
-                'rel': 'data',
+                'rel': 'enclosure',
                 'url': urljoin(product_manifest_link, f'{image_file}.{file_extension}'),
                 'type': mime_type,
                 'name': 'granule',
