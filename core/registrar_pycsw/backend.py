@@ -248,3 +248,17 @@ class ADESBackend(Backend[dict], PycswMixIn):
 
     def deregister(self, source: Optional[Source], item: dict):
         pass
+
+class CollectionBackend(Backend[dict], PycswMixIn):
+    def exists(self, source: Optional[Source], item: dict) -> bool:
+        pass
+
+    def register(self, source: Optional[Source], item: dict, replace: bool):
+        logger.info('Ingesting Collection')
+        imo = ISOMetadata()
+        iso_metadata = imo.from_stac_collection(item.get("stac_collection"))
+        logger.info(f'Upserting metadata: {iso_metadata}')
+        self._parse_and_upsert_metadata(iso_metadata)
+
+    def deregister(self, source: Optional[Source], item: dict):
+        pass

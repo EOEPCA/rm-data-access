@@ -556,3 +556,46 @@ class ISOMetadata:
         iso_os = ISO19139OutputSchema()
 
         return iso_os.write(mcf)
+
+    def from_stac_collection(self, stac_collection: str) -> str:
+        mcf = deepcopy(self.mcf)
+
+        now = datetime.now().isoformat()
+
+        sc = json.loads(stac_collection)
+
+        mcf['metadata']['identifier'] = sc['id']
+        mcf['metadata']['hierarchylevel'] = 'dataset'
+        mcf['metadata']['datestamp'] = now
+
+        mcf['identification']['title'] = sc['id']
+        mcf['identification']['abstract'] = sc['description']
+
+        mcf['identification']['extents'] = {
+            'spatial': [{
+                'bbox': sc['extents']['spatial']['bbox'][0],
+                'crs': 4326
+            }]
+        }
+
+        mcf['identification']['keywords']['default'] = {
+            'keywords': ['collection'],
+            'keywords_type': 'theme'
+        }
+
+        for key, value in sc['links'].items():
+            dist = {
+                'rel': value.get('rel'),
+                'url': value.get('href'),
+                'type': value.get('type'),
+                'name': value.get('title'),
+                'description': value.get('title'),
+                'function': value.get('rel')
+            }
+            mcf['distribution'][key] = dist
+
+        logger.debug(f'MCF: {mcf}')
+
+        iso_os = ISO19139_2OutputSchema()
+
+        return iso_os.write(mcf)
