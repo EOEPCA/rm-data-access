@@ -8,6 +8,7 @@ from urllib.parse import urlencode, urljoin, uses_netloc, uses_relative
 
 from lxml import etree
 from owslib.iso import MD_Metadata
+from owslib.ogcapi.processes import Processes
 from pygeometa.schemas.iso19139 import ISO19139OutputSchema
 from pygeometa.schemas.iso19139_2 import ISO19139_2OutputSchema
 import yaml
@@ -494,5 +495,64 @@ class ISOMetadata:
         logger.debug(f'MCF: {mcf}')
 
         iso_os = ISO19139_2OutputSchema()
+
+        return iso_os.write(mcf)
+
+    def from_ades(self, ades_url: str,
+                 parent_identifier: Optional[str] = None) -> str:
+        mcf = deepcopy(self.mcf)
+
+        now = datetime.now().isoformat()
+
+        ades = Processes(ades_url)
+
+        mcf['metadata']['identifier'] = ades_url
+        mcf['metadata']['hierarchylevel'] = 'application'
+        mcf['metadata']['datestamp'] = now
+
+        mcf['identification']['title'] = ades.response.get('title')
+        mcf['identification']['abstract'] = ades.response.get('description')
+        mcf['identification']['dates'] = {
+                'creation': now
+            }
+
+        mcf['identification']['keywords']['default'] = {
+            'keywords': ['application', 'ADES', 'OGC API Process', 'service'],
+            'keywords_type': 'theme'
+        }
+
+        mcf['distribution']['http'] = {
+            'rel': 'service',
+            'url': ades_url,
+            'type': 'application/json',
+            'name': ades.response.get('title'),
+            'description': ades.response.get('description'),
+            'function': 'service'
+        }
+
+        for link in ades.links:
+            name = link.get("title")
+            mcf['distribution'][name] = {
+                'rel': link.get("rel"),
+                'url': link.get("href"),
+                'type': link.get("type"),
+                'name': name,
+                'description': name,
+                'function': link.get("rel")
+            }
+
+        mcf['identification']['extents'] = {
+            'spatial': [{
+                'bbox': [-180, -90, 180, 90],
+                'crs': 4326
+            }],
+        }
+
+        if parent_identifier is not None:
+            mcf['metadata']['parentidentifier'] = parent_identifier
+
+        logger.info(f'MCF: {mcf}')
+
+        iso_os = ISO19139OutputSchema()
 
         return iso_os.write(mcf)

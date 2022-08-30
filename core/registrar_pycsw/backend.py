@@ -238,8 +238,12 @@ class ADESBackend(Backend[dict], PycswMixIn):
 
     def register(self, source: Optional[Source], item: dict, replace: bool):
         logger.info('Ingesting ADES')
-        url = item["url"]
-        iso_metadata = {"url": url}
+        base_url = item["url"]
+        logger.debug(f'base URL {base_url}')
+        imo = ISOMetadata(base_url)
+        iso_metadata = imo.from_ades(base_url, item.get("parent_identifier"))
+        # FIXME: Move logger to debug
+        logger.info(f'Upserting metadata: {iso_metadata}')
         self._parse_and_upsert_metadata(iso_metadata)
 
     def deregister(self, source: Optional[Source], item: dict):
