@@ -517,7 +517,7 @@ class ISOMetadata:
             }
 
         mcf['identification']['keywords']['default'] = {
-            'keywords': ['application', 'ADES', 'OGC API Process', 'service'],
+            'keywords': ['application', 'ADES', 'OGC API - Processes', 'service', 'process'],
             'keywords_type': 'theme'
         }
 
@@ -531,14 +531,14 @@ class ISOMetadata:
         }
 
         for link in ades.links:
-            name = link.get("title")
+            name = link.get('title')
             mcf['distribution'][name] = {
-                'rel': link.get("rel"),
-                'url': link.get("href"),
-                'type': link.get("type"),
+                'rel': link.get('rel'),
+                'url': link.get('href'),
+                'type': link.get('type'),
                 'name': name,
                 'description': name,
-                'function': link.get("rel")
+                'function': link.get('rel')
             }
 
         mcf['identification']['extents'] = {
