@@ -499,7 +499,7 @@ class ISOMetadata:
         return iso_os.write(mcf)
 
     def from_ades(self, ades_url: str,
-                 parent_identifier: Optional[str] = None) -> str:
+                  parent_identifier: Optional[str] = None) -> str:
         mcf = deepcopy(self.mcf)
 
         now = datetime.now().isoformat()
@@ -557,12 +557,12 @@ class ISOMetadata:
 
         return iso_os.write(mcf)
 
-    def from_stac_collection(self, stac_collection: str) -> str:
+    def from_stac_collection(self, stac_collection: dict) -> str:
         mcf = deepcopy(self.mcf)
 
         now = datetime.now().isoformat()
 
-        sc = json.loads(stac_collection)
+        sc = stac_collection
 
         mcf['metadata']['identifier'] = sc['id']
         mcf['metadata']['hierarchylevel'] = 'dataset'

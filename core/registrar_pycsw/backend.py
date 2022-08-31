@@ -10,7 +10,7 @@ import pycsw.core.admin
 import pycsw.core.config
 from pygeometa.core import read_mcf
 from pygeometa.schemas.iso19139 import ISO19139OutputSchema
-from pystac import Item
+from pystac import Item, Collection
 from registrar.abc import Backend
 from registrar.source import Source
 
@@ -249,16 +249,19 @@ class ADESBackend(Backend[dict], PycswMixIn):
     def deregister(self, source: Optional[Source], item: dict):
         pass
 
-class CollectionBackend(Backend[dict], PycswMixIn):
+
+class CollectionBackend(Backend[Collection], PycswMixIn):
     def exists(self, source: Optional[Source], item: dict) -> bool:
         pass
 
-    def register(self, source: Optional[Source], item: dict, replace: bool):
+    def register(
+        self, source: Optional[Source], item: Collection, replace: bool
+    ):
         logger.info('Ingesting Collection')
-        imo = ISOMetadata()
-        iso_metadata = imo.from_stac_collection(item.get("stac_collection"))
+        imo = ISOMetadata("")
+        iso_metadata = imo.from_stac_collection(item.to_dict())
         logger.info(f'Upserting metadata: {iso_metadata}')
         self._parse_and_upsert_metadata(iso_metadata)
 
-    def deregister(self, source: Optional[Source], item: dict):
+    def deregister(self, source: Optional[Source], item: Collection):
         pass
