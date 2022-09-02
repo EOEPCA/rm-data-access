@@ -268,7 +268,7 @@ class CollectionBackend(Backend[Collection], PycswMixIn):
     ):
         logger.info('Ingesting Collection')
         imo = ISOMetadata("")
-        iso_metadata = imo.from_stac_collection(item.to_dict())
+        iso_metadata = imo.from_stac_collection(item.c.to_dict(False, False))
         logger.info(f'Upserting metadata: {iso_metadata}')
         self._parse_and_upsert_metadata(iso_metadata)
 
