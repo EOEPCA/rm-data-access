@@ -509,6 +509,7 @@ class ISOMetadata:
         mcf['metadata']['identifier'] = ades_url
         mcf['metadata']['hierarchylevel'] = 'application'
         mcf['metadata']['datestamp'] = now
+        mcf.pop('dataquality', None)
 
         mcf['identification']['title'] = ades.response.get('title')
         mcf['identification']['abstract'] = ades.response.get('description')
