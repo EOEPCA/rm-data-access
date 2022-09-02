@@ -583,7 +583,9 @@ class ISOMetadata:
             'keywords_type': 'theme'
         }
 
-        for key, value in sc['links'].items():
+        for value in sc['links']:
+            # TODO: find better solution! Some rels are not unique.
+            key = value['rel']
             dist = {
                 'rel': value.get('rel'),
                 'url': value.get('href'),
