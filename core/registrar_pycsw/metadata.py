@@ -573,7 +573,7 @@ class ISOMetadata:
 
         mcf['identification']['extents'] = {
             'spatial': [{
-                'bbox': sc['extents']['spatial']['bbox'][0],
+                'bbox': sc['extent']['spatial']['bbox'][0],
                 'crs': 4326
             }]
         }
