@@ -571,6 +571,9 @@ class ISOMetadata:
 
         mcf['identification']['title'] = sc['id']
         mcf['identification']['abstract'] = sc['description']
+        mcf['identification']['dates'] = {
+                'creation': now
+            }
 
         mcf['identification']['extents'] = {
             'spatial': [{
