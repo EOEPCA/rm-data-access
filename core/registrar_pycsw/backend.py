@@ -172,6 +172,9 @@ class ItemBackend(Backend[Item], PycswMixIn):
         logger.debug(f'Upserting metadata: {iso_metadata}')
         self._parse_and_upsert_metadata(iso_metadata)
 
+    def deregister(self, source: Optional[Source], item: Item):
+        self.deregister_identifier(item.id)
+
     def deregister_identifier(self, identifier: str):
         logger.info(f'Deleting record {identifier}')
         # TODO: identifier alignment required with other components
@@ -231,6 +234,9 @@ class CWLBackend(Backend[dict], PycswMixIn):
     def deregister(self, source: Optional[Source], item: dict):
         pass
 
+    def deregister_identifier(self, identifier: str):
+        pass
+
 
 class ADESBackend(Backend[dict], PycswMixIn):
     def exists(self, source: Optional[Source], item: dict) -> bool:
@@ -249,6 +255,9 @@ class ADESBackend(Backend[dict], PycswMixIn):
     def deregister(self, source: Optional[Source], item: dict):
         pass
 
+    def deregister_identifier(self, identifier: str):
+        pass
+
 
 class CollectionBackend(Backend[Collection], PycswMixIn):
     def exists(self, source: Optional[Source], item: dict) -> bool:
@@ -264,4 +273,7 @@ class CollectionBackend(Backend[Collection], PycswMixIn):
         self._parse_and_upsert_metadata(iso_metadata)
 
     def deregister(self, source: Optional[Source], item: Collection):
+        pass
+
+    def deregister_identifier(self, identifier: str):
         pass
