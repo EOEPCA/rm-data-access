@@ -568,6 +568,7 @@ class ISOMetadata:
         mcf['metadata']['identifier'] = sc['id']
         mcf['metadata']['hierarchylevel'] = 'dataset'
         mcf['metadata']['datestamp'] = now
+        mcf.pop('dataquality', None)
 
         mcf['identification']['title'] = sc['id']
         mcf['identification']['abstract'] = sc['description']
