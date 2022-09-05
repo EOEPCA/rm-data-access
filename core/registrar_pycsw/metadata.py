@@ -603,6 +603,6 @@ class ISOMetadata:
 
         logger.debug(f'MCF: {mcf}')
 
-        iso_os = ISO19139_2OutputSchema()
+        iso_os = ISO19139OutputSchema()
 
         return iso_os.write(mcf)
