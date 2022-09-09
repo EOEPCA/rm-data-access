@@ -16,8 +16,8 @@ spatial:
 identification:
     language: eng
     charset: utf8
-    title: Sentinel-2 MSI
-    abstract: Sentinel-2 MultiSpectral Instrument
+    title: Sentinel-2 MSI Level 2A
+    abstract: Sentinel-2 MultiSpectral Instrument Level 2A
     dates:
         creation: 2015-06-21
         publication: 2015-06-21
