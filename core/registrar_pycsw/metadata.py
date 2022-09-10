@@ -368,6 +368,7 @@ class ISOMetadata:
 
         mcf['identification']['title'] = product_manifest
         mcf['identification']['abstract'] = product_manifest
+        mcf.pop('dataquality', None)
 
         mcf['identification']['dates'] = {
             'creation': mcf['metadata']['datestamp'],
