@@ -350,10 +350,13 @@ class ISOMetadata:
 
         gfp = exml.xpath('//Global_Footprint/EXT_POS_LIST/text()')[0].split()
 
-        minx = gfp[1]
-        miny = gfp[0]
-        maxx = gfp[5]
-        maxy = gfp[4]
+        xlist = gfp[1::2]
+        ylist = gfp[::2]
+
+        minx = min(xlist)
+        miny = min(ylist)
+        maxx = max(xlist)
+        maxy = max(ylist)
 
         mcf['identification']['extents'] = {
             'spatial': [{
