@@ -427,7 +427,7 @@ class ISOMetadata:
             'type': 'application/octet-stream',
             'name': 'product',
             'description': 'product',
-            'function': 'download'
+            'function': 'alternate'
         }
 
         product_format = exml.xpath('//Granule_List/Granule/@imageFormat')[0]
@@ -450,7 +450,7 @@ class ISOMetadata:
                 'type': mime_type,
                 'name': 'granule',
                 'description': 'granule',
-                'function': 'download'
+                'function': 'enclosure'
             }
             mcf['distribution'][image_file] = dist
 
