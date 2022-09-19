@@ -200,10 +200,7 @@ class ISOMetadata:
         mcf['metadata']['datestamp'] = si['properties']['datetime']
         mcf['metadata']['hierarchylevel'] = 'dataset'
 
-        if 'title' in si:
-            mcf['identification']['title'] = si['title']
-        else:
-            mcf['identification']['title'] = si['id']
+        mcf['identification']['title'] = si.get('title', si.get('id'))
 
         mcf['identification']['extents'] = {
             'spatial': [{
@@ -577,10 +574,7 @@ class ISOMetadata:
         mcf['metadata']['datestamp'] = now
         mcf.pop('dataquality', None)
 
-        if 'title' in sc:
-            mcf['identification']['title'] = sc['title']
-        else:
-            mcf['identification']['title'] = sc['id']
+        mcf['identification']['title'] = sc.get('title', sc.get('id'))
         mcf['identification']['abstract'] = sc['description']
         mcf['identification']['dates'] = {
                 'creation': now
