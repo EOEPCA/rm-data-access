@@ -32,8 +32,7 @@ class ISOMetadata:
             },
             'metadata': {
                 'language': LANGUAGE,
-                'charset': 'utf8',
-                'parentidentifier': 'TBD'
+                'charset': 'utf8'
             },
             'spatial': {
                 'datatype': 'grid',
@@ -82,9 +81,10 @@ class ISOMetadata:
             'keywords_type': 'theme'
         }
 
+        mcf['dataquality']['scope'] = {'level': 'application'}
+
         if 's:releaseNotes' in cwl:
             mcf['dataquality']['lineage']['statement'] = cwl['s:releaseNotes']
-            mcf['dataquality']['scope'] = {'level': 'application'}
             mcf['distribution']['releaseNotes'] = {
                 'rel': 'related',
                 'url': cwl['s:releaseNotes'],
