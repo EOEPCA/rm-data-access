@@ -12,6 +12,7 @@ from owslib.ogcapi.processes import Processes
 from pygeometa.schemas.iso19139 import ISO19139OutputSchema
 from pygeometa.schemas.iso19139_2 import ISO19139_2OutputSchema
 import yaml
+import re
 
 LANGUAGE = 'eng'
 
@@ -510,7 +511,7 @@ class ISOMetadata:
 
         ades = Processes(ades_url)
 
-        mcf['metadata']['identifier'] = ades_url
+        mcf['metadata']['identifier'] = re.sub('[^a-zA-Z0-9 \n]', '-', ades_url)
         mcf['metadata']['hierarchylevel'] = 'application'
         mcf['metadata']['datestamp'] = now
         mcf.pop('dataquality', None)
