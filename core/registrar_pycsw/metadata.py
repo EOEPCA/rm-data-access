@@ -512,7 +512,7 @@ class ISOMetadata:
         ades = Processes(ades_url)
 
         mcf['metadata']['identifier'] = re.sub('[^a-zA-Z0-9 \n]', '-', ades_url)
-        mcf['metadata']['hierarchylevel'] = 'application'
+        mcf['metadata']['hierarchylevel'] = 'service'
         mcf['metadata']['datestamp'] = now
         mcf.pop('dataquality', None)
 
