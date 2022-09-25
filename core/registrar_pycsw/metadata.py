@@ -43,6 +43,7 @@ class ISOMetadata:
                 'charset': 'utf8',
                 'language': 'missing',
                 'keywords': {},
+                'dates': {},
                 'status': 'onGoing',
                 'maintenancefrequency': 'continual'
             },
