@@ -111,6 +111,8 @@ class ItemBackend(Backend[Item], PycswMixIn):
         logger.info('Ingesting product')
 
         assets = item.get_assets()
+
+        # ESA metadata
         if 'inspire-metadata' in assets and 'product-metadata' in assets:
             inspire_xml = href_to_path(assets['inspire-metadata'].href)
             esa_xml = href_to_path(assets['product-metadata'].href)
@@ -140,6 +142,8 @@ class ItemBackend(Backend[Item], PycswMixIn):
             for tmp_file in [esa_xml_local, inspire_xml_local]:
                 logger.debug(f"Removing temporary file {tmp_file}")
                 os.remove(tmp_file)
+
+        # ISO metadata
         elif 'iso-metadata' in assets:
             iso_xml = assets['iso-metadata'].href
             iso_xml_local = '/tmp/iso-metadata.xml'
@@ -154,6 +158,20 @@ class ItemBackend(Backend[Item], PycswMixIn):
 
             with open(iso_xml_local, 'r') as a:
                 iso_metadata = a.read()
+
+        # Landsat
+        elif 'MTL.xml' in assets:
+            logger.info('Ingesting Landsat data')
+            mtl_xml = assets['MTL.xml'].href
+            base_url = mtl_xml[:mtl_xml.rfind("/")]
+            logger.debug(f'base URL {base_url}')
+            imo = ISOMetadata(base_url)
+            iso_metadata = imo.from_stac_item(
+                json.dumps(item.to_dict(transform_hrefs=False)),
+                self.ows_url
+            )
+
+        # Processing result
         else:
             logger.info('Ingesting processing result')
             self_href = item.get_links('self')[0].get_absolute_href()
