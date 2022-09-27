@@ -155,7 +155,7 @@ class ItemBackend(Backend[Item], PycswMixIn):
             with open(iso_xml_local, 'r') as a:
                 iso_metadata = a.read()
         else:
-            logger.info('Ingesting processing result')
+            logger.info('Ingesting STAC Item')
             self_href = item.get_links('self')[0].get_absolute_href()
             parsed = urlparse(self_href)
             parsed = parsed._replace(path=os.path.dirname(parsed.path))
@@ -166,7 +166,7 @@ class ItemBackend(Backend[Item], PycswMixIn):
             imo = ISOMetadata(base_url)
             iso_metadata = imo.from_stac_item(
                 json.dumps(item.to_dict(transform_hrefs=False)),
-                self.ows_url
+                self.collections, self.ows_url
             )
 
         logger.debug(f'Upserting metadata: {iso_metadata}')
