@@ -112,7 +112,7 @@ class ItemBackend(Backend[Item], PycswMixIn):
 
         assets = item.get_assets()
 
-        # ESA metadata
+        # ESA metadata (Sentinel)
         if 'inspire-metadata' in assets and 'product-metadata' in assets:
             inspire_xml = href_to_path(assets['inspire-metadata'].href)
             esa_xml = href_to_path(assets['product-metadata'].href)
@@ -171,7 +171,7 @@ class ItemBackend(Backend[Item], PycswMixIn):
                 self.collections, self.ows_url
             )
 
-        # Processing result
+        # Generic STAC Item (Stage out or other)
         else:
             logger.info('Ingesting STAC Item')
             self_href = item.get_links('self')[0].get_absolute_href()
