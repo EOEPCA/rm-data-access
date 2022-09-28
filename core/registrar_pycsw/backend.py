@@ -168,7 +168,7 @@ class ItemBackend(Backend[Item], PycswMixIn):
             imo = ISOMetadata(base_url)
             iso_metadata = imo.from_stac_item(
                 json.dumps(item.to_dict(transform_hrefs=False)),
-                self.ows_url
+                self.collections, self.ows_url
             )
 
         # Processing result
