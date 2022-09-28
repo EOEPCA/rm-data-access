@@ -192,7 +192,7 @@ class ISOMetadata:
 
         return iso_os.write(mcf)
 
-    def from_stac_item(self, stac_item: str, ows_url: str) -> str:
+    def from_stac_item(self, stac_item: str, collections: list, ows_url: str) -> str:
         mcf = deepcopy(self.mcf)
 
         si = json.loads(stac_item)
@@ -245,6 +245,10 @@ class ISOMetadata:
         properties = si['properties']
         platform = properties.get('platform') or properties.get('eo:platform')
         instrument = properties.get('instrument') or properties.get('eo:instrument')  # noqa
+        collection = properties.get('collection', '')
+
+        if collection in collections:
+            mcf['metadata']['parentidentifier'] = collection
 
         mcf['dataquality'] = {
             'scope': {
