@@ -1,0 +1,68 @@
+mcf:
+    version: 1.0
+
+metadata:
+    identifier: L8MSI1GT
+    language: eng
+    charset: utf8
+    hierarchylevel: dataset
+    datestamp: 2021-02-16
+    dataseturi: https://www.usgs.gov/landsat-missions/landsat-8
+
+spatial:
+    datatype: grid
+    geomtype: solid
+
+identification:
+    language: eng
+    charset: utf8
+    title: Landsat-8 Level 1GT
+    abstract: Landsat-8 Level 1GT
+    dates:
+        creation: 2015-06-21
+        publication: 2015-06-21
+    keywords:
+        default:
+            keywords: [landsat-8,level-1gt]
+    topiccategory:
+        - imageryBaseMapsEarthCover
+    extents:
+        spatial:
+            - bbox: [-180,-56,180,82]
+              crs: 4326
+        temporal:
+            - begin: 2015-06-21
+              end: now
+    fees: None
+    accessconstraints: None
+    rights: https://www.usgs.gov/landsat-missions/landsat-8
+    url: https://www.usgs.gov/landsat-missions/landsat-8
+    status: onGoing
+    maintenancefrequency: continual
+
+contact:
+    pointOfContact: &contact_poc
+        organization: USGS
+        url: https://www.usgs.gov/
+        individualname: Firstname Lastname
+        positionname: Position name
+        phone: TBD
+        fax: TBD
+        address: TBD
+        city: TBD
+        administrativearea: TBD
+        postalcode: TBD
+        country: TBD
+        email: TBD
+        hoursofservice: TBD
+        contactinstructions: TBD
+
+    distributor: *contact_poc
+
+distribution:
+    wms:
+        url: http://example.org/
+        type: OGC:WMS
+        name: TBD
+        description: TBD
+        function: download
