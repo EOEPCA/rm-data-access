@@ -92,8 +92,7 @@ class ISOMetadata:
                 'url': cwl['s:releaseNotes'],
                 'type': 'text/html',
                 'name': 'releaseNotes',
-                'description': 'release notes',
-                'function': 'version-history'
+                'description': 'release notes'
             }
 
         if 's:version' in cwl:
@@ -123,8 +122,7 @@ class ISOMetadata:
             'url': self.base_url.rstrip('/'),
             'type': 'application/x-yaml',
             'name': wf['label'],
-            'description': wf['doc'],
-            'function': 'enclosure'
+            'description': wf['doc']
         }
 
         mcf['distribution']['http'] = {
@@ -132,8 +130,7 @@ class ISOMetadata:
             'url': public_s3_url,
             'type': 'application/x-yaml',
             'name': wf['label'],
-            'description': wf['doc'],
-            'function': 'enclosure'
+            'description': wf['doc']
         }
 
         if 's:citation' in cwl:
@@ -142,18 +139,16 @@ class ISOMetadata:
                 'url': cwl['s:citation'],
                 'type': 'text/html',
                 'name': 'citation',
-                'description': 'citation',
-                'function': 'cite-as'
+                'description': 'citation'
             }
 
         if 's:codeRepository' in cwl:
             mcf['distribution']['codeRepository'] = {
-                'rel': 'related',
+                'rel': 'working-copy-of',
                 'url': cwl['s:codeRepository'],
                 'type': 'text/html',
                 'name': 'codeRepository',
-                'description': 'code repository',
-                'function': 'working-copy-of'
+                'description': 'code repository'
             }
 
         if 's:license' in cwl:
@@ -162,8 +157,7 @@ class ISOMetadata:
                 'url': cwl['s:license'],
                 'type': 'text/html',
                 'name': 'license',
-                'description': 'license',
-                'function': 'license'
+                'description': 'license'
             }
 
         if 's:logo' in cwl:
@@ -172,8 +166,7 @@ class ISOMetadata:
                 'url': cwl['s:logo'],
                 'type': 'text/html',
                 'name': 'logo',
-                'description': 'logo',
-                'function': 'icon'
+                'description': 'logo'
             }
 
         mcf['identification']['extents'] = {
@@ -276,8 +269,7 @@ class ISOMetadata:
                 'url': urljoin(self.base_url, value['href']),
                 'type': value['type'],
                 'name': value.get('title'),
-                'description': value.get('title'),
-                'function': 'download'
+                'description': value.get('title')
             }
             mcf['distribution'][key] = dist
 
@@ -286,8 +278,7 @@ class ISOMetadata:
             'url': self.base_url,
             'type': 'enclosure',
             'name': 'product',
-            'description': 'product',
-            'function': 'download'
+            'description': 'product'
         }
 
         logger.debug('Adding WMS/WCS links')
@@ -432,8 +423,7 @@ class ISOMetadata:
             'url': self.base_url,
             'type': 'application/octet-stream',
             'name': 'product',
-            'description': 'product',
-            'function': 'alternate'
+            'description': 'product'
         }
 
         product_format = exml.xpath('//Granule_List/Granule/@imageFormat')[0]
@@ -455,8 +445,7 @@ class ISOMetadata:
                 'url': urljoin(product_manifest_link, f'{image_file}.{file_extension}'),
                 'type': mime_type,
                 'name': 'granule',
-                'description': 'granule',
-                'function': 'enclosure'
+                'description': 'granule'
             }
             mcf['distribution'][image_file] = dist
 
@@ -548,8 +537,7 @@ class ISOMetadata:
                 'url': link.get('href'),
                 'type': link.get('type'),
                 'name': name,
-                'description': name,
-                'function': link.get('rel')
+                'description': name
             }
 
         mcf['identification']['extents'] = {
@@ -583,8 +571,8 @@ class ISOMetadata:
         mcf['identification']['title'] = sc.get('title', sc.get('id'))
         mcf['identification']['abstract'] = sc['description']
         mcf['identification']['dates'] = {
-                'creation': now
-            }
+            'creation': now
+        }
 
         mcf['identification']['extents'] = {
             'spatial': [{
@@ -606,8 +594,7 @@ class ISOMetadata:
                 'url': value.get('href'),
                 'type': value.get('type'),
                 'name': value.get('title'),
-                'description': value.get('title'),
-                'function': value.get('rel')
+                'description': value.get('title')
             }
             mcf['distribution'][key] = dist
 
