@@ -180,7 +180,6 @@ class ItemBackend(Backend[Item], PycswMixIn):
             base_url = urlunparse(parsed)
 
             logger.debug(f'base URL {base_url}')
-            base_url = f's3://{base_url}'
             imo = ISOMetadata(base_url)
             iso_metadata = imo.from_stac_item(
                 json.dumps(item.to_dict(transform_hrefs=False)),
