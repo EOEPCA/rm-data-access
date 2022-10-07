@@ -491,7 +491,7 @@ class ISOMetadata:
             }]
         }
 
-        logger.info(f'MCF: {mcf}')
+        logger.debug(f'MCF: {mcf}')
 
         iso_os = ISO19139_2OutputSchema()
 
