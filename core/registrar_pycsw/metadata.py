@@ -320,10 +320,11 @@ class ISOMetadata:
 
         return iso_os.write(mcf)
 
-    def from_esa_iso_xml(self, esa_xml: bytes, inspire_xml: bytes,
-                         collections: list, ows_url: str, stac_id: str) -> str:
+    def from_esa_iso_xml(self, esa_xml: bytes, inspire_xml: bytes, stac_item: str,
+                         collections: list, ows_url: str) -> str:
 
         mcf = deepcopy(self.mcf)
+        si = json.loads(stac_item)
 
         exml = etree.fromstring(esa_xml)
         ixml = etree.fromstring(inspire_xml)
@@ -335,8 +336,8 @@ class ISOMetadata:
         product_manifest = exml.xpath('//PRODUCT_URI/text()')[0]
         product_manifest_link = urljoin(self.base_url, product_manifest)
 
-        if stac_id:
-            mcf['metadata']['identifier'] = stac_id
+        if si.get('id') != None:
+            mcf['metadata']['identifier'] = si['id']
         else:
             mcf['metadata']['identifier'] = product_manifest
         mcf['metadata']['hierarchylevel'] = m.hierarchy or 'dataset'
@@ -439,15 +440,25 @@ class ISOMetadata:
             mime_type = 'NA'
             file_extension = 'NA'
 
-        for image_file in exml.xpath('//Product_Organisation//IMAGE_FILE/text()'):
+        # for image_file in exml.xpath('//Product_Organisation//IMAGE_FILE/text()'):
+        #     dist = {
+        #         'rel': 'enclosure',
+        #         'url': urljoin(product_manifest_link, f'{image_file}.{file_extension}'),
+        #         'type': mime_type,
+        #         'name': 'granule',
+        #         'description': 'granule'
+        #     }
+        #     mcf['distribution'][image_file] = dist
+
+        for key, value in si['assets'].items():
             dist = {
                 'rel': 'enclosure',
-                'url': urljoin(product_manifest_link, f'{image_file}.{file_extension}'),
-                'type': mime_type,
-                'name': 'granule',
-                'description': 'granule'
+                'url': urljoin(self.base_url, value['href']),
+                'type': value.get('type'),
+                'name': value.get('title'),
+                'description': value.get('title')
             }
-            mcf['distribution'][image_file] = dist
+            mcf['distribution'][key] = dist
 
         logger.debug('Adding WMS/WCS links')
         wms_link_params = {
