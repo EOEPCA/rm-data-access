@@ -265,7 +265,7 @@ class ISOMetadata:
 
         for key, value in si['assets'].items():
             dist = {
-                'rel': 'data',
+                'rel': 'enclosure',
                 'url': urljoin(self.base_url, value['href']),
                 'type': value['type'],
                 'name': value.get('title'),
@@ -274,9 +274,9 @@ class ISOMetadata:
             mcf['distribution'][key] = dist
 
         mcf['distribution'][si['id']] = {
-            'rel': 'enclosure',
+            'rel': 'alternate',
             'url': self.base_url,
-            'type': 'enclosure',
+            'type': 'application/octet-stream',
             'name': 'product',
             'description': 'product'
         }
