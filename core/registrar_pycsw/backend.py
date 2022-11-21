@@ -72,7 +72,7 @@ class PycswMixIn:
         logger.debug('Processing metadata')
         try:
             record = metadata.parse_record(self.context, metadata_record, self.repo)[0]
-            # record.xml = record.xml.decode()
+            record.xml = record.xml.decode()
             logger.info(f"identifier: {record.identifier}")
         except Exception as err:
             logger.error(f'Metadata parsing failed: {err}')
