@@ -5,7 +5,6 @@ import json
 from urllib.parse import urlparse, urljoin, urlunparse
 
 from lxml import etree
-import json
 from pycsw.core import metadata, repository, util
 import pycsw.core.admin
 import pycsw.core.config
