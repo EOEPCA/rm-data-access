@@ -5,6 +5,7 @@ import json
 from urllib.parse import urlparse, urljoin, urlunparse
 
 from lxml import etree
+import json
 from pycsw.core import metadata, repository, util
 import pycsw.core.admin
 import pycsw.core.config
@@ -60,17 +61,19 @@ class PycswMixIn:
             self._parse_and_upsert_metadata(clm_iso)
 
     def _parse_and_upsert_metadata(self, md: str):
-        logger.debug('Parsing XML')
+        logger.debug('Parsing metadata')
         try:
-            xml = etree.fromstring(md)
+            metadata_record = json.loads(md)
+        except json.decoder.JSONDecodeError as err:
+            metadata_record = etree.fromstring(md)
         except Exception as err:
-            logger.error(f'XML parsing failed: {err}')
+            logger.error(f'Metadata parsing failed: {err}')
             raise
 
         logger.debug('Processing metadata')
         try:
-            record = metadata.parse_record(self.context, xml, self.repo)[0]
-            record.xml = record.xml.decode()
+            record = metadata.parse_record(self.context, metadata_record, self.repo)[0]
+            # record.xml = record.xml.decode()
             logger.info(f"identifier: {record.identifier}")
         except Exception as err:
             logger.error(f'Metadata parsing failed: {err}')
