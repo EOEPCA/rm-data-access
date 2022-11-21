@@ -83,6 +83,11 @@ class ISOMetadata:
             'keywords_type': 'theme'
         }
 
+        if 's:keywords' in cwl:
+            mcf['identification']['keywords']['default']['keywords'].extend(
+                cwl['s:keywords'].split(',')
+            )
+
         mcf['dataquality']['scope'] = {'level': 'application'}
 
         if 's:releaseNotes' in cwl:
