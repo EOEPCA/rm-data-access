@@ -637,7 +637,7 @@ class STACMetadata:
             product_type = si['properties']['s2:product_type']
 
         product_manifest = si['id']
-        product_manifest_link = urljoin(self.base_url, product_manifest)
+        # product_manifest_link = urljoin(self.base_url, product_manifest)
 
         if product_type in collections:
             si['properties']['collection'] = product_type
@@ -691,10 +691,9 @@ class STACMetadata:
         product_manifest = si['id']
 
         properties = si['properties']
-        platform = properties.get('platform') or properties.get('eo:platform')
         collection = properties.get('collection', '')
 
-        if product_type in collections:
+        if collection in collections:
             si['properties']['collection'] = collection
 
         si['links'].append({
