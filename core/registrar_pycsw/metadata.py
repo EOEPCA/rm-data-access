@@ -3,6 +3,8 @@ import logging
 from copy import deepcopy
 from datetime import datetime
 import json
+import yaml
+import re
 from typing import Optional
 from urllib.parse import urlencode, urljoin, uses_netloc, uses_relative
 
@@ -11,8 +13,6 @@ from owslib.iso import MD_Metadata
 from owslib.ogcapi.processes import Processes
 from pygeometa.schemas.iso19139 import ISO19139OutputSchema
 from pygeometa.schemas.iso19139_2 import ISO19139_2OutputSchema
-import yaml
-import re
 
 LANGUAGE = 'eng'
 
@@ -619,3 +619,124 @@ class ISOMetadata:
         iso_os = ISO19139OutputSchema()
 
         return iso_os.write(mcf)
+
+class STACMetadata:
+    def __init__(self, base_url: str):
+        logger.debug('Adding s3 to urllib supported protocols for urljoin')
+        uses_netloc.append('s3')
+        uses_relative.append('s3')
+
+        self.base_url = base_url.rstrip('/') + '/'
+
+    def from_sentinel2_stac_item(self, stac_item: str,
+                         collections: list, ows_url: str) -> str:
+
+        si = json.loads(stac_item)
+
+        if 's2:product_type' in si['properties']:
+            product_type = si['properties']['s2:product_type']
+
+        product_manifest = si['id']
+        # product_manifest_link = urljoin(self.base_url, product_manifest)
+
+        if product_type in collections:
+            si['collection'] = product_type
+
+        si['links'].append({
+            'rel': 'alternate',
+            'url': self.base_url,
+            'type': 'application/octet-stream',
+            'name': 'product',
+            'description': 'product'
+        })
+
+        logger.debug('Adding WMS/WCS links')
+        wms_link_params = {
+            'service': 'WMS',
+            'version': '1.3.0',
+            'request': 'GetCapabilities',
+            'cql': f'identifier="{product_manifest}"'
+        }
+
+        si['links'].append({
+            'rel': 'http://www.opengis.net/def/serviceType/ogc/wms',
+            'url': f'{ows_url}?{urlencode(wms_link_params)}',
+            'type': 'OGC:WMS',
+            'name': product_manifest,
+            'description': f'WMS URL for {product_manifest}',
+        })
+
+        wcs_link_params = {
+            'service': 'WCS',
+            'version': '2.0.1',
+            'request': 'DescribeEOCoverageSet',
+            'eoid': product_manifest
+        }
+
+        si['links'].append({
+            'rel': 'http://www.opengis.net/def/serviceType/ogc/wcs',
+            'url': f'{ows_url}?{urlencode(wcs_link_params)}',
+            'type': 'OGC:WCS',
+            'name': product_manifest,
+            'description': f'WCS URL for {product_manifest}',
+        })
+
+        logger.debug(f'STAC Item: {si}')
+
+        return json.dumps(si)
+
+    def from_stac_item(self, stac_item: str, collections: list, ows_url: str) -> str:
+
+        si = json.loads(stac_item)
+        product_manifest = si['id']
+
+        # properties = si['properties']
+        # collection = si.get('collection', '')
+
+        # if collection in collections:
+        #     si['collection'] = collection
+
+        si['links'].append({
+            'rel': 'alternate',
+            'url': self.base_url,
+            'type': 'application/octet-stream',
+            'name': 'product',
+            'description': 'product'
+        })
+
+        logger.debug('Adding WMS/WCS links')
+        wms_link_params = {
+            'rel': 'http://www.opengis.net/def/serviceType/ogc/wms',
+            'service': 'WMS',
+            'version': '1.3.0',
+            'request': 'GetCapabilities',
+            'cql': f'identifier="{product_manifest}"'
+        }
+
+        si['links'].append({
+            'rel': 'http://www.opengis.net/def/serviceType/ogc/wms',
+            'url': f'{ows_url}?{urlencode(wms_link_params)}',
+            'type': 'OGC:WMS',
+            'name': product_manifest,
+            'description': f'WMS URL for {product_manifest}',
+        })
+
+        wcs_link_params = {
+            'rel': 'http://www.opengis.net/def/serviceType/ogc/wcs',
+            'service': 'WCS',
+            'version': '2.0.1',
+            'request': 'DescribeEOCoverageSet',
+            'eoid': product_manifest
+        }
+
+        si['links'].append({
+            'rel': 'http://www.opengis.net/def/serviceType/ogc/wcs',
+            'url': f'{ows_url}?{urlencode(wcs_link_params)}',
+            'type': 'OGC:WCS',
+            'name': product_manifest,
+            'description': f'WCS URL for {product_manifest}',
+        })
+
+        logger.debug(f'STAC Item: {si}')
+
+        return json.dumps(si)
