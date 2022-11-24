@@ -3,6 +3,8 @@ import logging
 from copy import deepcopy
 from datetime import datetime
 import json
+import yaml
+import re
 from typing import Optional
 from urllib.parse import urlencode, urljoin, uses_netloc, uses_relative
 
@@ -11,8 +13,6 @@ from owslib.iso import MD_Metadata
 from owslib.ogcapi.processes import Processes
 from pygeometa.schemas.iso19139 import ISO19139OutputSchema
 from pygeometa.schemas.iso19139_2 import ISO19139_2OutputSchema
-import yaml
-import re
 
 LANGUAGE = 'eng'
 
