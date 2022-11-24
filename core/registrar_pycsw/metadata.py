@@ -272,9 +272,9 @@ class ISOMetadata:
             dist = {
                 'rel': 'enclosure',
                 'url': urljoin(self.base_url, value['href']),
-                'type': value['type'],
-                'name': value.get('title'),
-                'description': value.get('title')
+                'type': value.get('type'),
+                'name': key,
+                'description': value.get('title', key)
             }
             mcf['distribution'][key] = dist
 
