@@ -117,10 +117,10 @@ class ItemBackend(Backend[Item], PycswMixIn):
         # ESA metadata (Sentinel)
         if 'inspire-metadata' in assets and 'product-metadata' in assets:
             inspire_xml = href_to_path(assets['inspire-metadata'].href)
-            logger.info('Generating ISO XML based on ESA and INSPIRE XML')
+            logger.info('Ingesting Sentinel 2 STAC Item')
             base_url = f's3://{os.path.dirname(inspire_xml)}'
             imo = STACMetadata(base_url)
-            metadata = imo.from_sentinel2_stac_item(
+            metadata = imo.from_stac_item(
                 json.dumps(item.to_dict(transform_hrefs=False)),
                 self.collections, self.ows_url
             )
@@ -143,7 +143,7 @@ class ItemBackend(Backend[Item], PycswMixIn):
 
         # Landsat
         elif 'MTL.xml' in assets:
-            logger.info('Ingesting Landsat data')
+            logger.info('Ingesting Landsat STAC Item')
             mtl_xml = assets['MTL.xml'].href
             base_url = mtl_xml[:mtl_xml.rfind("/")]
             logger.debug(f'base URL {base_url}')

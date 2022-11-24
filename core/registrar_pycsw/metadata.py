@@ -628,63 +628,6 @@ class STACMetadata:
 
         self.base_url = base_url.rstrip('/') + '/'
 
-    def from_sentinel2_stac_item(self, stac_item: str,
-                         collections: list, ows_url: str) -> str:
-
-        si = json.loads(stac_item)
-
-        if 's2:product_type' in si['properties']:
-            product_type = si['properties']['s2:product_type']
-
-        product_manifest = si['id']
-        # product_manifest_link = urljoin(self.base_url, product_manifest)
-
-        if product_type in collections:
-            si['collection'] = product_type
-
-        si['links'].append({
-            'rel': 'alternate',
-            'url': self.base_url,
-            'type': 'application/octet-stream',
-            'name': 'product',
-            'description': 'product'
-        })
-
-        logger.debug('Adding WMS/WCS links')
-        wms_link_params = {
-            'service': 'WMS',
-            'version': '1.3.0',
-            'request': 'GetCapabilities',
-            'cql': f'identifier="{product_manifest}"'
-        }
-
-        si['links'].append({
-            'rel': 'http://www.opengis.net/def/serviceType/ogc/wms',
-            'url': f'{ows_url}?{urlencode(wms_link_params)}',
-            'type': 'OGC:WMS',
-            'name': product_manifest,
-            'description': f'WMS URL for {product_manifest}',
-        })
-
-        wcs_link_params = {
-            'service': 'WCS',
-            'version': '2.0.1',
-            'request': 'DescribeEOCoverageSet',
-            'eoid': product_manifest
-        }
-
-        si['links'].append({
-            'rel': 'http://www.opengis.net/def/serviceType/ogc/wcs',
-            'url': f'{ows_url}?{urlencode(wcs_link_params)}',
-            'type': 'OGC:WCS',
-            'name': product_manifest,
-            'description': f'WCS URL for {product_manifest}',
-        })
-
-        logger.debug(f'STAC Item: {si}')
-
-        return json.dumps(si)
-
     def from_stac_item(self, stac_item: str, collections: list, ows_url: str) -> str:
 
         si = json.loads(stac_item)
