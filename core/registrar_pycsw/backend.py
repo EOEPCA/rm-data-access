@@ -14,7 +14,7 @@ from pystac import Item, Collection
 from registrar.abc import Backend
 from registrar.source import Source
 
-from .metadata import ISOMetadata
+from .metadata import ISOMetadata,STACMetadata
 
 logger = logging.getLogger(__name__)
 
@@ -117,34 +117,13 @@ class ItemBackend(Backend[Item], PycswMixIn):
         # ESA metadata (Sentinel)
         if 'inspire-metadata' in assets and 'product-metadata' in assets:
             inspire_xml = href_to_path(assets['inspire-metadata'].href)
-            esa_xml = href_to_path(assets['product-metadata'].href)
-
-            esa_xml_local = '/tmp/esa-metadata.xml'
-            inspire_xml_local = '/tmp/inspire-metadata.xml'
-
-            logger.info(f"ESA XML metadata file: {esa_xml}")
-            logger.info(f"INSPIRE XML metadata file: {inspire_xml}")
-
-            try:
-                source.get_file(inspire_xml, inspire_xml_local)
-                source.get_file(esa_xml, esa_xml_local)
-            except Exception as err:
-                logger.error(err)
-                raise
-
             logger.info('Generating ISO XML based on ESA and INSPIRE XML')
             base_url = f's3://{os.path.dirname(inspire_xml)}'
-            imo = ISOMetadata(base_url)
-
-            with open(esa_xml_local, 'rb') as a, open(inspire_xml_local, 'rb') as b:  # noqa
-                iso_metadata = imo.from_esa_iso_xml(
-                    a.read(), b.read(), json.dumps(item.to_dict(transform_hrefs=False)),
-                    self.collections, self.ows_url
-                )
-
-            for tmp_file in [esa_xml_local, inspire_xml_local]:
-                logger.debug(f"Removing temporary file {tmp_file}")
-                os.remove(tmp_file)
+            imo = STACMetadata(base_url)
+            metadata = imo.from_sentinel2_stac_item(
+                json.dumps(item.to_dict(transform_hrefs=False)),
+                self.collections, self.ows_url
+            )
 
         # ISO metadata
         elif 'iso-metadata' in assets:
@@ -160,7 +139,7 @@ class ItemBackend(Backend[Item], PycswMixIn):
                 raise
 
             with open(iso_xml_local, 'r') as a:
-                iso_metadata = a.read()
+                metadata = a.read()
 
         # Landsat
         elif 'MTL.xml' in assets:
@@ -168,8 +147,8 @@ class ItemBackend(Backend[Item], PycswMixIn):
             mtl_xml = assets['MTL.xml'].href
             base_url = mtl_xml[:mtl_xml.rfind("/")]
             logger.debug(f'base URL {base_url}')
-            imo = ISOMetadata(base_url)
-            iso_metadata = imo.from_stac_item(
+            imo = STACMetadata(base_url)
+            metadata = imo.from_stac_item(
                 json.dumps(item.to_dict(transform_hrefs=False)),
                 self.collections, self.ows_url
             )
@@ -183,14 +162,14 @@ class ItemBackend(Backend[Item], PycswMixIn):
             base_url = urlunparse(parsed)
 
             logger.debug(f'base URL {base_url}')
-            imo = ISOMetadata(base_url)
-            iso_metadata = imo.from_stac_item(
+            imo = STACMetadata(base_url)
+            metadata = imo.from_stac_item(
                 json.dumps(item.to_dict(transform_hrefs=False)),
                 self.collections, self.ows_url
             )
 
-        logger.debug(f'Upserting metadata: {iso_metadata}')
-        self._parse_and_upsert_metadata(iso_metadata)
+        logger.debug(f'Upserting metadata: {metadata}')
+        self._parse_and_upsert_metadata(metadata)
 
     def deregister(self, source: Optional[Source], item: Item):
         self.deregister_identifier(item.id)
