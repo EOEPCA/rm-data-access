@@ -299,7 +299,7 @@ class ISOMetadata:
             'rel': 'http://www.opengis.net/def/serviceType/ogc/wms',
             'url': f'{ows_url}?{urlencode(wms_link_params)}',
             'type': 'OGC:WMS',
-            'name': product_manifest,
+            'name': 'OGC WMS',
             'description': f'WMS URL for {product_manifest}',
         }
 
@@ -315,7 +315,7 @@ class ISOMetadata:
             'rel': 'http://www.opengis.net/def/serviceType/ogc/wcs',
             'url': f'{ows_url}?{urlencode(wcs_link_params)}',
             'type': 'OGC:WCS',
-            'name': product_manifest,
+            'name': 'OGC WCS',
             'description': f'WCS URL for {product_manifest}',
         }
 
@@ -477,7 +477,7 @@ class ISOMetadata:
             'rel': 'http://www.opengis.net/def/serviceType/ogc/wms',
             'url': f'{ows_url}?{urlencode(wms_link_params)}',
             'type': 'OGC:WMS',
-            'name': product_manifest,
+            'name': 'OGC WMS',
             'description': f'WMS URL for {product_manifest}',
         }
 
@@ -492,7 +492,7 @@ class ISOMetadata:
             'rel': 'http://www.opengis.net/def/serviceType/ogc/wcs',
             'url': f'{ows_url}?{urlencode(wcs_link_params)}',
             'type': 'OGC:WCS',
-            'name': product_manifest,
+            'name': 'OGC WCS',
             'description': f'WCS URL for {product_manifest}',
         }
 
@@ -660,7 +660,7 @@ class STACMetadata:
             'rel': 'http://www.opengis.net/def/serviceType/ogc/wms',
             'url': f'{ows_url}?{urlencode(wms_link_params)}',
             'type': 'OGC:WMS',
-            'name': product_manifest,
+            'name': 'OGC WMS',
             'description': f'WMS URL for {product_manifest}',
         })
 
@@ -676,7 +676,7 @@ class STACMetadata:
             'rel': 'http://www.opengis.net/def/serviceType/ogc/wcs',
             'url': f'{ows_url}?{urlencode(wcs_link_params)}',
             'type': 'OGC:WCS',
-            'name': product_manifest,
+            'name': 'OGC WCS',
             'description': f'WCS URL for {product_manifest}',
         })
 
