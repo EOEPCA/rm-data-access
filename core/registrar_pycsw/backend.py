@@ -63,8 +63,10 @@ class PycswMixIn:
         logger.debug('Parsing metadata')
         try:
             metadata_record = json.loads(md)
+            metadata_format = 'json'
         except json.decoder.JSONDecodeError as err:
             metadata_record = etree.fromstring(md)
+            metadata_format = 'xml'
         except Exception as err:
             logger.error(f'Metadata parsing failed: {err}')
             raise
@@ -72,7 +74,8 @@ class PycswMixIn:
         logger.debug('Processing metadata')
         try:
             record = metadata.parse_record(self.context, metadata_record, self.repo)[0]
-            record.xml = record.xml.decode()
+            if metadata_format == 'xml':
+                record.xml = record.xml.decode()
             logger.info(f"identifier: {record.identifier}")
         except Exception as err:
             logger.error(f'Metadata parsing failed: {err}')
