@@ -641,7 +641,7 @@ class STACMetadata:
 
         si['links'].append({
             'rel': 'alternate',
-            'url': self.base_url,
+            'href': self.base_url,
             'type': 'application/octet-stream',
             'name': 'product',
             'description': 'product'
@@ -658,7 +658,7 @@ class STACMetadata:
 
         si['links'].append({
             'rel': 'http://www.opengis.net/def/serviceType/ogc/wms',
-            'url': f'{ows_url}?{urlencode(wms_link_params)}',
+            'href': f'{ows_url}?{urlencode(wms_link_params)}',
             'type': 'OGC:WMS',
             'name': 'OGC WMS',
             'description': f'WMS URL for {product_manifest}',
@@ -674,7 +674,7 @@ class STACMetadata:
 
         si['links'].append({
             'rel': 'http://www.opengis.net/def/serviceType/ogc/wcs',
-            'url': f'{ows_url}?{urlencode(wcs_link_params)}',
+            'href': f'{ows_url}?{urlencode(wcs_link_params)}',
             'type': 'OGC:WCS',
             'name': 'OGC WCS',
             'description': f'WCS URL for {product_manifest}',
