@@ -633,12 +633,6 @@ class STACMetadata:
         si = json.loads(stac_item)
         product_manifest = si['id']
 
-        # properties = si['properties']
-        # collection = si.get('collection', '')
-
-        # if collection in collections:
-        #     si['collection'] = collection
-
         si['links'].append({
             'rel': 'alternate',
             'href': self.base_url,
