@@ -125,7 +125,7 @@ class ItemBackend(Backend[Item], PycswMixIn):
             imo = STACMetadata(base_url)
             metadata = imo.from_stac_item(
                 json.dumps(item.to_dict(transform_hrefs=False)),
-                self.collections, self.ows_url
+                self.ows_url
             )
 
         # ISO metadata
@@ -153,7 +153,7 @@ class ItemBackend(Backend[Item], PycswMixIn):
             imo = STACMetadata(base_url)
             metadata = imo.from_stac_item(
                 json.dumps(item.to_dict(transform_hrefs=False)),
-                self.collections, self.ows_url
+                self.ows_url
             )
 
         # Generic STAC Item (Stage out or other)
@@ -168,7 +168,7 @@ class ItemBackend(Backend[Item], PycswMixIn):
             imo = STACMetadata(base_url)
             metadata = imo.from_stac_item(
                 json.dumps(item.to_dict(transform_hrefs=False)),
-                self.collections, self.ows_url
+                self.ows_url
             )
 
         logger.debug(f'Upserting metadata: {metadata}')
