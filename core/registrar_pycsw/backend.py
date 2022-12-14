@@ -269,10 +269,10 @@ class CollectionBackend(Backend[Collection], PycswMixIn):
         self, source: Optional[Source], item: Collection, replace: bool
     ):
         logger.info('Ingesting Collection')
-        imo = ISOMetadata("")
-        iso_metadata = imo.from_stac_collection(item.to_dict(False, False))
-        logger.info(f'Upserting metadata: {iso_metadata}')
-        self._parse_and_upsert_metadata(iso_metadata)
+        imo = STACMetadata("")
+        metadata = imo.from_stac_collection(item.to_dict(False, False))
+        logger.info(f'Upserting metadata: {metadata}')
+        self._parse_and_upsert_metadata(metadata)
 
     def deregister(self, source: Optional[Source], item: Collection):
         pass
