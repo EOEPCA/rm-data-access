@@ -628,7 +628,7 @@ class STACMetadata:
 
         self.base_url = base_url.rstrip('/') + '/'
 
-    def from_stac_item(self, stac_item: str, collections: list, ows_url: str) -> str:
+    def from_stac_item(self, stac_item: str, ows_url: str) -> str:
 
         si = json.loads(stac_item)
         product_manifest = si['id']
