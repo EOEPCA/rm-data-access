@@ -628,7 +628,7 @@ class STACMetadata:
 
         self.base_url = base_url.rstrip('/') + '/'
 
-    def from_stac_item(self, stac_item: str, collections: list, ows_url: str) -> str:
+    def from_stac_item(self, stac_item: str, ows_url: str) -> str:
 
         si = json.loads(stac_item)
         product_manifest = si['id']
@@ -677,3 +677,13 @@ class STACMetadata:
         logger.debug(f'STAC Item: {si}')
 
         return json.dumps(si)
+
+    def from_stac_collection(self, stac_collection: dict) -> str:
+
+        sc = stac_collection
+
+        # TODO: Fix links with self.base_url?
+
+        logger.debug(f'STAC Collection: {sc}')
+
+        return json.dumps(sc)
