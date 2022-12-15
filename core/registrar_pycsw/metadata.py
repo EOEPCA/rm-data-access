@@ -19,12 +19,14 @@ LANGUAGE = 'eng'
 logger = logging.getLogger(__name__)
 
 
+if 's3' not in uses_netloc:
+    uses_netloc.append('s3')
+if 's3' not in uses_relative:
+    uses_relative.append('s3')
+
+
 class ISOMetadata:
     def __init__(self, base_url: str):
-        logger.debug('Adding s3 to urllib supported protocols for urljoin')
-        uses_netloc.append('s3')
-        uses_relative.append('s3')
-
         self.base_url = base_url.rstrip('/') + '/'
 
         self.mcf = {
