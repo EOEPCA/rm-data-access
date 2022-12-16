@@ -624,10 +624,6 @@ class ISOMetadata:
 
 class STACMetadata:
     def __init__(self, base_url: str):
-        logger.debug('Adding s3 to urllib supported protocols for urljoin')
-        uses_netloc.append('s3')
-        uses_relative.append('s3')
-
         self.base_url = base_url.rstrip('/') + '/'
 
     def from_stac_item(self, stac_item: str, ows_url: str) -> str:
