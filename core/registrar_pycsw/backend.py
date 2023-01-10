@@ -159,10 +159,13 @@ class ItemBackend(Backend[Item], PycswMixIn):
         # Generic STAC Item (Stage out or other)
         else:
             logger.info('Ingesting STAC Item')
-            self_href = item.get_links('self')[0].get_absolute_href()
-            parsed = urlparse(self_href)
-            parsed = parsed._replace(path=os.path.dirname(parsed.path))
-            base_url = urlunparse(parsed)
+            if item.get_links('self'):
+                self_href = item.get_links('self')[0].get_absolute_href()
+                parsed = urlparse(self_href)
+                parsed = parsed._replace(path=os.path.dirname(parsed.path))
+                base_url = urlunparse(parsed)
+            else:
+                base_url = ''
 
             logger.debug(f'base URL {base_url}')
             imo = STACMetadata(base_url)
