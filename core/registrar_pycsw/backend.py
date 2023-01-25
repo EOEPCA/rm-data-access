@@ -121,9 +121,9 @@ class ItemBackend(Backend[Item], PycswMixIn):
         if 'inspire-metadata' in assets and 'product-metadata' in assets:
             inspire_xml = assets['inspire-metadata'].href
             logger.info('Ingesting Sentinel 2 STAC Item')
-            logger.info(f'asset href: {inspire_xml}')
+            # logger.info(f'asset href: {inspire_xml}')
             base_url = f'{os.path.dirname(inspire_xml)}'
-            logger.info(f'base_url: {base_url}')
+            # logger.info(f'base_url: {base_url}')
             imo = STACMetadata(base_url)
             metadata = imo.from_stac_item(
                 json.dumps(item.to_dict(transform_hrefs=False)),
