@@ -131,7 +131,8 @@ class ItemBackend(Backend[Item], PycswMixIn):
                 raise
 
             logger.info('Generating ISO XML based on ESA and INSPIRE XML')
-            base_url = f's3://{os.path.dirname(inspire_xml)}'
+            inspire_xml_full_url = assets['inspire-metadata'].href
+            base_url = f'{os.path.dirname(inspire_xml_full_url)}'
             imo = ISOMetadata(base_url)
 
             with open(esa_xml_local, 'rb') as a, open(inspire_xml_local, 'rb') as b:  # noqa
