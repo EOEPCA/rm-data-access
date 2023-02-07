@@ -266,6 +266,27 @@ class ADESBackend(Backend[dict], PycswMixIn):
         pass
 
 
+class OAProcBackend(Backend[dict], PycswMixIn):
+    def exists(self, source: Optional[Source], item: dict) -> bool:
+        pass
+
+    def register(self, source: Optional[Source], item: dict, replace: bool):
+        logger.info('Ingesting OGC API - Processes')
+        base_url = item["url"]
+        logger.debug(f'base URL {base_url}')
+        imo = ISOMetadata(base_url)
+        iso_metadata_records = imo.from_oaproc(base_url)
+        for iso_metadata in iso_metadata_records:
+            logger.debug(f'Upserting metadata: {iso_metadata}')
+            self._parse_and_upsert_metadata(iso_metadata)
+
+    def deregister(self, source: Optional[Source], item: dict):
+        pass
+
+    def deregister_identifier(self, identifier: str):
+        pass
+
+
 class CollectionBackend(Backend[Collection], PycswMixIn):
     def exists(self, source: Optional[Source], item: dict) -> bool:
         pass
