@@ -575,69 +575,130 @@ class ISOMetadata:
         return iso_os.write(mcf)
 
     def from_oaproc(self, oaproc_url: str,
-                    parent_identifier: Optional[str] = None) -> str:
+                    parent_identifier: Optional[str] = None,
+                    registration_type: Optional[str] = None) -> str:
         mcf = deepcopy(self.mcf)
 
         now = datetime.now().isoformat()
 
         oaproc = Processes(oaproc_url)
 
-        records = []
+        oaproc_id = re.sub('[^a-zA-Z0-9 \n]', '-', oaproc_url)
+        mcf['metadata']['identifier'] = oaproc_id
+        mcf['metadata']['hierarchylevel'] = 'service'
+        mcf['metadata']['datestamp'] = now
+        mcf.pop('dataquality', None)
 
-        for process in oaproc.processes():
-            mcf['metadata']['identifier'] = re.sub('[^a-zA-Z0-9 \n]', '-', oaproc_url) + process['id']
-            mcf['metadata']['hierarchylevel'] = 'service'
-            mcf['metadata']['datestamp'] = now
-            mcf.pop('dataquality', None)
-
-            mcf['identification']['title'] = process['title']
-            mcf['identification']['abstract'] = process['description']
-            mcf['identification']['dates'] = {
+        mcf['identification']['title'] = oaproc.response.get('title')
+        mcf['identification']['abstract'] = oaproc.response.get('description')
+        mcf['identification']['dates'] = {
                 'creation': now
             }
 
-            mcf['identification']['keywords']['service'] = {
-                'keywords': ['application', 'OAProc', 'OGC API - Processes', 'service', 'process'],
-                'keywords_type': 'theme'
+        kw = ['OGC API - Processes', 'service', 'application', 'process']
+        if registration_type == 'ades':
+            kw.append('ADES')
+
+        mcf['identification']['keywords']['default'] = {
+            'keywords': kw,
+            'keywords_type': 'theme'
+        }
+
+        mcf['distribution']['http'] = {
+            'rel': 'service',
+            'url': oaproc_url,
+            'type': 'application/json',
+            'name': oaproc.response.get('title'),
+            'description': oaproc.response.get('description'),
+            'function': 'service'
+        }
+
+        for link in oaproc.links:
+            name = link.get('title')
+            mcf['distribution'][name] = {
+                'rel': link.get('rel'),
+                'url': link.get('href'),
+                'type': link.get('type'),
+                'name': name,
+                'description': name
             }
 
-            if 'keywords' in process:
-                mcf['identification']['keywords']['default'] = {
-                    'keywords': process['keywords'],
+        mcf['identification']['extents'] = {
+            'spatial': [{
+                'bbox': [-180, -90, 180, 90],
+                'crs': 4326
+            }],
+        }
+
+        if parent_identifier is not None:
+            mcf['metadata']['parentidentifier'] = parent_identifier
+
+        logger.info(f'OGC API Processes MCF: {mcf}')
+
+        iso_os = ISO19139OutputSchema()
+
+        records = []
+        records.append(iso_os.write(mcf))
+
+        if registration_type != 'ades':
+            for process in oaproc.processes():
+                mcf = {}
+                mcf = deepcopy(self.mcf)
+                mcf['metadata']['identifier'] = oaproc_id + '-' + process['id']
+                mcf['metadata']['hierarchylevel'] = 'service'
+                mcf['metadata']['datestamp'] = now
+                mcf.pop('dataquality', None)
+
+                mcf['identification']['title'] = process['title']
+                mcf['identification']['abstract'] = process['description']
+                mcf['identification']['dates'] = {
+                    'creation': now
+                }
+
+                mcf['identification']['keywords']['service'] = {
+                    'keywords': ['OGC API - Processes', 'service', 'application', 'process', 'OAProc'],
                     'keywords_type': 'theme'
                 }
 
-            mcf['distribution']['http'] = {
-                'rel': 'service',
-                'url': oaproc_url,
-                'type': 'application/json',
-                'name': oaproc.response['title'],
-                'description': oaproc.response['description'],
-                'function': 'service'
-            }
+                if 'keywords' in process:
+                    mcf['identification']['keywords']['default'] = {
+                        'keywords': process['keywords'],
+                        'keywords_type': 'theme'
+                    }
 
-            for link in process.links:
-                name = link.get('title')
-                mcf['distribution'][name] = {
-                    'rel': link.get('rel'),
-                    'url': link.get('href'),
-                    'type': link.get('type'),
-                    'name': name,
-                    'description': name
+                mcf['distribution']['http'] = {
+                    'rel': 'service',
+                    'url': oaproc_url,
+                    'type': 'application/json',
+                    'name': oaproc.response['title'],
+                    'description': oaproc.response['description'],
+                    'function': 'service'
                 }
 
-            mcf['identification']['extents'] = {
-                'spatial': [{
-                    'bbox': [-180, -90, 180, 90],
-                    'crs': 4326
-                }],
-            }
+                for link in process.links:
+                    name = link.get('title')
+                    mcf['distribution'][name] = {
+                        'rel': link.get('rel'),
+                        'url': link.get('href'),
+                        'type': link.get('type'),
+                        'name': name,
+                        'description': name
+                    }
 
-            logger.info(f'MCF: {mcf}')
+                mcf['identification']['extents'] = {
+                    'spatial': [{
+                        'bbox': [-180, -90, 180, 90],
+                        'crs': 4326
+                    }],
+                }
 
-            iso_os = ISO19139OutputSchema()
+                mcf['metadata']['parentidentifier'] = oaproc_id
 
-            records.append(iso_os.write(mcf))
+                logger.info(f'Process MCF: {mcf}')
+
+                iso_os = ISO19139OutputSchema()
+
+                records.append(iso_os.write(mcf))
 
         return records
 
