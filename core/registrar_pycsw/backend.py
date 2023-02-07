@@ -255,8 +255,7 @@ class ADESBackend(Backend[dict], PycswMixIn):
         logger.debug(f'base URL {base_url}')
         imo = ISOMetadata(base_url)
         iso_metadata = imo.from_ades(base_url, item.get("parent_identifier"))
-        # FIXME: Move logger to debug
-        logger.info(f'Upserting metadata: {iso_metadata}')
+        logger.debug(f'Upserting metadata: {iso_metadata}')
         self._parse_and_upsert_metadata(iso_metadata)
 
     def deregister(self, source: Optional[Source], item: dict):
