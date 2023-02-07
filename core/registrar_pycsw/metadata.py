@@ -574,6 +574,73 @@ class ISOMetadata:
 
         return iso_os.write(mcf)
 
+    def from_oaproc(self, oaproc_url: str,
+                    parent_identifier: Optional[str] = None) -> str:
+        mcf = deepcopy(self.mcf)
+
+        now = datetime.now().isoformat()
+
+        oaproc = Processes(oaproc_url)
+
+        records = []
+
+        for process in oaproc.processes():
+            mcf['metadata']['identifier'] = re.sub('[^a-zA-Z0-9 \n]', '-', oaproc_url) + process['id']
+            mcf['metadata']['hierarchylevel'] = 'service'
+            mcf['metadata']['datestamp'] = now
+            mcf.pop('dataquality', None)
+
+            mcf['identification']['title'] = process['title']
+            mcf['identification']['abstract'] = process['description']
+            mcf['identification']['dates'] = {
+                'creation': now
+            }
+
+            mcf['identification']['keywords']['service'] = {
+                'keywords': ['application', 'OAProc', 'OGC API - Processes', 'service', 'process'],
+                'keywords_type': 'theme'
+            }
+
+            if 'keywords' in process:
+                mcf['identification']['keywords']['default'] = {
+                    'keywords': process['keywords'],
+                    'keywords_type': 'theme'
+                }
+
+            mcf['distribution']['http'] = {
+                'rel': 'service',
+                'url': oaproc_url,
+                'type': 'application/json',
+                'name': oaproc.response['title'],
+                'description': oaproc.response['description'],
+                'function': 'service'
+            }
+
+            for link in process.links:
+                name = link.get('title')
+                mcf['distribution'][name] = {
+                    'rel': link.get('rel'),
+                    'url': link.get('href'),
+                    'type': link.get('type'),
+                    'name': name,
+                    'description': name
+                }
+
+            mcf['identification']['extents'] = {
+                'spatial': [{
+                    'bbox': [-180, -90, 180, 90],
+                    'crs': 4326
+                }],
+            }
+
+            logger.info(f'MCF: {mcf}')
+
+            iso_os = ISO19139OutputSchema()
+
+            records.append(iso_os.write(mcf))
+
+        return records
+
     def from_stac_collection(self, stac_collection: dict) -> str:
         mcf = deepcopy(self.mcf)
 
