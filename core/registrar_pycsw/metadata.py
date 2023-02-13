@@ -675,7 +675,7 @@ class ISOMetadata:
                     'function': 'service'
                 }
 
-                for link in process.links:
+                for link in process['links']:
                     name = link.get('title')
                     mcf['distribution'][name] = {
                         'rel': link.get('rel'),
