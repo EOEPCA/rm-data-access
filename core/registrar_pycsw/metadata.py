@@ -763,6 +763,52 @@ class ISOMetadata:
 
         return iso_os.write(mcf)
 
+    def from_csw(self, capabilities) -> str:
+        mcf = deepcopy(self.mcf)
+
+        now = datetime.now().isoformat()
+
+        csw_id = re.sub('[^a-zA-Z0-9 \n]', '-', self.base_url)
+        mcf['metadata']['identifier'] = csw_id
+        mcf['metadata']['hierarchylevel'] = 'service'
+        mcf['metadata']['datestamp'] = now
+        mcf.pop('dataquality', None)
+
+        mcf['identification']['title'] = capabilities.identification.title
+        mcf['identification']['abstract'] = capabilities.identification.abstract
+        mcf['identification']['dates'] = {
+            'creation': now
+        }
+
+        kw = ['CSW', 'service', 'application', 'metadata']
+
+        mcf['identification']['keywords']['default'] = {
+            'keywords': kw,
+            'keywords_type': 'theme'
+        }
+
+        mcf['distribution']['http'] = {
+            'rel': 'service',
+            'url': self.base_url,
+            'type': 'application/xml',
+            'name': capabilities.identification.title,
+            'description': capabilities.identification.abstract,
+            'function': 'service'
+        }
+
+        mcf['identification']['extents'] = {
+            'spatial': [{
+                'bbox': [-180, -90, 180, 90],
+                'crs': 4326
+            }],
+        }
+
+        logger.info(f'MCF: {mcf}')
+
+        iso_os = ISO19139OutputSchema()
+
+        return iso_os.write(mcf)
+
     def from_stac_collection(self, stac_collection: dict) -> str:
         mcf = deepcopy(self.mcf)
 
