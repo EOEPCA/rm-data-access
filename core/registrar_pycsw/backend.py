@@ -5,6 +5,8 @@ import json
 from urllib.parse import urlparse, urljoin, urlunparse
 
 from lxml import etree
+from owslib.csw import CatalogueServiceWeb
+from owslib.ogcapi.records import Records
 from pycsw.core import metadata, repository, util
 import pycsw.core.admin
 import pycsw.core.config
@@ -13,8 +15,9 @@ from pygeometa.schemas.iso19139 import ISO19139OutputSchema
 from pystac import Item, Collection
 from registrar.abc import Backend
 from registrar.source import Source
+import requests.exceptions.JSONDecodeError
 
-from .metadata import ISOMetadata,STACMetadata
+from .metadata import ISOMetadata, STACMetadata
 
 logger = logging.getLogger(__name__)
 
@@ -64,7 +67,7 @@ class PycswMixIn:
         try:
             metadata_record = json.loads(md)
             metadata_format = 'json'
-        except json.decoder.JSONDecodeError as err:
+        except json.decoder.JSONDecodeError:
             metadata_record = etree.fromstring(md)
             metadata_format = 'xml'
         except Exception as err:
@@ -73,7 +76,8 @@ class PycswMixIn:
 
         logger.debug('Processing metadata')
         try:
-            record = metadata.parse_record(self.context, metadata_record, self.repo)[0]
+            record = metadata.parse_record(
+                self.context, metadata_record, self.repo)[0]
             if metadata_format == 'xml':
                 record.xml = record.xml.decode()
             logger.info(f"identifier: {record.identifier}")
@@ -257,7 +261,8 @@ class ADESBackend(Backend[dict], PycswMixIn):
         base_url = item["url"]
         logger.debug(f'base URL {base_url}')
         imo = ISOMetadata(base_url)
-        iso_metadata_records = imo.from_oaproc(base_url, item.get("parent_identifier"), item.get("type"))
+        iso_metadata_records = imo.from_oaproc(
+            base_url, item.get("parent_identifier"), item.get("type"))
         for iso_metadata in iso_metadata_records:
             logger.debug(f'Upserting metadata: {iso_metadata}')
             self._parse_and_upsert_metadata(iso_metadata)
@@ -279,6 +284,51 @@ class CollectionBackend(Backend[Collection], PycswMixIn):
         logger.info('Ingesting Collection')
         imo = STACMetadata("")
         metadata = imo.from_stac_collection(item.to_dict(False, False))
+        logger.info(f'Upserting metadata: {metadata}')
+        self._parse_and_upsert_metadata(metadata)
+
+    def deregister(self, source: Optional[Source], item: Collection):
+        pass
+
+    def deregister_identifier(self, identifier: str):
+        pass
+
+
+class CatalogueBackend(Backend[dict], PycswMixIn):
+    def exists(self, source: Optional[Source], item: dict) -> bool:
+        pass
+
+    def register(
+        self, source: Optional[Source], item: Collection, replace: bool
+    ):
+        logger.info('Ingesting Catalogue')
+        # OARec
+        # CSW2
+        # CSW3
+        # STAC API
+        # OpenSearch
+
+        imo = ISOMetadata("")
+        metadata = None
+
+        try:
+            is_stac_api = False
+            c = Records(item['url'])
+
+            if 'stac_version' in c.response:
+                logger.info('Detected STAC API')
+
+            else:
+                logger.info('Detected OGC API - Records endpoint')
+
+            metadata = imo.from_oarec(c.response, is_stac_api=is_stac_api)
+
+        except requests.exceptions.JSONDecodeError:
+            logger.info('Testing for OGC CSW endpoint')
+
+            c = CatalogueServiceWeb(item['url'])
+            metadata = imo.from_csw(c.response)
+
         logger.info(f'Upserting metadata: {metadata}')
         self._parse_and_upsert_metadata(metadata)
 
