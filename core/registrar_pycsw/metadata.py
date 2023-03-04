@@ -341,9 +341,9 @@ class ISOMetadata:
         m = MD_Metadata(ixml)
 
         product_manifest = exml.xpath('//PRODUCT_URI/text()')[0]
-        product_manifest_link = urljoin(self.base_url, product_manifest)
+        # product_manifest_link = urljoin(self.base_url, product_manifest)
 
-        if si.get('id') != None:
+        if si.get('id') is not None:
             mcf['metadata']['identifier'] = si['id']
         else:
             mcf['metadata']['identifier'] = product_manifest
@@ -592,8 +592,8 @@ class ISOMetadata:
         mcf['identification']['title'] = oaproc.response.get('title')
         mcf['identification']['abstract'] = oaproc.response.get('description')
         mcf['identification']['dates'] = {
-                'creation': now
-            }
+            'creation': now
+        }
 
         kw = ['OGC API - Processes', 'service', 'application', 'process']
         if registration_type == 'ades':
@@ -633,7 +633,7 @@ class ISOMetadata:
         if parent_identifier is not None:
             mcf['metadata']['parentidentifier'] = parent_identifier
 
-        logger.info(f'OGC API Processes MCF: {mcf}')
+        logger.info(f'OGC API - Processes MCF: {mcf}')
 
         iso_os = ISO19139OutputSchema()
 
@@ -702,6 +702,67 @@ class ISOMetadata:
 
         return records
 
+    def from_oarec(self, landing_page: dict, is_stac_api: bool = False) -> str:
+        mcf = deepcopy(self.mcf)
+
+        now = datetime.now().isoformat()
+
+        oarec_id = re.sub('[^a-zA-Z0-9 \n]', '-', self.base_url)
+        mcf['metadata']['identifier'] = oarec_id
+        mcf['metadata']['hierarchylevel'] = 'service'
+        mcf['metadata']['datestamp'] = now
+        mcf.pop('dataquality', None)
+
+        mcf['identification']['title'] = landing_page.response.get('title')
+        mcf['identification']['abstract'] = landing_page.response.get('description')
+        mcf['identification']['dates'] = {
+            'creation': now
+        }
+
+        kw = ['service', 'application', 'metadata']
+
+        if is_stac_api:
+            kw.append('STAC API')
+        else:
+            kw.append('OGC API - Records')
+
+        mcf['identification']['keywords']['default'] = {
+            'keywords': kw,
+            'keywords_type': 'theme'
+        }
+
+        mcf['distribution']['http'] = {
+            'rel': 'service',
+            'url': self.base_url,
+            'type': 'application/json',
+            'name': landing_page.response.get('title'),
+            'description': landing_page.response.get('description'),
+            'function': 'service'
+        }
+
+        for link in landing_page.links:
+            name = link.get('title')
+            mcf['distribution'][name] = {
+                'rel': link.get('rel'),
+                'url': link.get('href'),
+                'type': link.get('type'),
+                'name': name,
+                'description': name
+            }
+
+        mcf['identification']['extents'] = {
+            'spatial': [{
+                'bbox': [-180, -90, 180, 90],
+                'crs': 4326
+            }],
+        }
+
+        logger.info(f'MCF: {mcf}')
+
+        iso_os = ISO19139OutputSchema()
+
+        return iso_os.write(mcf)
+
     def from_stac_collection(self, stac_collection: dict) -> str:
         mcf = deepcopy(self.mcf)
 
@@ -749,6 +810,7 @@ class ISOMetadata:
         iso_os = ISO19139OutputSchema()
 
         return iso_os.write(mcf)
+
 
 class STACMetadata:
     def __init__(self, base_url: str):
