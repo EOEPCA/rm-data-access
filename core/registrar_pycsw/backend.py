@@ -326,10 +326,8 @@ class CatalogueBackend(Backend[dict], PycswMixIn):
 
         except JSONDecodeError:
             logger.info('Testing for OGC CSW endpoint')
-
             c = CatalogueServiceWeb(base_url)
-
-            metadata = imo.from_csw(c.response)
+            metadata = imo.from_csw()
 
         logger.info(f'Upserting metadata: {metadata}')
         self._parse_and_upsert_metadata(metadata)

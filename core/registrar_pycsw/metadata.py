@@ -11,6 +11,7 @@ from urllib.parse import urlencode, urljoin, uses_netloc, uses_relative
 from lxml import etree
 from owslib.iso import MD_Metadata
 from owslib.ogcapi.processes import Processes
+from owslib.csw import CatalogueServiceWeb
 from pygeometa.schemas.iso19139 import ISO19139OutputSchema
 from pygeometa.schemas.iso19139_2 import ISO19139_2OutputSchema
 
@@ -761,10 +762,11 @@ class ISOMetadata:
 
         return iso_os.write(mcf)
 
-    def from_csw(self, capabilities) -> str:
+    def from_csw(self) -> str:
         mcf = deepcopy(self.mcf)
 
         now = datetime.now().isoformat()
+        capabilities = CatalogueServiceWeb(self.base_url)
 
         csw_id = re.sub('[^a-zA-Z0-9 \n]', '-', self.base_url)
         mcf['metadata']['identifier'] = csw_id
