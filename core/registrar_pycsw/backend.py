@@ -323,7 +323,7 @@ class CatalogueBackend(Backend[dict], PycswMixIn):
 
             metadata = imo.from_oarec(c.response, is_stac_api=is_stac_api)
 
-        except requests.exceptions.JSONDecodeError:
+        except JSONDecodeError:
             logger.info('Testing for OGC CSW endpoint')
 
             c = CatalogueServiceWeb(item['url'])
