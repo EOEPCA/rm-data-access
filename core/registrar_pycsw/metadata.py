@@ -740,7 +740,7 @@ class ISOMetadata:
             'function': 'service'
         }
 
-        for link in landing_page.links:
+        for link in landing_page['links']:
             name = link.get('title')
             mcf['distribution'][name] = {
                 'rel': link.get('rel'),
