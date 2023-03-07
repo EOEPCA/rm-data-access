@@ -713,8 +713,8 @@ class ISOMetadata:
         mcf['metadata']['datestamp'] = now
         mcf.pop('dataquality', None)
 
-        mcf['identification']['title'] = landing_page.response.get('title')
-        mcf['identification']['abstract'] = landing_page.response.get('description')
+        mcf['identification']['title'] = landing_page.get('title')
+        mcf['identification']['abstract'] = landing_page.get('description')
         mcf['identification']['dates'] = {
             'creation': now
         }
@@ -735,8 +735,8 @@ class ISOMetadata:
             'rel': 'service',
             'url': self.base_url,
             'type': 'application/json',
-            'name': landing_page.response.get('title'),
-            'description': landing_page.response.get('description'),
+            'name': landing_page.get('title'),
+            'description': landing_page.get('description'),
             'function': 'service'
         }
 
