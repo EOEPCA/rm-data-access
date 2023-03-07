@@ -15,7 +15,7 @@ from pygeometa.schemas.iso19139 import ISO19139OutputSchema
 from pystac import Item, Collection
 from registrar.abc import Backend
 from registrar.source import Source
-import requests.exceptions.JSONDecodeError
+from requests.exceptions import JSONDecodeError
 
 from .metadata import ISOMetadata, STACMetadata
 
