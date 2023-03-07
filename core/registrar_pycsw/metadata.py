@@ -763,12 +763,12 @@ class ISOMetadata:
 
         return iso_os.write(mcf)
 
-    def from_csw(self, csw_url: str, capabilities) -> str:
+    def from_csw(self, capabilities) -> str:
         mcf = deepcopy(self.mcf)
 
         now = datetime.now().isoformat()
 
-        csw_id = re.sub('[^a-zA-Z0-9 \n]', '-', csw_url)
+        csw_id = re.sub('[^a-zA-Z0-9 \n]', '-', self.base_url)
         mcf['metadata']['identifier'] = csw_id
         mcf['metadata']['hierarchylevel'] = 'service'
         mcf['metadata']['datestamp'] = now
@@ -789,7 +789,7 @@ class ISOMetadata:
 
         mcf['distribution']['http'] = {
             'rel': 'service',
-            'url': csw_url,
+            'url': self.base_url,
             'type': 'application/xml',
             'name': capabilities.identification.title,
             'description': capabilities.identification.abstract,
