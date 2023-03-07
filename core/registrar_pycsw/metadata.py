@@ -702,12 +702,12 @@ class ISOMetadata:
 
         return records
 
-    def from_oarec(self, oarec_url: str, landing_page: dict, is_stac_api: bool = False) -> str:
+    def from_oarec(self, landing_page: dict, is_stac_api: bool = False) -> str:
         mcf = deepcopy(self.mcf)
 
         now = datetime.now().isoformat()
 
-        oarec_id = re.sub('[^a-zA-Z0-9 \n]', '-', oarec_url)
+        oarec_id = re.sub('[^a-zA-Z0-9 \n]', '-', self.base_url)
         mcf['metadata']['identifier'] = oarec_id
         mcf['metadata']['hierarchylevel'] = 'service'
         mcf['metadata']['datestamp'] = now
@@ -733,7 +733,7 @@ class ISOMetadata:
 
         mcf['distribution']['http'] = {
             'rel': 'service',
-            'url': oarec_url,
+            'url': self.base_url,
             'type': 'application/json',
             'name': landing_page.get('title'),
             'description': landing_page.get('description'),
