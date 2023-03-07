@@ -702,12 +702,12 @@ class ISOMetadata:
 
         return records
 
-    def from_oarec(self, landing_page: dict, is_stac_api: bool = False) -> str:
+    def from_oarec(self, oarec_url: str, landing_page: dict, is_stac_api: bool = False) -> str:
         mcf = deepcopy(self.mcf)
 
         now = datetime.now().isoformat()
 
-        oarec_id = re.sub('[^a-zA-Z0-9 \n]', '-', self.base_url)
+        oarec_id = re.sub('[^a-zA-Z0-9 \n]', '-', oarec_url)
         mcf['metadata']['identifier'] = oarec_id
         mcf['metadata']['hierarchylevel'] = 'service'
         mcf['metadata']['datestamp'] = now
@@ -733,7 +733,7 @@ class ISOMetadata:
 
         mcf['distribution']['http'] = {
             'rel': 'service',
-            'url': self.base_url,
+            'url': oarec_url,
             'type': 'application/json',
             'name': landing_page.get('title'),
             'description': landing_page.get('description'),
@@ -763,12 +763,12 @@ class ISOMetadata:
 
         return iso_os.write(mcf)
 
-    def from_csw(self, capabilities) -> str:
+    def from_csw(self, csw_url: str, capabilities) -> str:
         mcf = deepcopy(self.mcf)
 
         now = datetime.now().isoformat()
 
-        csw_id = re.sub('[^a-zA-Z0-9 \n]', '-', self.base_url)
+        csw_id = re.sub('[^a-zA-Z0-9 \n]', '-', csw_url)
         mcf['metadata']['identifier'] = csw_id
         mcf['metadata']['hierarchylevel'] = 'service'
         mcf['metadata']['datestamp'] = now
@@ -789,7 +789,7 @@ class ISOMetadata:
 
         mcf['distribution']['http'] = {
             'rel': 'service',
-            'url': self.base_url,
+            'url': csw_url,
             'type': 'application/xml',
             'name': capabilities.identification.title,
             'description': capabilities.identification.abstract,

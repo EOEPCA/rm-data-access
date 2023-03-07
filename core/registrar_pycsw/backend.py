@@ -313,7 +313,8 @@ class CatalogueBackend(Backend[dict], PycswMixIn):
 
         try:
             is_stac_api = False
-            c = Records(item['url'])
+            oarec_url = item['url']
+            c = Records(oarec_url)
 
             if 'stac_version' in c.response:
                 logger.info('Detected STAC API')
@@ -321,13 +322,15 @@ class CatalogueBackend(Backend[dict], PycswMixIn):
             else:
                 logger.info('Detected OGC API - Records endpoint')
 
-            metadata = imo.from_oarec(c.response, is_stac_api=is_stac_api)
+            metadata = imo.from_oarec(oarec_url, c.response, is_stac_api=is_stac_api)
 
         except JSONDecodeError:
             logger.info('Testing for OGC CSW endpoint')
 
-            c = CatalogueServiceWeb(item['url'])
-            metadata = imo.from_csw(c.response)
+            csw_url = item['url']
+            c = CatalogueServiceWeb(csw_url)
+
+            metadata = imo.from_csw(csw_url, c.response)
 
         logger.info(f'Upserting metadata: {metadata}')
         self._parse_and_upsert_metadata(metadata)
