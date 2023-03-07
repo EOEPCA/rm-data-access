@@ -515,15 +515,14 @@ class ISOMetadata:
 
         return iso_os.write(mcf)
 
-    def from_ades(self, ades_url: str,
-                  parent_identifier: Optional[str] = None) -> str:
+    def from_ades(self, parent_identifier: Optional[str] = None) -> str:
         mcf = deepcopy(self.mcf)
 
         now = datetime.now().isoformat()
 
-        ades = Processes(ades_url)
+        ades = Processes(self.base_url)
 
-        mcf['metadata']['identifier'] = re.sub('[^a-zA-Z0-9 \n]', '-', ades_url)
+        mcf['metadata']['identifier'] = re.sub('[^a-zA-Z0-9 \n]', '-', self.base_url)
         mcf['metadata']['hierarchylevel'] = 'service'
         mcf['metadata']['datestamp'] = now
         mcf.pop('dataquality', None)
@@ -541,7 +540,7 @@ class ISOMetadata:
 
         mcf['distribution']['http'] = {
             'rel': 'service',
-            'url': ades_url,
+            'url': self.base_url,
             'type': 'application/json',
             'name': ades.response.get('title'),
             'description': ades.response.get('description'),
@@ -574,16 +573,15 @@ class ISOMetadata:
 
         return iso_os.write(mcf)
 
-    def from_oaproc(self, oaproc_url: str,
-                    parent_identifier: Optional[str] = None,
+    def from_oaproc(self, parent_identifier: Optional[str] = None,
                     registration_type: Optional[str] = None) -> str:
         mcf = deepcopy(self.mcf)
 
         now = datetime.now().isoformat()
 
-        oaproc = Processes(oaproc_url)
+        oaproc = Processes(self.base_url)
 
-        oaproc_id = re.sub('[^a-zA-Z0-9 \n]', '-', oaproc_url)
+        oaproc_id = re.sub('[^a-zA-Z0-9 \n]', '-', self.base_url)
         mcf['metadata']['identifier'] = oaproc_id
         mcf['metadata']['hierarchylevel'] = 'service'
         mcf['metadata']['datestamp'] = now
@@ -606,7 +604,7 @@ class ISOMetadata:
 
         mcf['distribution']['http'] = {
             'rel': 'service',
-            'url': oaproc_url,
+            'url': self.base_url,
             'type': 'application/json',
             'name': oaproc.response.get('title'),
             'description': oaproc.response.get('description'),
@@ -668,7 +666,7 @@ class ISOMetadata:
 
                 mcf['distribution']['http'] = {
                     'rel': 'service',
-                    'url': oaproc_url,
+                    'url': self.base_url,
                     'type': 'application/json',
                     'name': oaproc.response['title'],
                     'description': oaproc.response['description'],

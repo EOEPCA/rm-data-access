@@ -262,7 +262,7 @@ class ADESBackend(Backend[dict], PycswMixIn):
         logger.debug(f'base URL {base_url}')
         imo = ISOMetadata(base_url)
         iso_metadata_records = imo.from_oaproc(
-            base_url, item.get("parent_identifier"), item.get("type"))
+            item.get("parent_identifier"), item.get("type"))
         for iso_metadata in iso_metadata_records:
             logger.debug(f'Upserting metadata: {iso_metadata}')
             self._parse_and_upsert_metadata(iso_metadata)
