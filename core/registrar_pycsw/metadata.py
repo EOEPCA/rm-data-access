@@ -550,7 +550,8 @@ class ISOMetadata:
 
         for link in ades.links:
             name = link.get('title')
-            mcf['distribution'][name] = {
+            link_id = name + "/" + link.get('type')
+            mcf['distribution'][link_id] = {
                 'rel': link.get('rel'),
                 'url': link.get('href'),
                 'type': link.get('type'),
@@ -614,7 +615,8 @@ class ISOMetadata:
 
         for link in oaproc.links:
             name = link.get('title')
-            mcf['distribution'][name] = {
+            link_id = name + "/" + link.get('type')
+            mcf['distribution'][link_id] = {
                 'rel': link.get('rel'),
                 'url': link.get('href'),
                 'type': link.get('type'),
@@ -676,7 +678,8 @@ class ISOMetadata:
 
                 for link in process['links']:
                     name = link.get('title')
-                    mcf['distribution'][name] = {
+                    link_id = name + "/" + link.get('type')
+                    mcf['distribution'][link_id] = {
                         'rel': link.get('rel'),
                         'url': link.get('href'),
                         'type': link.get('type'),
@@ -741,7 +744,8 @@ class ISOMetadata:
 
         for link in landing_page['links']:
             name = link.get('title')
-            mcf['distribution'][name] = {
+            link_id = name + "/" + link.get('type')
+            mcf['distribution'][link_id] = {
                 'rel': link.get('rel'),
                 'url': link.get('href'),
                 'type': link.get('type'),
