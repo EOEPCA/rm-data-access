@@ -741,16 +741,16 @@ class ISOMetadata:
             'function': 'service'
         }
 
+        link_id = 0
         for link in landing_page['links']:
-            name = link.get('title')
-            link_id = re.sub('[^a-zA-Z0-9 \n]', '-', link.get('href')) + "-" + str(link.get('rel'))
-            mcf['distribution'][link_id] = {
+            mcf['distribution'][str(link_id)] = {
                 'rel': link.get('rel'),
                 'url': link.get('href'),
                 'type': link.get('type'),
-                'name': name,
-                'description': name
+                'name': link.get('title'),
+                'description': link.get('title')
             }
+            link_id += 1
 
         mcf['identification']['extents'] = {
             'spatial': [{
@@ -846,16 +846,16 @@ class ISOMetadata:
             'function': 'service'
         }
 
+        link_id = 0
         for link in client.links:
-            name = link.title
-            link_id = re.sub('[^a-zA-Z0-9 \n]', '-', link.href) + "-" + str(link.rel)
-            mcf['distribution'][link_id] = {
+            mcf['distribution'][str(link_id)] = {
                 'rel': str(link.rel),
                 'url': link.href,
                 'type': str(link.media_type),
-                'name': name,
-                'description': name
+                'name': link.title,
+                'description': link.title
             }
+            link_id += 1
 
         mcf['identification']['extents'] = {
             'spatial': [{
