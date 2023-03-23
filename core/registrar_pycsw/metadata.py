@@ -549,16 +549,16 @@ class ISOMetadata:
             'function': 'service'
         }
 
+        link_id = 0
         for link in ades.links:
-            name = link.get('title')
-            link_id = name + "/" + link.get('type')
-            mcf['distribution'][link_id] = {
+            mcf['distribution'][str(link_id)] = {
                 'rel': link.get('rel'),
                 'url': link.get('href'),
                 'type': link.get('type'),
-                'name': name,
-                'description': name
+                'name': link.get('title'),
+                'description': link.get('title')
             }
+            link_id += 1
 
         mcf['identification']['extents'] = {
             'spatial': [{
@@ -614,16 +614,16 @@ class ISOMetadata:
             'function': 'service'
         }
 
+        link_id = 0
         for link in oaproc.links:
-            name = link.get('title')
-            link_id = name + "/" + link.get('type')
-            mcf['distribution'][link_id] = {
+            mcf['distribution'][str(link_id)] = {
                 'rel': link.get('rel'),
                 'url': link.get('href'),
                 'type': link.get('type'),
-                'name': name,
-                'description': name
+                'name': link.get('title'),
+                'description': link.get('title')
             }
+            link_id += 1
 
         mcf['identification']['extents'] = {
             'spatial': [{
@@ -677,16 +677,16 @@ class ISOMetadata:
                     'function': 'service'
                 }
 
+                link_id = 0
                 for link in process['links']:
-                    name = link.get('title')
-                    link_id = name + "/" + link.get('type')
-                    mcf['distribution'][link_id] = {
+                    mcf['distribution'][str(link_id)] = {
                         'rel': link.get('rel'),
                         'url': link.get('href'),
                         'type': link.get('type'),
-                        'name': name,
-                        'description': name
+                        'name': link.get('title'),
+                        'description': link.get('title')
                     }
+                    link_id += 1
 
                 mcf['identification']['extents'] = {
                     'spatial': [{
