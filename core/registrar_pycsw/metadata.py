@@ -12,6 +12,7 @@ from lxml import etree
 from owslib.iso import MD_Metadata
 from owslib.ogcapi.processes import Processes
 from owslib.csw import CatalogueServiceWeb
+from pystac_client import Client
 from pygeometa.schemas.iso19139 import ISO19139OutputSchema
 from pygeometa.schemas.iso19139_2 import ISO19139_2OutputSchema
 
@@ -721,12 +722,10 @@ class ISOMetadata:
             'creation': now
         }
 
-        kw = ['service', 'application', 'metadata']
+        kw = ['OGC API - Records', 'service', 'application', 'metadata', 'catalogue']
 
         if is_stac_api:
             kw.append('STAC API')
-        else:
-            kw.append('OGC API - Records')
 
         mcf['identification']['keywords']['default'] = {
             'keywords': kw,
@@ -784,7 +783,7 @@ class ISOMetadata:
             'creation': now
         }
 
-        kw = ['CSW', 'service', 'application', 'metadata']
+        kw = ['CSW', 'service', 'application', 'metadata', 'catalogue']
 
         mcf['identification']['keywords']['default'] = {
             'keywords': kw,
@@ -799,6 +798,64 @@ class ISOMetadata:
             'description': capabilities.identification.abstract,
             'function': 'service'
         }
+
+        mcf['identification']['extents'] = {
+            'spatial': [{
+                'bbox': [-180, -90, 180, 90],
+                'crs': 4326
+            }],
+        }
+
+        logger.info(f'MCF: {mcf}')
+
+        iso_os = ISO19139OutputSchema()
+
+        return iso_os.write(mcf)
+
+    def from_stacapi(self) -> str:
+        mcf = deepcopy(self.mcf)
+
+        now = datetime.now().isoformat()
+        client = Client.open(self.base_url)
+
+        # api_id = re.sub('[^a-zA-Z0-9 \n]', '-', self.base_url)
+        mcf['metadata']['identifier'] = client.id
+        mcf['metadata']['hierarchylevel'] = 'service'
+        mcf['metadata']['datestamp'] = now
+        mcf.pop('dataquality', None)
+
+        mcf['identification']['title'] = client.title
+        mcf['identification']['abstract'] = client.description
+        mcf['identification']['dates'] = {
+            'creation': now
+        }
+
+        kw = ['STAC API', 'service', 'application', 'metadata', 'catalogue']
+
+        mcf['identification']['keywords']['default'] = {
+            'keywords': kw,
+            'keywords_type': 'theme'
+        }
+
+        mcf['distribution']['http'] = {
+            'rel': 'service',
+            'url': self.base_url,
+            'type': 'application/xml',
+            'name': client.title,
+            'description': client.description,
+            'function': 'service'
+        }
+
+        for link in client.links:
+            name = link.title
+            link_id = name + "/" + str(link.media_type)
+            mcf['distribution'][link_id] = {
+                'rel': str(link.rel),
+                'url': link.href,
+                'type': str(link.media_type),
+                'name': name,
+                'description': name
+            }
 
         mcf['identification']['extents'] = {
             'spatial': [{
