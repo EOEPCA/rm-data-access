@@ -333,11 +333,16 @@ class CatalogueBackend(Backend[dict], PycswMixIn):
 
         except JSONDecodeError:
             try:
-                c = CatalogueServiceWeb(base_url)
-                logger.info('Detected OGC CSW')
-                metadata = imo.from_csw()
-            except etree.XMLSyntaxError:
-                logger.info('All catalogue clients failed')
+                client = Client.open(base_url)
+                logger.info('Detected STAC Catalog')
+                metadata = imo.from_stac_catalog()
+            except JSONDecodeError:
+                try:
+                    c = CatalogueServiceWeb(base_url)
+                    logger.info('Detected OGC CSW')
+                    metadata = imo.from_csw()
+                except etree.XMLSyntaxError:
+                    logger.info('All catalogue clients failed')
 
         logger.info(f'Upserting metadata: {metadata}')
         self._parse_and_upsert_metadata(metadata)
