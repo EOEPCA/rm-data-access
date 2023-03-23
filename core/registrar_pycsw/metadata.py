@@ -820,7 +820,7 @@ class ISOMetadata:
 
         # api_id = re.sub('[^a-zA-Z0-9 \n]', '-', self.base_url)
         mcf['metadata']['identifier'] = client.id
-        mcf['metadata']['hierarchylevel'] = 'service'
+        mcf['metadata']['hierarchylevel'] = 'dataset'
         mcf['metadata']['datestamp'] = now
         mcf.pop('dataquality', None)
 
