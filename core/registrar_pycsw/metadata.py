@@ -848,7 +848,7 @@ class ISOMetadata:
 
         for link in client.links:
             name = link.title
-            link_id = name + "/" + str(link.media_type)
+            link_id = re.sub('[^a-zA-Z0-9 \n]', '-', link.href) + "-" + str(link.rel)
             mcf['distribution'][link_id] = {
                 'rel': str(link.rel),
                 'url': link.href,
