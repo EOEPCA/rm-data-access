@@ -812,7 +812,7 @@ class ISOMetadata:
 
         return iso_os.write(mcf)
 
-    def from_stacapi(self) -> str:
+    def from_stac_catalog(self) -> str:
         mcf = deepcopy(self.mcf)
 
         now = datetime.now().isoformat()
@@ -830,7 +830,7 @@ class ISOMetadata:
             'creation': now
         }
 
-        kw = ['STAC API', 'service', 'application', 'metadata', 'catalogue']
+        kw = ['STAC Catalog', 'service', 'application', 'metadata', 'catalogue']
 
         mcf['identification']['keywords']['default'] = {
             'keywords': kw,
