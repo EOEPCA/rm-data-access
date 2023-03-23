@@ -340,7 +340,7 @@ class CatalogueBackend(Backend[dict], PycswMixIn):
                 try:
                     client = Client.open(base_url)
                     logger.info('Detected STAC Catalog')
-                    metadata = imo.from_stac_catalog()
+                    metadata = imo.from_stac_catalog(base_url)
                 except JSONDecodeError:
                     logger.info('All catalogue clients failed')
 

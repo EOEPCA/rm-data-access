@@ -812,11 +812,11 @@ class ISOMetadata:
 
         return iso_os.write(mcf)
 
-    def from_stac_catalog(self) -> str:
+    def from_stac_catalog(self, url: str) -> str:
         mcf = deepcopy(self.mcf)
 
         now = datetime.now().isoformat()
-        client = Client.open(self.base_url)
+        client = Client.open(url)
 
         # api_id = re.sub('[^a-zA-Z0-9 \n]', '-', self.base_url)
         mcf['metadata']['identifier'] = client.id
@@ -839,7 +839,7 @@ class ISOMetadata:
 
         mcf['distribution']['http'] = {
             'rel': 'service',
-            'url': self.base_url,
+            'url': url,
             'type': 'application/xml',
             'name': client.title,
             'description': client.description,
