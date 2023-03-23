@@ -743,7 +743,7 @@ class ISOMetadata:
 
         for link in landing_page['links']:
             name = link.get('title')
-            link_id = name + "/" + link.get('type')
+            link_id = re.sub('[^a-zA-Z0-9 \n]', '-', link.get('href')) + "-" + str(link.get('rel'))
             mcf['distribution'][link_id] = {
                 'rel': link.get('rel'),
                 'url': link.get('href'),
