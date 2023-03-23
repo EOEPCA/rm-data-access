@@ -13,6 +13,7 @@ import pycsw.core.config
 from pygeometa.core import read_mcf
 from pygeometa.schemas.iso19139 import ISO19139OutputSchema
 from pystac import Item, Collection
+from pystac_client import Client
 from registrar.abc import Backend
 from registrar.source import Source
 from requests.exceptions import JSONDecodeError
@@ -315,19 +316,28 @@ class CatalogueBackend(Backend[dict], PycswMixIn):
         try:
             is_stac_api = False
             c = Records(base_url)
+            logger.info('Detected OGC API - Records')
 
-            if 'stac_version' in c.response:
+            try:
+                client = Client.open(base_url)
                 logger.info('Detected STAC API')
+                is_stac_api = True
+            except:
+                logger.info('STAC API client failed')
 
-            else:
-                logger.info('Detected OGC API - Records endpoint')
+            # if 'stac_version' in c.response:
+            #     logger.info('Detected STAC API')
+            #     is_stac_api = True
 
             metadata = imo.from_oarec(c.response, is_stac_api=is_stac_api)
 
         except JSONDecodeError:
-            logger.info('Testing for OGC CSW endpoint')
-            c = CatalogueServiceWeb(base_url)
-            metadata = imo.from_csw()
+            try:
+                c = CatalogueServiceWeb(base_url)
+                logger.info('Detected OGC CSW')
+                metadata = imo.from_csw()
+            except etree.XMLSyntaxError:
+                logger.info('All catalogue clients failed')
 
         logger.info(f'Upserting metadata: {metadata}')
         self._parse_and_upsert_metadata(metadata)
