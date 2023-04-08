@@ -7,6 +7,7 @@ from urllib.parse import urlparse, urljoin, urlunparse
 from lxml import etree
 from owslib.csw import CatalogueServiceWeb
 from owslib.ogcapi.records import Records
+from owslib.opensearch import OpenSearch
 from pycsw.core import metadata, repository, util
 import pycsw.core.admin
 import pycsw.core.config
@@ -342,6 +343,13 @@ class CatalogueBackend(Backend[dict], PycswMixIn):
                     logger.info('Detected STAC Catalog')
                     metadata = imo.from_stac_catalog(base_url)
                 except JSONDecodeError:
+                    logger.info('All catalogue clients failed')
+            except RuntimeError:
+                try:
+                    osearch = OpenSearch(base_url)
+                    logger.info('Detected OpenSearch Catalog')
+                    metadata = imo.from_opensearch(base_url)
+                except:
                     logger.info('All catalogue clients failed')
 
         logger.info(f'Upserting metadata: {metadata}')
