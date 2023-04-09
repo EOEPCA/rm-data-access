@@ -386,7 +386,7 @@ class ISOMetadata:
             'publication': mcf['metadata']['datestamp']
         }
 
-        for i, kws in enumerate(m.identification.keywords):
+        for i, kws in enumerate(m.identification[0].keywords):
             kw_set = f'kw{i}'
 
             mcf['identification']['keywords'][kw_set] = {
@@ -412,10 +412,10 @@ class ISOMetadata:
                 mcf['identification']['keywords']['product']['keywords'].append(
                     f"{key}:{keyword}")
 
-        mcf['identification']['topiccategory'] = [m.identification.topiccategory[0]]
+        mcf['identification']['topiccategory'] = [m.identification[0].topiccategory[0]]
         mcf['identification']['status'] = 'onGoing'
         mcf['identification']['maintenancefrequency'] = 'continual'
-        mcf['identification']['accessconstraints'] = m.identification.accessconstraints[0]
+        mcf['identification']['accessconstraints'] = m.identification[0].accessconstraints[0]
 
         if len(exml.xpath('//Cloud_Coverage_Assessment/text()')) > 0:
             mcf['content_info']['cloud_cover'] = exml.xpath('//Cloud_Coverage_Assessment/text()')[0]
