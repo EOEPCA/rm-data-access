@@ -210,8 +210,9 @@ class ISOMetadata:
                 'crs': 4326
             }],
             'temporal': [{
-                'instant': si['properties']['datetime']
-             }]
+                'begin': si['properties']['datetime'],
+                'end': si['properties']['datetime']
+            }]
         }
 
         if 'eo:bands' in si['properties']:
