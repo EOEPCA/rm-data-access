@@ -360,3 +360,21 @@ class CatalogueBackend(Backend[dict], PycswMixIn):
 
     def deregister_identifier(self, identifier: str):
         pass
+
+
+class JSONBackend(Backend[dict], PycswMixIn):
+    def exists(self, source: Optional[Source], item: dict) -> bool:
+        pass
+
+    def register(
+        self, source: Optional[Source], item: dict, replace: bool
+    ):
+        logger.info('Ingesting JSON')
+        logger.info(f'Upserting metadata: {item}')
+        self._parse_and_upsert_metadata(json.dumps(item))
+
+    def deregister(self, source: Optional[Source], item: dict):
+        pass
+
+    def deregister_identifier(self, identifier: str):
+        pass
