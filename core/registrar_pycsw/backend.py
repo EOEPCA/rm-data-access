@@ -71,7 +71,10 @@ class PycswMixIn:
             metadata_record = json.loads(md)
             metadata_format = 'json'
         except json.decoder.JSONDecodeError:
-            metadata_record = etree.fromstring(md)
+            try:
+                metadata_record = etree.fromstring(md)
+            except:
+                metadata_record = etree.fromstring(bytes(md, encoding='utf-8'))
             metadata_format = 'xml'
         except Exception as err:
             logger.error(f'Metadata parsing failed: {err}')
