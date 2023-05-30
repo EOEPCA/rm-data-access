@@ -3,6 +3,7 @@ import logging
 from typing import Optional
 import json
 from urllib.parse import urlparse, urljoin, urlunparse
+import requests
 
 from lxml import etree
 from owslib.csw import CatalogueServiceWeb
@@ -379,6 +380,7 @@ class JSONBackend(Backend[dict], PycswMixIn):
     def deregister_identifier(self, identifier: str):
         pass
 
+
 class XMLBackend(Backend[dict], PycswMixIn):
     def exists(self, source: Optional[Source], item: dict) -> bool:
         pass
@@ -390,7 +392,11 @@ class XMLBackend(Backend[dict], PycswMixIn):
         path = item["url"]
         xml_local = '/tmp/metadata.xml'
         logger.debug(f"Downloading {path} to temporary file {xml_local}")
-        source.get_file(path, xml_local)
+        if source:
+            source.get_file(path, xml_local)
+        else:
+            r = requests.get(path, allow_redirects=True)
+            open(xml_local, 'wb').write(r.content)
         with open(xml_local) as f:
             xml = f.read()
         logger.debug(f"Removing temporary file {xml_local}")
