@@ -378,3 +378,28 @@ class JSONBackend(Backend[dict], PycswMixIn):
 
     def deregister_identifier(self, identifier: str):
         pass
+
+class XMLBackend(Backend[dict], PycswMixIn):
+    def exists(self, source: Optional[Source], item: dict) -> bool:
+        pass
+
+    def register(
+        self, source: Optional[Source], item: dict, replace: bool
+    ):
+        logger.info('Ingesting XML')
+        path = item["url"]
+        xml_local = '/tmp/metadata.xml'
+        logger.debug(f"Downloading {path} to temporary file {xml_local}")
+        source.get_file(path, xml_local)
+        with open(xml_local) as f:
+            xml = f.read()
+        logger.debug(f"Removing temporary file {xml_local}")
+        os.remove(xml_local)
+        logger.info(f'Upserting metadata: {xml}')
+        self._parse_and_upsert_metadata(xml)
+
+    def deregister(self, source: Optional[Source], item: dict):
+        pass
+
+    def deregister_identifier(self, identifier: str):
+        pass
