@@ -1,0 +1,68 @@
+mcf:
+    version: 1.0
+
+metadata:
+    identifier: S1SLC
+    language: eng
+    charset: utf8
+    hierarchylevel: dataset
+    datestamp: 2021-02-16
+    dataseturi: https://sentinel.esa.int/web/sentinel/user-guides/sentinel-1-sar
+
+spatial:
+    datatype: grid
+    geomtype: solid
+
+identification:
+    language: eng
+    charset: utf8
+    title: Sentinel-1 SLC Level 1
+    abstract: Sentinel-1 Single Look Complex Level 1
+    dates:
+        creation: 2014-10-03
+        publication: 2014-10-03
+    keywords:
+        default:
+            keywords: [sentinel-1,SLC,level-1]
+    topiccategory:
+        - imageryBaseMapsEarthCover
+    extents:
+        spatial:
+            - bbox: [-180,-85,180,85]
+              crs: 4326
+        temporal:
+            - begin: 2014-10-03
+              end: now
+    fees: None
+    accessconstraints: None
+    rights: https://sentinels.copernicus.eu/documents/247904/690755/Sentinel_Data_Legal_Notice
+    url: https://sentinel.esa.int/web/sentinel/user-guides/sentinel-1-sar
+    status: onGoing
+    maintenancefrequency: continual
+
+contact:
+    pointOfContact: &contact_poc
+        organization: European Space Agency
+        url: https://www.esa.int
+        individualname: Firstname Lastname
+        positionname: Position name
+        phone: TBD
+        fax: TBD
+        address: TBD
+        city: TBD
+        administrativearea: TBD
+        postalcode: TBD
+        country: TBD
+        email: TBD
+        hoursofservice: TBD
+        contactinstructions: TBD
+
+    distributor: *contact_poc
+
+distribution:
+    wms:
+        url: http://example.org/
+        type: OGC:WMS
+        name: TBD
+        description: TBD
+        function: download
