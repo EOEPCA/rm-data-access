@@ -43,9 +43,6 @@ RUN apt-get update \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/partial/* /tmp/* /var/tmp/*
 
-RUN wget https://github.com/eoxserver/eoxserver/archive/master.tar.gz && \
-    tar -C /opt/eoxserver/ --strip-components=1 -xvf master.tar.gz eoxserver-master/
-
 RUN mkdir /registrar_pycsw
 ADD registrar_pycsw/ \
     /registrar_pycsw/registrar_pycsw
@@ -57,5 +54,8 @@ ADD MANIFEST.in \
 RUN cd /registrar_pycsw && \
     python3 setup.py install && \
     pip3 install .
+
+ADD eoxserver.patch /opt/eoxserver/
+RUN cd /opt/eoxserver && patch -p 1 < eoxserver.patch
 
 ENV STARTUP_SCRIPTS="/registrar_pycsw/registrar_pycsw/initialize-collections.sh"
