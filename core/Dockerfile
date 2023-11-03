@@ -32,7 +32,7 @@ LABEL name="EOEPCA data access core" \
       vendor="EOX IT Services GmbH <https://eox.at>" \
       license="MIT Copyright (C) 2019 EOX IT Services GmbH <https://eox.at>" \
       type="EOEPCA data access core" \
-      version="1.1.6"
+      version="1.4-dev1"
 
 RUN pip3 install PyYAML "SQLAlchemy<2.0.0" OWSLib pygeometa pystac_client && \
     pip3 install https://github.com/geopython/pycsw/archive/master.zip \
