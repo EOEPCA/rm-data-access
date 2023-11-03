@@ -35,8 +35,16 @@ LABEL name="EOEPCA data access core" \
       version="1.4-dev1"
 
 RUN pip3 install PyYAML "SQLAlchemy<2.0.0" OWSLib pygeometa pystac_client && \
-    pip3 install https://github.com/geopython/pycsw/archive/master.zip && \
-    pip3 install https://github.com/eoxserver/eoxserver/archive/master.zip
+    pip3 install https://github.com/geopython/pycsw/archive/master.zip
+
+RUN apt-get update \
+  && apt-get install -y wget \
+  && apt-get autoremove -y \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/partial/* /tmp/* /var/tmp/*
+
+RUN wget https://github.com/eoxserver/eoxserver/archive/master.tar.gz && \
+    tar -C /opt/eoxserver/ --strip-components=1 -xvf master.tar.gz eoxserver-master/
 
 RUN mkdir /registrar_pycsw
 ADD registrar_pycsw/ \
