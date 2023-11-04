@@ -1,0 +1,42 @@
+diff --git a/eoxserver/services/mapserver/wcs/base_renderer.py b/eoxserver/services/mapserver/wcs/base_renderer.py
+index a28ef027..01c9bfb7 100644
+--- a/eoxserver/services/mapserver/wcs/base_renderer.py
++++ b/eoxserver/services/mapserver/wcs/base_renderer.py
+@@ -171,9 +171,9 @@ class BaseRenderer(Component):
+
+         for band in bands:
+             ms.setMetaData(layer, {
+-                "band_description": band.description,
+-                "band_definition": band.definition,
+-                "band_uom": band.unit_of_measure,
++                "band_description": band.description or '',
++                "band_definition": band.definition or '',
++                "band_uom": band.unit_of_measure or '',
+             }, namespace=band.identifier)
+
+             if band.allowed_values:
+diff --git a/eoxserver/services/ows/wcs/v20/encoders.py b/eoxserver/services/ows/wcs/v20/encoders.py
+index ca8835c4..6f0f7221 100644
+--- a/eoxserver/services/ows/wcs/v20/encoders.py
++++ b/eoxserver/services/ows/wcs/v20/encoders.py
+@@ -418,9 +418,9 @@ class GMLCOV10Encoder(WCS20BaseXMLEncoder, GML32Encoder):
+     def encode_field(self, field):
+         return SWE("field",
+             SWE("Quantity",
+-                SWE("description", field.description),
++                SWE("description", field.description or ''),
+                 self.encode_nil_values(field.nil_values),
+-                SWE("uom", code=field.unit_of_measure),
++                SWE("uom", code=field.unit_of_measure or ''),
+                 SWE("constraint",
+                     SWE("AllowedValues",
+                         *[
+@@ -435,7 +435,7 @@ class GMLCOV10Encoder(WCS20BaseXMLEncoder, GML32Encoder):
+                 ),
+                 # TODO: lookup correct definition according to data type:
+                 # http://www.opengis.net/def/dataType/OGC/0/
+-                definition=field.definition
++                definition=field.definition or ''
+             ),
+             name=field.identifier
+         )
