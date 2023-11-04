@@ -50,6 +50,7 @@ RUN cd /registrar_pycsw && \
     pip3 install .
 
 ADD eoxserver.patch /opt/eoxserver/
-RUN cd /opt/eoxserver && patch -p 1 < eoxserver.patch
+RUN cd /opt/eoxserver && patch -p 1 < eoxserver.patch && \
+    python3 -m pip install .
 
 ENV STARTUP_SCRIPTS="/registrar_pycsw/registrar_pycsw/initialize-collections.sh"
