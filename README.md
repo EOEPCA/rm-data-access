@@ -83,6 +83,9 @@ The View Server default Chart vs consists of the following service components (w
 
 View Server is Open Source, released under an MIT license.
 
+This [repository](https://github.com/EOEPCA/rm-data-access) holds EOEPCA customizations for the View Server Core component (Renderer and Registrar)
+EOEPCA customizations for the Harvester component can be found in https://github.com/EOEPCA/rm-harvester
+
 [![Product Name Screen Shot][product-screenshot]](https://gitlab.eox.at/vs/vs)
 
 ### Built With
