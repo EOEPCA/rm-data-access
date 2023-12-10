@@ -55,9 +55,11 @@ RUN cd /registrar_pycsw && \
     python3 setup.py install && \
     pip3 install .
 
+# Patching EOxServer 1.2.12 release
 ADD eoxserver.patch /opt/eoxserver/
 RUN cd /opt/eoxserver && patch -p 1 < eoxserver.patch
 
+# FIXME: Patching EOxServer 1.2.12 release prometheus configuration
 ENV PROMETHEUS_MULTIPROC_DIR="/var/tmp/prometheus_multiproc_dir"
 RUN mkdir -p $PROMETHEUS_MULTIPROC_DIR && \
     chmod 777 $PROMETHEUS_MULTIPROC_DIR
