@@ -59,9 +59,8 @@ RUN cd /registrar_pycsw && \
 ADD eoxserver.patch /opt/eoxserver/
 RUN cd /opt/eoxserver && patch -p 1 < eoxserver.patch
 
-# FIXME: Patching EOxServer 1.2.12 release prometheus configuration
-ENV PROMETHEUS_MULTIPROC_DIR="/var/tmp/prometheus_multiproc_dir"
 RUN mkdir -p $PROMETHEUS_MULTIPROC_DIR && \
-    chmod 777 $PROMETHEUS_MULTIPROC_DIR
+    chown www-data $PROMETHEUS_MULTIPROC_DIR && \
+    chmod g+w $PROMETHEUS_MULTIPROC_DIR
 
 ENV STARTUP_SCRIPTS="/registrar_pycsw/registrar_pycsw/initialize-collections.sh"
