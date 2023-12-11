@@ -34,8 +34,8 @@ LABEL name="EOEPCA data access core" \
       type="EOEPCA data access core" \
       version="1.4-dev1"
 
-RUN pip3 install PyYAML "SQLAlchemy<2.0.0" OWSLib pygeometa pystac_client && \
-    pip3 install https://github.com/geopython/pycsw/archive/master.zip
+RUN pip3 install PyYAML==5.3.1 "SQLAlchemy<2.0.0" OWSLib==0.29.3 pygeometa==0.15.3 pystac_client==0.7.5 && \
+    pip3 install https://github.com/geopython/pycsw/archive/3.0.0-alpha5.zip
 
 RUN apt-get update \
   && apt-get install -y wget \
