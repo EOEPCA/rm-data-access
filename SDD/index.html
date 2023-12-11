@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.20">
+<meta name="description" content="Resource Management - Data Access Design Document for the Common Architecture">
+<meta name="keywords" content="common architecture design">
+<meta name="author" content="TVUK System Team">
+<title>Resource Management - Data Access Design Document: EOEPCA.SDD.xxx</title>
+<link rel="stylesheet" href="stylesheets/eoepca.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body class="book toc2 toc-left">
+<div id="header">
+<h1>Resource Management - Data Access Design Document: EOEPCA.SDD.xxx</h1>
+<div class="details">
+<span id="author" class="author">TVUK System Team</span><br>
+<span id="email" class="email">&lt;<a href="mailto:Eoepca.SystemTeam@telespazio.com">Eoepca.SystemTeam@telespazio.com</a>&gt;</span><br>
+<span id="revnumber">version 0.1,</span>
+<span id="revdate">dd/mm/yyyy</span>
+<br><span id="revremark"></span>
+</div>
+<div id="toc" class="toc2">
+<div id="toctitle">Resource Management - Data Access Design Document</div>
+<ul class="sectlevel1">
+<li><a href="#_introduction">1. Introduction</a>
+<ul class="sectlevel2">
+<li><a href="#_purpose_and_scope">1.1. Purpose and Scope</a></li>
+<li><a href="#_structure_of_the_document">1.2. Structure of the Document</a></li>
+<li><a href="#_reference_documents">1.3. Reference Documents</a></li>
+<li><a href="#_terminology">1.4. Terminology</a></li>
+<li><a href="#_glossary">1.5. Glossary</a></li>
+</ul>
+</li>
+<li><a href="#mainOverview">2. Overview</a></li>
+<li><a href="#mainDesign">3. Building Block Design</a>
+<ul class="sectlevel2">
+<li><a href="#_registrar_service">3.1. Registrar Service</a>
+<ul class="sectlevel3">
+<li><a href="#_overview_and_purpose">3.1.1. Overview and Purpose</a></li>
+<li><a href="#_software_reuse_and_dependencies">3.1.2. Software Reuse and Dependencies</a></li>
+<li><a href="#_interfaces">3.1.3. Interfaces</a></li>
+<li><a href="#_data">3.1.4. Data</a>
+<ul class="sectlevel4">
+<li><a href="#_data_model">3.1.4.1. Data Model</a>
+<ul class="sectlevel5">
+<li><a href="#_collectioncollectiontype">3.1.4.1.1. Collection/CollectionType</a></li>
+<li><a href="#_productproducttype">3.1.4.1.2. Product/ProductType</a></li>
+<li><a href="#_coveragecoveragetype">3.1.4.1.3. Coverage/CoverageType</a></li>
+<li><a href="#_browsebrowsetype">3.1.4.1.4. Browse/BrowseType</a></li>
+<li><a href="#_productcoverage_metadata">3.1.4.1.5. Product/Coverage Metadata</a></li>
+<li><a href="#_arraydata_item">3.1.4.1.6. ArrayData Item</a></li>
+<li><a href="#_metadata_item">3.1.4.1.7. MetaData Item</a></li>
+<li><a href="#_storage">3.1.4.1.8. Storage</a></li>
+<li><a href="#_storageauth">3.1.4.1.9. StorageAuth</a></li>
+</ul>
+</li>
+<li><a href="#_configuration">3.1.4.2. Configuration</a></li>
+<li><a href="#_data_flow">3.1.4.3. Data flow</a></li>
+</ul>
+</li>
+<li><a href="#_applicable_resources">3.1.5. Applicable Resources</a></li>
+</ul>
+</li>
+<li><a href="#_renderer_service">3.2. Renderer Service</a>
+<ul class="sectlevel3">
+<li><a href="#_overview_and_purpose_2">3.2.1. Overview and Purpose</a></li>
+<li><a href="#_software_reuse_and_dependencies_2">3.2.2. Software Reuse and Dependencies</a></li>
+<li><a href="#_interfaces_2">3.2.3. Interfaces</a>
+<ul class="sectlevel4">
+<li><a href="#_ogc_web_service_ows_interfaces">3.2.3.1. OGC Web Service (OWS) interfaces</a>
+<ul class="sectlevel5">
+<li><a href="#_web_coverage_service_wcs">3.2.3.1.1. Web Coverage Service (WCS)</a></li>
+<li><a href="#_web_map_service_wms">3.2.3.1.2. Web Map Service (WMS)</a></li>
+<li><a href="#_opensearch">3.2.3.1.3. OpenSearch</a></li>
+<li><a href="#_admin_interface">3.2.3.1.4. Admin Interface</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_data_2">3.2.4. Data</a>
+<ul class="sectlevel4">
+<li><a href="#_configuration_2">3.2.4.1. Configuration</a></li>
+<li><a href="#_data_flow_2">3.2.4.2. Data flow</a></li>
+</ul>
+</li>
+<li><a href="#_applicable_resources_2">3.2.5. Applicable Resources</a></li>
+</ul>
+</li>
+<li><a href="#_cache_service">3.3. Cache Service</a>
+<ul class="sectlevel3">
+<li><a href="#_overview_and_purpose_3">3.3.1. Overview and Purpose</a></li>
+<li><a href="#_software_reuse_and_dependencies_3">3.3.2. Software Reuse and Dependencies</a></li>
+<li><a href="#_interfaces_3">3.3.3. Interfaces</a>
+<ul class="sectlevel4">
+<li><a href="#_ogc_web_service_ows_interfaces_2">3.3.3.1. OGC Web Service (OWS) interfaces</a>
+<ul class="sectlevel5">
+<li><a href="#_web_map_tile_service_wmts">3.3.3.1.1. Web Map Tile Service (WMTS)</a></li>
+<li><a href="#_web_map_service_wms_2">3.3.3.1.2. Web Map Service (WMS)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_data_3">3.3.4. Data</a>
+<ul class="sectlevel4">
+<li><a href="#_configuration_3">3.3.4.1. Configuration</a></li>
+<li><a href="#_data_flow_3">3.3.4.2. Data flow</a></li>
+</ul>
+</li>
+<li><a href="#_applicable_resources_3">3.3.5. Applicable Resources</a></li>
+</ul>
+</li>
+<li><a href="#_client_service">3.4. Client Service</a>
+<ul class="sectlevel3">
+<li><a href="#_overview_and_purpose_4">3.4.1. Overview and Purpose</a></li>
+<li><a href="#_software_reuse_and_dependencies_4">3.4.2. Software Reuse and Dependencies</a></li>
+<li><a href="#_interfaces_4">3.4.3. Interfaces</a></li>
+<li><a href="#_data_4">3.4.4. Data</a>
+<ul class="sectlevel4">
+<li><a href="#_configuration_4">3.4.4.1. Configuration</a></li>
+<li><a href="#_data_flow_4">3.4.4.2. Data flow</a></li>
+</ul>
+</li>
+<li><a href="#_applicable_resources_4">3.4.5. Applicable Resources</a></li>
+</ul>
+</li>
+<li><a href="#_database_service">3.5. Database Service</a>
+<ul class="sectlevel3">
+<li><a href="#_overview_and_purpose_5">3.5.1. Overview and Purpose</a></li>
+<li><a href="#_software_reuse_and_dependencies_5">3.5.2. Software Reuse and Dependencies</a></li>
+<li><a href="#_interfaces_5">3.5.3. Interfaces</a></li>
+<li><a href="#_data_5">3.5.4. Data</a>
+<ul class="sectlevel4">
+<li><a href="#_configuration_5">3.5.4.1. Configuration</a></li>
+<li><a href="#_data_flow_5">3.5.4.2. Data flow</a></li>
+</ul>
+</li>
+<li><a href="#_applicable_resources_5">3.5.5. Applicable Resources</a></li>
+</ul>
+</li>
+<li><a href="#_queue_service">3.6. Queue Service</a>
+<ul class="sectlevel3">
+<li><a href="#_overview_and_purpose_6">3.6.1. Overview and Purpose</a></li>
+<li><a href="#_software_reuse_and_dependencies_6">3.6.2. Software Reuse and Dependencies</a></li>
+<li><a href="#_interfaces_6">3.6.3. Interfaces</a></li>
+<li><a href="#_data_6">3.6.4. Data</a>
+<ul class="sectlevel4">
+<li><a href="#_configuration_6">3.6.4.1. Configuration</a></li>
+<li><a href="#_data_flow_6">3.6.4.2. Data flow</a></li>
+</ul>
+</li>
+<li><a href="#_applicable_resources_6">3.6.5. Applicable Resources</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>EO Exploitation Platform Common Architecture<br>
+<em>Resource Management - Data Access Design Document</em><br>
+EOEPCA.SDD.xxx</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><strong>COMMENTS and ISSUES</strong><br>
+If you would like to raise comments or issues on this document, please do so by raising an Issue at the following URL <a href="https://github.com/EOEPCA/template-svce/issues" class="bare">https://github.com/EOEPCA/template-svce/issues</a>.</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><strong>PDF</strong><br>
+This document is available in PDF format <a href="EOEPCA-template-svce.pdf" target="_blank" rel="noopener">here</a>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><strong>EUROPEAN SPACE AGENCY CONTRACT REPORT</strong><br>
+The work described in this report was done under ESA contract. Responsibility for the contents resides in the author or organisation that prepared it.</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock"><strong>TELESPAZIO VEGA UK Ltd</strong><br>
+350 Capability Green, Luton, Bedfordshire, LU1 3LU, United Kingdom.<br>
+Tel: +44 (0)1582 399000<br>
+<a href="http://telespazio-vega.com/">www.telespazio-vega.com</a></p></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">AMENDMENT HISTORY</dt>
+<dd>
+<p>This document shall be amended by releasing a new edition of the document in its entirety.<br>
+The Amendment Record Sheet below records the history and issue status of this document.</p>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. Amendment Record Sheet</caption>
+<colgroup>
+<col style="width: 12.5%;">
+<col style="width: 25%;">
+<col style="width: 62.5%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-center valign-top">ISSUE</th>
+<th class="tableblock halign-center valign-top">DATE</th>
+<th class="tableblock halign-left valign-top">REASON</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th class="tableblock halign-center valign-top"><p class="tableblock">0.1</p></th>
+<td class="tableblock halign-center valign-top"><p class="tableblock">dd/mm/yyyy</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Initial in-progress draft</p></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</div>
+<hr>
+<div style="page-break-after: always;"></div>
+<div style="page-break-after: always;"></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_introduction">1. Introduction</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_purpose_and_scope">1.1. Purpose and Scope</h3>
+<div class="paragraph">
+<p>This document presents the Resource Management - Data Access Design for the Common Architecture.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_structure_of_the_document">1.2. Structure of the Document</h3>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Section 2 - <a href="#mainOverview">Overview</a></dt>
+<dd>
+<p>Provides an over of the Resource Management - Data Access component, within the context of the wider Common Architecture design.</p>
+</dd>
+<dt class="hdlist1">Section 3 - <a href="#mainDesign">Building Block Design</a></dt>
+<dd>
+<p>Provides the design of the Resource Management - Data Access component.</p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_reference_documents">1.3. Reference Documents</h3>
+<div class="paragraph">
+<p>The following is a list of Reference Documents with a direct bearing on the content of this document.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 18.1818%;">
+<col style="width: 63.6363%;">
+<col style="width: 18.1819%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Reference</th>
+<th class="tableblock halign-left valign-top">Document Details</th>
+<th class="tableblock halign-left valign-top">Version</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a id="EOEPCA-UC"></a>[EOEPCA-UC]</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>EOEPCA - Use Case Analysis<br>
+EOEPCA.TN.005<br>
+<a href="https://eoepca.github.io/use-case-analysis" class="bare">https://eoepca.github.io/use-case-analysis</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Issue 1.0,<br>
+02/08/2019</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a id="EP-FM"></a>[EP-FM]</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Exploitation Platform - Functional Model,<br>
+ESA-EOPSDP-TN-17-050</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Issue 1.0,<br>
+30/11/2017</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a id="TEP-OA"></a>[TEP-OA]</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Thematic Exploitation Platform Open Architecture,<br>
+EMSS-EOPS-TN-17-002</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Issue 1,<br>
+12/12/2017</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a id="WPS-T"></a>[WPS-T]</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>OGC Testbed-14: WPS-T Engineering Report,<br>
+OGC 18-036r1,<br>
+<a href="http://docs.opengeospatial.org/per/18-036r1.html" class="bare">http://docs.opengeospatial.org/per/18-036r1.html</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>18-036r1,<br>
+07/02/2019</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a id="WPS-REST-JSON"></a>[WPS-REST-JSON]</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>OGC WPS 2.0 REST/JSON Binding Extension, Draft,<br>
+OGC 18-062,<br>
+<a href="https://raw.githubusercontent.com/opengeospatial/wps-rest-binding/develop/docs/18-062.pdf" class="bare">https://raw.githubusercontent.com/opengeospatial/wps-rest-binding/develop/docs/18-062.pdf</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>1.0-draft</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a id="CWL"></a>[CWL]</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Common Workflow Language Specifications,<br>
+<a href="https://www.commonwl.org/v1.0/" class="bare">https://www.commonwl.org/v1.0/</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>v1.0.2</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a id="TB13-AP"></a>[TB13-AP]</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>OGC Testbed-13, EP Application Package Engineering Report,<br>
+OGC 17-023,<br>
+<a href="http://docs.opengeospatial.org/per/17-023.html" class="bare">http://docs.opengeospatial.org/per/17-023.html</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>17-023,<br>
+30/01/2018</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a id="TB13-ADES"></a>[TB13-ADES]</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>OGC Testbed-13, Application Deployment and Execution Service Engineering Report,<br>
+OGC 17-024,<br>
+<a href="http://docs.opengeospatial.org/per/17-024.html" class="bare">http://docs.opengeospatial.org/per/17-024.html</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>17-024,<br>
+11/01/2018</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a id="TB14-AP"></a>[TB14-AP]</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>OGC Testbed-14, Application Package Engineering Report,<br>
+OGC 18-049r1,<br>
+<a href="http://docs.opengeospatial.org/per/18-049r1.html" class="bare">http://docs.opengeospatial.org/per/18-049r1.html</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>18-049r1,<br>
+07/02/2019</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a id="TB14-ADES"></a>[TB14-ADES]</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>OGC Testbed-14, ADES &amp; EMS Results and Best Practices Engineering Report,<br>
+OGC 18-050r1, <a href="http://docs.opengeospatial.org/per/18-050r1.html" class="bare">http://docs.opengeospatial.org/per/18-050r1.html</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>18-050r1,<br>
+08/02/2019</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a id="OS-GEO-TIME"></a>[OS-GEO-TIME]</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>OpenSearch GEO: OpenSearch Geo and Time Extensions,<br>
+OGC 10-032r8,<br>
+<a href="http://www.opengeospatial.org/standards/opensearchgeo" class="bare">http://www.opengeospatial.org/standards/opensearchgeo</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>10-032r8,<br>
+14/04/2014</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a id="OS-EO"></a>[OS-EO]</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>OpenSearch EO: OGC OpenSearch Extension for Earth Observation,<br>
+OGC 13-026r9,<br>
+<a href="http://docs.opengeospatial.org/is/13-026r8/13-026r8.html" class="bare">http://docs.opengeospatial.org/is/13-026r8/13-026r8.html</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>13-026r9,<br>
+16/12/2016</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a id="GEOJSON-LD"></a>[GEOJSON-LD]</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>OGC EO Dataset Metadata GeoJSON(-LD) Encoding Standard,<br>
+OGC 17-003r1/17-084</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>17-003r1/17-084</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a id="GEOJSON-LD-RESP"></a>[GEOJSON-LD-RESP]</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>OGC OpenSearch-EO GeoJSON(-LD) Response Encoding Standard,<br>
+OGC 17-047</p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>17-047</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a id="PCI-DSS"></a>[PCI-DSS]</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>The Payment Card Industry Data Security Standard,<br>
+<a href="https://www.pcisecuritystandards.org/document_library?category=pcidss&amp;document=pci_dss" class="bare">https://www.pcisecuritystandards.org/document_library?category=pcidss&amp;document=pci_dss</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>v3.2.1</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a id="CEOS-OS-BP"></a>[CEOS-OS-BP]</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>CEOS OpenSearch Best Practise,<br>
+<a href="http://ceos.org/ourwork/workinggroups/wgiss/access/opensearch/" class="bare">http://ceos.org/ourwork/workinggroups/wgiss/access/opensearch/</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>v1.2,<br>
+13/06/2017</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a id="OIDC"></a>[OIDC]</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>OpenID Connect Core 1.0,<br>
+<a href="https://openid.net/specs/openid-connect-core-1_0.html" class="bare">https://openid.net/specs/openid-connect-core-1_0.html</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>v1.0,<br>
+08/11/2014</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a id="OGC-CSW"></a>[OGC-CSW]</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>OGC Catalogue Services 3.0 Specification - HTTP Protocol Binding (Catalogue Services for the Web),<br>
+OGC 12-176r7,<br>
+<a href="http://docs.opengeospatial.org/is/12-176r7/12-176r7.html" class="bare">http://docs.opengeospatial.org/is/12-176r7/12-176r7.html</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>v3.0,<br>
+10/06/2016</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a id="OGC-WMS"></a>[OGC-WMS]</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>OGC Web Map Server Implementation Specification,<br>
+OGC 06-042,<br>
+<a href="http://portal.opengeospatial.org/files/?artifact_id=14416" class="bare">http://portal.opengeospatial.org/files/?artifact_id=14416</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>v1.3.0,<br>
+05/03/2006</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a id="OGC-WMTS"></a>[OGC-WMTS]</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>OGC Web Map Tile Service Implementation Standard,<br>
+OGC 07-057r7,<br>
+<a href="http://portal.opengeospatial.org/files/?artifact_id=35326" class="bare">http://portal.opengeospatial.org/files/?artifact_id=35326</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>v1.0.0,<br>
+06/04/2010</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a id="OGC-WFS"></a>[OGC-WFS]</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>OGC Web Feature Service 2.0 Interface Standard – With Corrigendum,<br>
+OGC 09-025r2,<br>
+<a href="http://docs.opengeospatial.org/is/09-025r2/09-025r2.html" class="bare">http://docs.opengeospatial.org/is/09-025r2/09-025r2.html</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>v2.0.2,<br>
+10/07/2014</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a id="OGC-WCS"></a>[OGC-WCS]</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>OGC Web Coverage Service (WCS) 2.1 Interface Standard - Core,<br>
+OGC 17-089r1,<br>
+<a href="http://docs.opengeospatial.org/is/17-089r1/17-089r1.html" class="bare">http://docs.opengeospatial.org/is/17-089r1/17-089r1.html</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>v2.1,<br>
+16/08/2018</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a id="OGC-WCPS"></a>[OGC-WCPS]</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Web Coverage Processing Service (WCPS) Language Interface Standard,<br>
+OGC 08-068r2,<br>
+<a href="http://portal.opengeospatial.org/files/?artifact_id=32319" class="bare">http://portal.opengeospatial.org/files/?artifact_id=32319</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>v1.0.0,<br>
+25/03/2009</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a id="AWS-S3"></a>[AWS-S3]</p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>Amazon Simple Storage Service REST API,<br>
+<a href="https://docs.aws.amazon.com/AmazonS3/latest/API" class="bare">https://docs.aws.amazon.com/AmazonS3/latest/API</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>API Version 2006-03-01</p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_terminology">1.4. Terminology</h3>
+<div class="paragraph">
+<p>The following terms are used in the Master System Design.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Term</th>
+<th class="tableblock halign-left valign-top">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Admin</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">User with administrative capability on the EP</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Algorithm</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A self-contained set of operations to be performed, typically to achieve a desired data manipulation. The algorithm must be implemented (codified) for deployment and execution on the platform.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Analysis Result</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The <em>Products</em> produced as output of an <em>Interactive Application</em> analysis session.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Analytics</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A set of activities aimed to discover, interpret and communicate meaningful patters within the data. Analytics considered here are performed manually (or in a semi-automatic way) on-line with the aid of <em>Interactive Applications</em>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Application Artefact</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The 'software' component that provides the execution unit of the <em>Application Package</em>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Application Deployment and Execution Service (ADES)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WPS-T (REST/JSON) service that incorporates the Docker execution engine, and is responsible for the execution of the processing service (as a WPS request) within the ‘target’ Exploitation Platform.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Application Descriptor</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A file that provides the metadata part of the <em>Application Package</em>. Provides all the metadata required to accommodate the processor within the WPS service and make it available for execution.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Application Package</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A platform independent and self-contained representation of a software item, providing executable, metadata and dependencies such that it can be deployed to and executed within an Exploitation Platform. Comprises the <em>Application Descriptor</em> and the <em>Application Artefact</em>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Bulk Processing</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Execution of a <em>Processing Service</em> on large amounts of data specified by AOI and TOI.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Code</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The codification of an algorithm performed with a given programming language - compiled to Software or directly executed (interpretted) within the platform.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Compute Platform</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The Platform on which execution occurs (this may differ from the Host or Home platform where federated processing is happening)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Consumer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">User accessing existing services/products within the EP. Consumers may be scientific/research or commercial, and may or may not be experts of the domain</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Data Access Library</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">An abstraction of the interface to the data layer of the resource tier. The library provides bindings for common languages (including python, Javascript) and presents a common object model to the code.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Development</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The act of building new products/services/applications to be exposed within the platform and made available for users to conduct exploitation activities. Development may be performed inside or outside of the platform. If performed outside, an integration activity will be required to accommodate the developed service so that it is exposed within the platform.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Discovery</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">User finds products/services of interest to them based upon search criteria.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Execution</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The act to start a <em>Processing Service</em> or an <em>Interactive Application</em>.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Execution Management Service (EMS)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The EMS is responsible for the orchestration of workflows, including the possibility of steps running on other (remote) platforms, and the on-demand deployment of processors to local/remote ADES as required.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Expert</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">User developing and integrating added-value to the EP (Scientific Researcher or Service Developer)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Exploitation Tier</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The Exploitation Tier represents the end-users who exploit the services of the platform to perform analysis, or using high-level applications built-in on top of the platform’s services</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">External Application</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">An application or script that is developed and executed outside of the Exploitation Platform, but is able to use the data/services of the EP via a programmatic interface (API).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Guest</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">An unregistered User or an unauthenticated Consumer with limited access to the EP&#8217;s services</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Home Platform</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The Platform on which a User is based or from which an action was initiated by a User</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Host Platform</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The Platform through which a Resource has been published</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Identity Provider (IdP)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The source for validating user identity in a federated identity system, (user authentication as a service).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Interactive Application</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A stand-alone application provided within the exploitation platform for on-line hosted processing. Provides an interactive interface through which the user is able to conduct their analysis of the data, producing <em>Analysis Results</em> as output. Interactive Applications include at least the following types: console application, web application (rich browser interface), remote desktop to a hosted VM.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Interactive Console Application</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A simple <em>Interactive Application</em> for analysis in which a console interface to a platform-hosted terminal is provided to the user. The console interface can be provided through the user&#8217;s browser session or through a remote SSH connection.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Interactive Remote Desktop</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">An Interactive Application for analysis provided as a remote desktop session to an OS-session (or directly to a 'native' application) on the exploitation platform. The user will have access to a number of applications within the hosted OS. The remote desktop session is provided through the user’s web browser.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Interactive Web Application</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">An Interactive Application for analysis provided as a rich user interface through the user&#8217;s web browser.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Key-Value Pair</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A key-value pair (KVP) is an abstract data type that includes a group of key identifiers and a set of associated values. Key-value pairs are frequently used in lookup tables, hash tables and configuration files.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Kubernetes (K8s)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Container orchestration system for automating application deployment, scaling and management.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Login Service</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">An encapsulation of Authenticated Login provision within the Exploitation Platform context. The Login Service is an OpenID Connect Provider that is used purely for authentication. It acts as a Relying Party in flows with external IdPs to obtain access to the user&#8217;s identity.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EO Network of Resources</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The coordinated collection of European EO resources (platforms, data sources, etc.).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Object Store</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A computer data storage architecture that manages data as objects. Each object typically includes the data itself, a variable amount of metadata, and a globally unique identifier.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">On-demand Processing Service</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A <em>Processing Service</em> whose execution is initiated directly by the user on an ad-hoc basis.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Platform (EP)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">An on-line collection of products, services and tools for exploitation of EO data</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Platform Tier</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The Platform Tier represents the Exploitation Platform and the services it offers to end-users</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Processing</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A set of pre-defined activities that interact to achieve a result. For the exploitation platform, comprises on-line processing to derive data products from input data, conducted by a hosted processing service execution.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Processing Result</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The <em>Products</em> produced as output of a <em>Processing Service</em> execution.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Processing Service</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A non-interactive data processing that has a well-defined set of input data types, input parameterisation, producing <em>Processing Results</em> with a well-defined output data type.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Products</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EO data (commercial and non-commercial) and Value-added products and made available through the EP. <em>It is assumed that the Hosting Environment for the EP makes available an existing supply of EO Data</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Resource</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A entity, such as a Product, Processing Service or Interactive Application, which is of interest to a user, is indexed in a catalogue and can be returned as a single meaningful search result</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Resource Tier</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The Resource Tier represents the hosting infrastructure and provides the EO data, storage and compute upon which the exploitation platform is deployed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Reusable Research Object</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">An encapsulation of some research/analysis that describes all aspects required to reproduce the analysis, including data used, processing performed etc.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Scientific Researcher</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Expert user with the objective to perform scientific research. Having minimal IT knowledge with no desire to acquire it, they want the effort for the translation of their algorithm into a service/product to be minimised by the platform.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Service Developer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Expert user with the objective to provide a performing, stable and reliable service/product. Having deeper IT knowledge or a willingness to acquire it, they require deeper access to the platform IT functionalities for optimisation of their algorithm.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Software</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The compilation of code into a binary program to be executed within the platform on-line computing environment.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Systematic Processing Service</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A <em>Processing Service</em> whose execution is initiated automatically (on behalf of a user), either according to a schedule (routine) or triggered by an event (e.g. arrival of new data).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Terms &amp; Conditions (T&amp;Cs)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The obligations that the user agrees to abide by in regard of usage of products/services of the platform. T&amp;Cs are set by the provider of each product/service.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Transactional Web Processing Service (WPS-T)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Transactional extension to WPS that allows adhoc deployment / undeployment of user-provided processors.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">User</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">An individual using the EP, of any type (Admin/Consumer/Expert/Guest)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Value-added products</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Products generated from processing services of the EP (or external processing) and made available through the EP. This includes products uploaded to the EP by users and published for collaborative consumption</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Visualisation</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">To obtain a visual representation of any data/products held within the platform - presented to the user within their web browser session.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Web Coverage Service (WCS)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">OGC standard that provides an open specification for sharing raster datasets on the web.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Web Coverage Processing Service (WCPS)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">OGC standard that defines a protocol-independent language for the extraction, processing, and analysis of multi-dimentional coverages representing sensor, image, or statistics data.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Web Feature Service (WFS)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">OGC standard that makes geographic feature data (vector geospatial datasets) available on the web.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Web Map Service (WMS)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">OGC standard that provides a simple HTTP interface for requesting geo-registered map images from one or more distributed geospatial databases.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Web Map Tile Service (WMTS)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">OGC standard that provides a simple HTTP interface for requesting map tiles of spatially referenced data using the images with predefined content, extent, and resolution.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Web Processing Services (WPS)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">OGC standard that defines how a client can request the execution of a process, and how the output from the process is handled.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Workspace</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A user-scoped 'container' in the EP, in which each user maintains their own links to resources (products and services) that have been collected by a user during their usage of the EP. The workspace acts as the hub for a user&#8217;s exploitation activities within the EP</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_glossary">1.5. Glossary</h3>
+<div class="paragraph">
+<p>The following acronyms and abbreviations have been used in this report.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 14.2857%;">
+<col style="width: 85.7143%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Term</th>
+<th class="tableblock halign-left valign-top">Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AAI</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Authentication &amp; Authorization Infrastructure</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ABAC</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Attribute Based Access Control</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ADES</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Application Deployment and Execution Service</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ALFA</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Abbreviated Language For Authorization</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AOI</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Area of Interest</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">API</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Application Programming Interface</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CMS</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Content Management System</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CWL</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Common Workflow Language</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">DAL</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Data Access Library</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EMS</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Execution Management Service</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EO</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Earth Observation</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EP</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Exploitation Platform</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">FUSE</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Filesystem in Userspace</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GeoXACML</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Geo-specific extension to the XACML Policy Language</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">IAM</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Identity and Access Management</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">IdP</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Identity Provider</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">JSON</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">JavaScript Object Notation</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">K8s</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Kubernetes</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">KVP</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Key-value Pair</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">M2M</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Machine-to-machine</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">OGC</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Open Geospatial Consortium</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PDE</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Processor Development Environment</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PDP</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Policy Decision Point</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PEP</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Policy Enforcement Point</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PIP</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Policy Information Point</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">RBAC</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Role Based Access Control</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">REST</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Representational State Transfer</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SSH</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Secure Shell</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TOI</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Time of Interest</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">UMA</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">User-Managed Access</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">VNC</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Virtual Network Computing</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WCS</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Web Coverage Service</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WCPS</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Web Coverage Processing Service</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WFS</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Web Feature Service</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WMS</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Web Map Service</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WMTS</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Web Map Tile Service</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WPS</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Web Processing Service</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">WPS-T</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Transactional Web Processing Service</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">XACML</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">eXtensible Access Control Markup Language</p></td>
+</tr>
+</tbody>
+</table>
+<div style="page-break-after: always;"></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="mainOverview">2. Overview</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>TBD</p>
+</div>
+<div style="page-break-after: always;"></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="mainDesign">3. Building Block Design</h2>
+<div class="sectionbody">
+<div class="imageblock">
+<div class="content">
+<img src="./images/eoepca-rm-da.png" alt="EOEPCA Resource Management Data Access service structure">
+</div>
+</div>
+<div class="exampleblock">
+<div class="content">
+<div class="paragraph">
+<p>When discussing the Data Access Building Block it needs to be stressed, that there are actually two kinds of deployments of the same software stack in two slightly different roles.</p>
+</div>
+<div class="paragraph">
+<p>The first role is sort of system global instances, registering and serving upstream data products whereas the second one is used within the context of a user workspace. In this second context, only user provided data will be registered and served.</p>
+</div>
+<div class="paragraph">
+<p>The global instance is installed in a global namespace using a GitOps approach, whereas the user workspace deployment of the Data Access Service is deployed via the Workspace API dynamically.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_registrar_service">3.1. Registrar Service</h3>
+<div class="sect3">
+<h4 id="_overview_and_purpose">3.1.1. Overview and Purpose</h4>
+<div class="paragraph">
+<p>The purpose of the registrar service is to register data products from either upstream data sources (such as Sentinel-2 data archives) into the Data Access Building Block and the Resource Catalogue Building Block where they are indexed for later access.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_software_reuse_and_dependencies">3.1.2. Software Reuse and Dependencies</h4>
+<div class="paragraph">
+<p>This service is based upon the Registrar Service of the View Server software system, using its plugin system to allow for a registration also into the Resource Catalogue.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_interfaces">3.1.3. Interfaces</h4>
+<div class="paragraph">
+<p>This service does not provide any interfaces.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_data">3.1.4. Data</h4>
+<div class="sect4">
+<h5 id="_data_model">3.1.4.1. Data Model</h5>
+<div class="paragraph">
+<p>The following image shows the registrars (and also the renderers) internal data model:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/eoepca-rm-da-er.png" alt="EOEPCA Resource Management Data Access data model">
+</div>
+</div>
+<div class="sect5">
+<h6 id="_collectioncollectiontype">3.1.4.1.1. Collection/CollectionType</h6>
+<div class="paragraph">
+<p>Collections are used to form variant groupings of products and/or coverages. They can either be homogenous, semi-homogenous or non-homogenous, depending on the configuration of the Collections associated CollectionType. The CollectionType can limit the insertion of Products and Coverages by specifying allowed Product-/CoverageTypes, which are then the only types of Products/Coverages that can be inserted.</p>
+</div>
+<div class="paragraph">
+<p>The spatio-temporal metadata (time-span and footprint) is always the summary of all entailed items.</p>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_productproducttype">3.1.4.1.2. Product/ProductType</h6>
+<div class="paragraph">
+<p>A Product is a collection of spatio-temporally and acquisition related data items. Each Product has a unique identifier, a spetio-temporal coverage and optionally additional metadata associated.<br>
+Each Product is of a specific ProductType, limiting in which Collections it can be inserted and what Coverages can be part of a Product.</p>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_coveragecoveragetype">3.1.4.1.3. Coverage/CoverageType</h6>
+<div class="paragraph">
+<p>A Coverage is an n-dimensional construct of a specific grid. It consists of at one data file that stores the actual values of the Coverage. Each Coverage is associated with a CoverageType, adding additional metadata to the internal structure of each such Coverage and limiting the possible Products this Coverage can be assoctiated with. Each Coverage can only be part of one Product.</p>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_browsebrowsetype">3.1.4.1.4. Browse/BrowseType</h6>
+<div class="paragraph">
+<p>A Browse is a visual representation of a Product and the BrowseType is the blueprint to create such a representation of a given Product. Each Browse is associated with a BrowseType but it is not required for each Product to have a Browse of each available BrowseType. In this case, the browse is considered virtual and the representation will be generated from the Products associated Coverages every time.</p>
+</div>
+<div class="paragraph">
+<p>The BrowseType consists of expressions and ranges that allow to generate the greyscale, RGB or RGBA images.</p>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_productcoverage_metadata">3.1.4.1.5. Product/Coverage Metadata</h6>
+<div class="paragraph">
+<p>This model store additional Product/Coverage level metadata (such as snow- or cloud coverage) that can be used in filters.</p>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_arraydata_item">3.1.4.1.6. ArrayData Item</h6>
+<div class="paragraph">
+<p>This is a link to a "file" containing the raster data for a specific Coverage.</p>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_metadata_item">3.1.4.1.7. MetaData Item</h6>
+<div class="paragraph">
+<p>This is a link to a file containing Product/Coverage metadata.</p>
+</div>
+<div class="paragraph">
+<p>Each DataItem can be associated with a Storage, which specifies the actual location of the DataItem. If no Storage is specified the DataItem points to a file on the local filesystem.</p>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_storage">3.1.4.1.8. Storage</h6>
+<div class="paragraph">
+<p>A Storage describes a physical storage location such as an HTTP server, FTP service or Object Storage of various types. For services requiring more elaborate authentication/authorization the Storage must be linked to a StorageAuth of a compatible type.</p>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_storageauth">3.1.4.1.9. StorageAuth</h6>
+<div class="paragraph">
+<p>This model stores the authentication/authorization values for any number of Storages. This may include, but is not limited to access tokens, access credentials, public/private keys, etc.</p>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_configuration">3.1.4.2. Configuration</h5>
+<div class="paragraph">
+<p>This service uses a YAML based configuration to allow the highly configurable configuration from various data sources parsed using various schemas into the backends.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_data_flow">3.1.4.3. Data flow</h5>
+<div class="paragraph">
+<p>The registrar is a server process, listening on a distributed queue for new registration requests coming in as paths to the respective item to be registered.<br>
+When such a registration request is passed via the queue, the respective data storage source will be determined and the relevant data and metadata files are read for a rudimentary classification of the to be registered item, which will be passed to all configured backends for a final registration of the item.</p>
+</div>
+<div class="paragraph">
+<p>The registrar allows for various item schemes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Sentinel-2 L1C/L2A: This expects an unpacked Sentinel-2 Level 1C or 2A SAFE package as the path input. It will parse all product and granule related metadata and will register the product as a single item. Each Product will be registered for the Data Access building block in the following manner:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Product: the whole SAFE package will be referenced as a single Product. The root and tile metadata files are associated as its MetaData items. The ProductType is the pre-created type for either Sentinel-2 L1C or L2A.</p>
+</li>
+<li>
+<p>Coverage: each raster data file in the scene will be added as a single Coverage, using the Products identifier as a common base name and using the band identifier as a postfix. This includes the following bands: B01, B02, B03, B04, B05, B06, B07, B08, B8A, B09, B10 (only L1C), B11, B12. In case of L2A, only the band with the highest resolution will be used. The CoverageType for each Coverage is the pre-registered band specific CoverageType for the used ProductType.</p>
+</li>
+<li>
+<p>Browse: The TCI image of each SAFE will be registered as the Products default representation. For L2A, only the highest resolution TCI is used. Some pre-registered BrowseTypes (TRUE_COLOR, FALSE_COLOR, and NDVI) are used in a virtual manner.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>STAC-Catalog: This scheme requires a path to a directory containing at least one <code>catalog.json</code> file that will be read and parsed for both sub-catalogs and/or referenced STAC items. All STAC items found this way will be registered into all the backends.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>The Items Product-/CoverageTypes will be looked up using the STAC Items asset identifiers or created if necessary.</p>
+</li>
+<li>
+<p>Product: each STAC Item is translated to a Product, using the Items identifier as the Product identifier. The product type will be the one earlier looked up or created.</p>
+</li>
+<li>
+<p>Coverage: each associated asset in the STAC Item having a <code>eo:band</code> property will be added as a Coverage, using the Products identifier as a prefix and the asset identifier as a postfix.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_applicable_resources">3.1.5. Applicable Resources</h4>
+<div class="paragraph">
+<p><a href="https://docs.eoxserver.org/en/master/" class="bare">https://docs.eoxserver.org/en/master/</a></p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_renderer_service">3.2. Renderer Service</h3>
+<div class="sect3">
+<h4 id="_overview_and_purpose_2">3.2.1. Overview and Purpose</h4>
+<div class="paragraph">
+<p>This service allows to generate automatic renderings of the registered data items via various standardized interfaces.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_software_reuse_and_dependencies_2">3.2.2. Software Reuse and Dependencies</h4>
+<div class="paragraph">
+<p>This service is based upon the Renderer Service of the View Server software system with only minor enhancements.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_interfaces_2">3.2.3. Interfaces</h4>
+<div class="sect4">
+<h5 id="_ogc_web_service_ows_interfaces">3.2.3.1. OGC Web Service (OWS) interfaces</h5>
+<div class="paragraph">
+<p>The renderer service provides various OGC compliant service endpoints, to enable the creation of dynamic renderings/processings of the referenced datasets.</p>
+</div>
+<div class="sect5">
+<h6 id="_web_coverage_service_wcs">3.2.3.1.1. Web Coverage Service (WCS)</h6>
+<div class="paragraph">
+<p>With the OGC Web Coverage Service (WCS) interface, users can access the raw raster data values of the stored Earth Observation data or coverages. A coverage is a multidimensional spatio-temporal object and can be subset along any axis and/or field.<br>
+With the EO extension (EO-WCS), it is possible to define homogeneous or heterogeneous collections (Stitched Mosaics and Dataset Series respectively) of EO metadata enriched coverages that can be searched in time and space.</p>
+</div>
+<div class="paragraph">
+<p>In this service, each Collection is represented as a <code>DatasetSeries</code>, which can be queried using the <code>DescribeEOCoverageSet</code>. Each Collection is thus advertised in the Capabilities document of the service.</p>
+</div>
+<div class="paragraph">
+<p>Each Product is also represented as a <code>DatasetSeries</code> but in contrast to Collections not advertised in the Capabilities document.</p>
+</div>
+<div class="paragraph">
+<p>Each Coverage is represented as a Coverage directly, but not listed in the Capabilities document.</p>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_web_map_service_wms">3.2.3.1.2. Web Map Service (WMS)</h6>
+<div class="paragraph">
+<p>The OGC Web Map Service (WMS) interface standard provides rendered maps (images) to be displayed in the users’ graphical user interface or similar application. This interface revolves around the concept of the layer, from which subsets can be fetched. This can be static data prepared for each request or can have dynamic filters such as specific rendering instructions or data filters applied.<br>
+The Earth Observation Application Profile (EO-WMS) provides guidance how to apply WMS on Earth Observation data. For example, it details how to provide a collection or dataset like the whole Sentinel-2 archive as one WMS layer. Subsets down to individual products can be visualized using the TIME dimension or parameter.<br>
+Additional extension exists via custom or vendor specific parameters. One such extension is the CQL (Common Query Language) parameter as used in ESA’s PRISM activity for example to select individual products based on ID or to filter on additional parameters like cloud coverage.</p>
+</div>
+<div class="paragraph">
+<p>Each registered Collection is represented as a hierarchy of layers in the following form:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A root layer with the same name as the Collection with the following sub-layers with the associated suffixes:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>The Root layer is rendered using the default Browse representation of each Product.</p>
+</li>
+<li>
+<p>Outlines (<code>&#8230;&#8203;_outlines</code>): This shows the outlines of each Product in the collection.</p>
+</li>
+<li>
+<p>Outlined root layer (<code>&#8230;&#8203;_outlined</code>): This shows the outlines of each Product in the collection overlayed over the default browse representation.</p>
+</li>
+<li>
+<p>Browse Type (<code>&#8230;&#8203;_&lt;browse-type-name&gt;</code>): this renders each product in the collection with the specified browse type. When a pre-rendered browse is available it is used, otherwise the dynamic rendering process is used.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Each Product is also represented in the same structure as Collections with the sole difference that they are not by default represented in the Capabilities document, only when a CQL query using the <code>cql</code> parameter matches this Product is passed.</p>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_opensearch">3.2.3.1.3. OpenSearch</h6>
+<div class="paragraph">
+<p>OpenSearch is a collection of simple formats for the sharing of search results. The OpenSearch description document format can be used to describe a search engine so that it can be used by search client applications. The OpenSearch description format allows the use of extensions that allow search engines to request a specific and contextual query parameter from search clients. The OpenSearch response elements can be used to extend existing syndication formats, such as RSS and Atom, with the extra metadata needed to return search results.<br>
+The CEOS OpenSearch Best Practice Document is providing server implementation best practices for EO OpenSearch search services that allow for standardized and harmonized access to metadata and data for CEOS agencies. Within this context, the following OGC extensions and recommendations are applicable:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>OpenSearch GEO: OpenSearch Geo and Time Extensions</p>
+</li>
+<li>
+<p>OpenSearch EO: OGC OpenSearch Extension for Earth Observation</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The OGC OpenSearch Geo and Time standard specifies the Geo and Time extensions to the OpenSearch query protocol to geographically constrain search results.<br>
+The Earth Observation Extension specifies a series of parameters that can be used to constrain search results. In short, provision is made to filter results by sensor information, acquisition, processing parameters and other information. The purpose of the OpenSearch Extension for Earth Observation is to make sure that OpenSearch parameters are aligned with OGC 10-157r4 that describes EO products metadata and with ISO19115(-1)/ISO19115-2 that is used for describing EO collection metadata. In a typical search scenario, a client will first search for the appropriate EO Collection with the parameters appropriate to EO Collections. In the search response he will find the details (e.g. the identifier or the link to the OpenSearch description document) to search for EO Products of that EO Collection that he identifies as most appropriate.<br>
+OGC defines a GeoJSON and JSON-LD encoding standard of Earth Observation (EO) metadata for collections (a.k.a. dataset series). The standard provides document models for the exchange of information describing EO collections, both within and between different organisations.<br>
+EO collections are collections of datasets sharing the same product specification. These collections are also called dataset series as they may be mapped to ‘dataset series’ following the terminology defined in ISO 19113, ISO 19114 and ISO 19115. An EO collection typically corresponds to a series of EO datasets (also called EO products) derived from data acquired:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Either from an instrument in a dedicated mode on board a single satellite platform; or</p>
+</li>
+<li>
+<p>by a series of instruments, possibly from different satellite platforms, but in this case working in the same instrument mode</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In this service, Collections are searched in the first step of the two-step search, whereas Products within those Collections are searched in the second step.</p>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_admin_interface">3.2.3.1.4. Admin Interface</h6>
+<div class="paragraph">
+<p>The admin interface allows operators to inspect and ultimately alter the internal data models of the service. The interface is structured very similarly to the model layout as detailed in the registrar section.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_data_2">3.2.4. Data</h4>
+<div class="sect4">
+<h5 id="_configuration_2">3.2.4.1. Configuration</h5>
+<div class="paragraph">
+<p>The application configuration is stored in the Database service where, depending on the request, all relevant metadata is extracted and used in the rendering process.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_data_flow_2">3.2.4.2. Data flow</h5>
+<div class="paragraph">
+<p>As a web service, the renderer awaits user requests which are then processed. For that, initial queries to the database service are made, which in turn deliver the information of what files are required to fulfill the request. In the ensuing process, these files, residing on an object storage or a mounted network file system are then accessed and the required portions extracted. Finally, the resulting image, or data files are returned to the caller.</p>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_applicable_resources_2">3.2.5. Applicable Resources</h4>
+<div class="paragraph">
+<p><a href="https://docs.eoxserver.org/en/master/" class="bare">https://docs.eoxserver.org/en/master/</a></p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_cache_service">3.3. Cache Service</h3>
+<div class="sect3">
+<h4 id="_overview_and_purpose_3">3.3.1. Overview and Purpose</h4>
+<div class="paragraph">
+<p>The purpose of this service is to provide a caching layer for WMS interface of the renderer service, as they may be computationally costly to produce.<br>
+Caching can happen either beforehand (pre-seeded) or on demand (or a mixture of both), in order to even further improve performance, even for the first lookup.<br>
+Caching is performed on a tile basis for each registered dataset, using the time axis to distinguish the individiual scenes in a collection. In order to resolve the time axis, a connection to the database service is used.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_software_reuse_and_dependencies_3">3.3.2. Software Reuse and Dependencies</h4>
+<div class="paragraph">
+<p>This service is realized using the COTS MapCache with a custom confugation.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_interfaces_3">3.3.3. Interfaces</h4>
+<div class="paragraph">
+<p>This service exposes the WMS and WMTS OGC Web Services endpoints.</p>
+</div>
+<div class="sect4">
+<h5 id="_ogc_web_service_ows_interfaces_2">3.3.3.1. OGC Web Service (OWS) interfaces</h5>
+<div class="paragraph">
+<p>The Cache Service provides various OGC Web Service endpoints. The provided layers use a static configuration, mimicking the dynamic status of the contents of the Renderer Service.</p>
+</div>
+<div class="sect5">
+<h6 id="_web_map_tile_service_wmts">3.3.3.1.1. Web Map Tile Service (WMTS)</h6>
+<div class="paragraph">
+<p>The OGC Web Map Tile Service (WMTS) interface standard is very similar in nature to the WMS, as it provides rendered images of stored data. In contrast, however, only tiles of one of the pre-defined tile grids can be accessed and only in a limited number of predefined styles.<br>
+This way, the tiles can be efficiently pre-processed and cached, allowing for better performance when accessing the service.<br>
+The EO-WMS guidance can be applied on WMTS as well for example to support the TIME dimension on collection level layers.</p>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_web_map_service_wms_2">3.3.3.1.2. Web Map Service (WMS)</h6>
+<div class="paragraph">
+<p>The OGC Web Map Service (WMS) interface standard provides rendered maps (images) to be displayed in the users’ graphical user interface or similar application. This interface revolves around the concept of the layer, from which subsets can be fetched. This can be static data prepared for each request or can have dynamic filters such as specific rendering instructions or data filters applied.<br>
+The Earth Observation Application Profile (EO-WMS) provides guidance how to apply WMS on Earth Observation data. For example, it details how to provide a collection or dataset like the whole Sentinel-2 archive as one WMS layer. Subsets down to individual products can be visualized using the TIME dimension or parameter.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_data_3">3.3.4. Data</h4>
+<div class="sect4">
+<h5 id="_configuration_3">3.3.4.1. Configuration</h5>
+<div class="paragraph">
+<p>A single configuration file defines the cache behavior. The structure of this XML based configuration file can be inspected on the MapCache homepage.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_data_flow_3">3.3.4.2. Data flow</h5>
+<div class="imageblock">
+<div class="content">
+<img src="./images/eoepca-rm-da-cache-sequence.png" alt="Cache Sequence">
+</div>
+</div>
+<div class="paragraph">
+<p>Similarly to the renderer service, the cache service exposes an HTTP endpoint that dispatches requests for the provided OGC Web Services. Depending on the request, a database query may be involved in order to resolve the time axis.<br>
+Now it is checked, whether the tiles involved with the request are already cached or need to be rendered by the renderer service. Each tile that is missing in the cache is now requested from the renderer and subsequently cached in the backend, the configured object storage.<br>
+The final response is now merged from all intersecting tiles and returned to the client.</p>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_applicable_resources_3">3.3.5. Applicable Resources</h4>
+<div class="paragraph">
+<p>The MapCache documentation can be found here: <a href="https://mapserver.org/mapcache/" class="bare">https://mapserver.org/mapcache/</a></p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_client_service">3.4. Client Service</h3>
+<div class="sect3">
+<h4 id="_overview_and_purpose_4">3.4.1. Overview and Purpose</h4>
+<div class="paragraph">
+<p>This service provides a configured client to be run in a browser.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_software_reuse_and_dependencies_4">3.4.2. Software Reuse and Dependencies</h4>
+<div class="paragraph">
+<p>The server software used is the open source software nginx, serving a pre-built and configured JavaScript application eoxc, which is in turn based on the mapping library OpenLayers.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_interfaces_4">3.4.3. Interfaces</h4>
+<div class="paragraph">
+<p>This service provides an HTTP endpoint to retrieve the client files.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_data_4">3.4.4. Data</h4>
+<div class="sect4">
+<h5 id="_configuration_4">3.4.4.1. Configuration</h5>
+<div class="paragraph">
+<p>The client is configured using JavaScript inside the main index.html.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_data_flow_4">3.4.4.2. Data flow</h5>
+<div class="paragraph">
+<p>When requested, the client JavaScript bundle is downloaded by the browser and the application is initialized. This application will connect to the endpoints of various services such as the cache and renderer, but also external sources for map base-, or overlay layer tiles. The requested map tiles and metadata will be visualized within the app or made available as a downloaded file.</p>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_applicable_resources_4">3.4.5. Applicable Resources</h4>
+<div class="paragraph">
+<p>The git repository with additional resources for EOxC can be found at the projects repository: <a href="https://github.com/eoxc/eoxc" class="bare">https://github.com/eoxc/eoxc</a></p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_database_service">3.5. Database Service</h3>
+<div class="sect3">
+<h4 id="_overview_and_purpose_5">3.5.1. Overview and Purpose</h4>
+<div class="paragraph">
+<p>This service provides the main database facilities for the other services requiring relational table storage.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_software_reuse_and_dependencies_5">3.5.2. Software Reuse and Dependencies</h4>
+<div class="paragraph">
+<p>This service is using the COTS version of the popular PostgreSQL system software.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_interfaces_5">3.5.3. Interfaces</h4>
+<div class="paragraph">
+<p>This service provides a single TCP based access mechanism through which commands can be executed.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_data_5">3.5.4. Data</h4>
+<div class="sect4">
+<h5 id="_configuration_5">3.5.4.1. Configuration</h5>
+<div class="paragraph">
+<p>This service is configures via a configuration file.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_data_flow_5">3.5.4.2. Data flow</h5>
+
+</div>
+</div>
+<div class="sect3">
+<h4 id="_applicable_resources_5">3.5.5. Applicable Resources</h4>
+<div class="paragraph">
+<p>The documentation for PostgreSQL can be found here: <a href="https://www.postgresql.org/docs/" class="bare">https://www.postgresql.org/docs/</a></p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_queue_service">3.6. Queue Service</h3>
+<div class="sect3">
+<h4 id="_overview_and_purpose_6">3.6.1. Overview and Purpose</h4>
+<div class="paragraph">
+<p>This service serves as a central point of communication between the services of the data access building block. Various sets and lists are used to track incoming registration requests and their subsequent status.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_software_reuse_and_dependencies_6">3.6.2. Software Reuse and Dependencies</h4>
+<div class="paragraph">
+<p>This service is a configured instance of the Redis COTS software.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_interfaces_6">3.6.3. Interfaces</h4>
+<div class="paragraph">
+<p>This service provides a TCP based endpoint for all commands.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_data_6">3.6.4. Data</h4>
+<div class="sect4">
+<h5 id="_configuration_6">3.6.4.1. Configuration</h5>
+<div class="paragraph">
+<p>No additonal configuration is used beyond the default settings.</p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_data_flow_6">3.6.4.2. Data flow</h5>
+<div class="paragraph">
+<p><code>registration_queue</code>: this list based queue is used to buffer incoming registration requests. It is used as a FIFO (first-in-first-out) queue, so the earlier registration request is handled first.</p>
+</div>
+<div class="paragraph">
+<p><code>registered_set</code>: This set of strings collects all registration items that were successfully registered.<br>
+<code>failure_set</code>: This set contains all the paths of items that failed to register.</p>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_applicable_resources_6">3.6.5. Applicable Resources</h4>
+<div class="paragraph">
+<p><a href="https://redis.io/documentation" class="bare">https://redis.io/documentation</a></p>
+</div>
+<hr>
+<div class="paragraph large">
+<p>&lt;&lt; End of Document &gt;&gt;</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Version 0.1<br>
+Last updated 2023-12-11 09:22:32 UTC
+</div>
+</div>
+</body>
+</html>
